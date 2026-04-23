@@ -17,22 +17,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
+import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
-import com.patrykandpatrick.vico.compose.common.fill
-import com.patrykandpatrick.vico.core.cartesian.data.*
-import com.patrykandpatrick.vico.core.cartesian.layer.*
-import com.patrykandpatrick.vico.core.cartesian.axis.*
-import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer.ColumnProvider
-import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer.LineFill
+import com.patrykandpatrick.vico.compose.common.Fill
+import com.patrykandpatrick.vico.compose.cartesian.data.*
+import com.patrykandpatrick.vico.compose.cartesian.layer.*
+import com.patrykandpatrick.vico.compose.cartesian.axis.*
+import com.patrykandpatrick.vico.compose.cartesian.layer.ColumnCartesianLayer.ColumnProvider
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer.LineFill
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.domain.model.SymptomType
@@ -277,7 +277,7 @@ fun SymptomIntensityChart(data: ChartDataSet) {
             rememberColumnCartesianLayer(
                 columnProvider = ColumnProvider.series(
                     rememberLineComponent(
-                        fill = fill(AccentOrange),
+                        fill = Fill(AccentOrange),
                         thickness = 12.dp
                     )
                 )
@@ -357,10 +357,10 @@ fun PollenVsSymptomChart(data: ChartDataSet) {
             rememberLineCartesianLayer(
                 lineProvider = LineCartesianLayer.LineProvider.series(
                     LineCartesianLayer.Line(
-                        fill = LineFill.single(fill(AccentBlue))
+                        fill = LineFill.single(Fill(AccentBlue))
                     ),
                     LineCartesianLayer.Line(
-                        fill = LineFill.single(fill(AccentOrange))
+                        fill = LineFill.single(Fill(AccentOrange))
                     )
                 )
             ),
@@ -411,10 +411,10 @@ fun AqiVsSymptomChart(data: ChartDataSet) {
             rememberLineCartesianLayer(
                 lineProvider = LineCartesianLayer.LineProvider.series(
                     LineCartesianLayer.Line(
-                        fill = LineFill.single(fill(AccentGreen))
+                        fill = LineFill.single(Fill(AccentGreen))
                     ),
                     LineCartesianLayer.Line(
-                        fill = LineFill.single(fill(AccentOrange))
+                        fill = LineFill.single(Fill(AccentOrange))
                     )
                 )
             ),
