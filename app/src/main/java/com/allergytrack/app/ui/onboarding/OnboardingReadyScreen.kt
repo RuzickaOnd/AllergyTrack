@@ -1,9 +1,10 @@
 package com.allergytrack.app.ui.onboarding
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,6 +17,7 @@ import com.allergytrack.app.domain.model.OnboardingStep
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.theme.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingReadyScreen(
     uiState: OnboardingUiState,
@@ -24,88 +26,107 @@ fun OnboardingReadyScreen(
 ) {
     val permissions = uiState.permissionsState
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Background),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Scaffold(
+        containerColor = Background,
+        topBar = {
+            TopAppBar(
+                title = { Text("Vše je připraveno!", fontFamily = SerifFontFamily) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Zpět")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Background,
+                    titleContentColor = TextPrimary
+                )
+            )
+        }
+    ) { padding ->
         Column(
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp)
-                .padding(top = 48.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(32.dp)
+                .fillMaxSize()
+                .padding(padding),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header
-            SectionHeading(
-                title = "You're All Set!",
-                subtitle = "In 14 days of logging, AI will reveal your first patterns and potential allergy triggers."
-            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(32.dp)
+            ) {
+                // Subtitle
+                Text(
+                    text = "Během 14 dnů logování AI odhalí tvé první vzorce a potenciální spouštěče alergií.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextDim,
+                    textAlign = TextAlign.Center
+                )
 
-            // Large Success Icon
-            Text(
-                text = "✨",
-                fontSize = 80.sp,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
+                // Large Success Icon
+                Text(
+                    text = "✨",
+                    fontSize = 80.sp,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
 
-            // Settings Summary
-            AppCard(borderColor = Border) {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    CardTitle("YOUR SETUP")
+                // Settings Summary
+                AppCard(borderColor = Border) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        CardTitle("TVÉ NASTAVENÍ")
 
-                    ReadySummaryItem(
-                        label = "Allergy Types",
-                        value = if (uiState.selectedAllergyTypes.isEmpty())
-                            "Not set"
-                        else
-                            uiState.selectedAllergyTypes.joinToString(" ") { it.emoji }
-                    )
+                        ReadySummaryItem(
+                            label = "Typy alergií",
+                            value = if (uiState.selectedAllergyTypes.isEmpty())
+                                "Nenastaveno"
+                            else
+                                uiState.selectedAllergyTypes.joinToString(" ") { it.emoji }
+                        )
 
-                    ReadySummaryItem(
-                        label = "Location",
-                        value = if (permissions.location) "✓ Enabled" else "✗ Disabled"
-                    )
+                        ReadySummaryItem(
+                            label = "Poloha",
+                            value = if (permissions.location) "✓ Povoleno" else "✗ Zakázáno"
+                        )
 
-                    ReadySummaryItem(
-                        label = "Camera",
-                        value = if (permissions.camera) "✓ Enabled" else "✗ Disabled"
-                    )
+                        ReadySummaryItem(
+                            label = "Fotoaparát",
+                            value = if (permissions.camera) "✓ Povoleno" else "✗ Zakázáno"
+                        )
 
-                    ReadySummaryItem(
-                        label = "Notifications",
-                        value = if (permissions.notifications) "✓ Enabled" else "✗ Disabled"
-                    )
+                        ReadySummaryItem(
+                            label = "Oznámení",
+                            value = if (permissions.notifications) "✓ Povoleno" else "✗ Zakázáno"
+                        )
+                    }
                 }
+
+                // First Day Recommendations
+                AppCard(borderColor = AccentBlue.copy(alpha = 0.3f)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        CardTitle("TVŮJ PRVNÍ DEN")
+                        
+                        FirstDayItem("📸", "Vyfoť nebo zapiš svou snídani")
+                        FirstDayItem("😊", "Zaznamenej, jak se cítíš")
+                        FirstDayItem("📊", "Prostředí se sleduje automaticky")
+                    }
+                }
+
+                Spacer(Modifier.height(32.dp))
             }
 
-            // First Day Recommendations
-            AppCard(borderColor = AccentBlue.copy(alpha = 0.3f)) {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    CardTitle("YOUR FIRST DAY")
-                    
-                    FirstDayItem("📸", "Photograph or log your breakfast")
-                    FirstDayItem("😊", "Record how you're feeling")
-                    FirstDayItem("📊", "Environment is tracked automatically")
-                }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                OnboardingProgressDots(
+                    currentStep = OnboardingStep.READY,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                OnboardingBottomBar(
+                    onNext = onComplete,
+                    onBack = onBack,
+                    nextLabel = "PŘEJÍT NA PŘEHLED →",
+                )
             }
-
-            Spacer(Modifier.height(32.dp))
-        }
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            OnboardingProgressDots(
-                currentStep = OnboardingStep.READY,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            OnboardingBottomBar(
-                onNext = onComplete,
-                onBack = onBack,
-                nextLabel = "GO TO DASHBOARD →",
-            )
         }
     }
 }

@@ -3,7 +3,6 @@ package com.allergytrack.app.ui.screens.dashboard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,7 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
@@ -29,41 +31,54 @@ fun DashboardScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold { padding ->
-        if (uiState.isLoading) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-            }
-            return@Scaffold
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(lifecycle) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.refreshEnvironment()
         }
+    }
 
+    if (uiState.isLoading) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        }
+    } else {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item { Spacer(Modifier.height(16.dp)) }
+            item { Spacer(Modifier.height(8.dp)) }
 
-            // Greeting header
+            // Stálá tlačítka pro logování — vždy viditelná
             item {
-                SectionHeading(
-                    title = "${uiState.greeting} 👋",
-                    subtitle = "${SimpleDateFormat("EEEE, d MMMM", Locale.US).format(Date())} · Prague"
-                )
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    PrimaryButton(
+                        text = "+ JÍDLO",
+                        onClick = { navController.navigate(Screen.FoodLog.route) },
+                        modifier = Modifier.weight(1f)
+                    )
+                    SecondaryButton(
+                        text = "+ PŘÍZNAK",
+                        onClick = { navController.navigate(Screen.SymptomLog.route) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
 
-            // Environment card
-            item {
-                uiState.latestEnvironment?.let { env ->
-                    EnvironmentCard(env = env)
-                } ?: NoEnvironmentCard()
+            // Environment card — zobrazíme pouze pokud jsme v Evropě (nebo ještě načítáme)
+            if (uiState.showEnvironmentSection) {
+                item {
+                    uiState.latestEnvironment?.let { env ->
+                        EnvironmentCard(env = env)
+                    } ?: NoEnvironmentCard()
+                }
             }
 
             // Today's records header
             item {
-                CardTitle(text = "📋 TODAY'S LOGS")
+                CardTitle(text = "📋 DNEŠNÍ ZÁZNAMY")
             }
 
             // Merged and sorted timeline
@@ -79,12 +94,7 @@ fun DashboardScreen(
             }
 
             if (allItems.isEmpty()) {
-                item {
-                    EmptyDayCard(
-                        onAddFood = { navController.navigate(Screen.FoodLog.route) },
-                        onAddSymptom = { navController.navigate(Screen.SymptomLog.route) }
-                    )
-                }
+                item { EmptyDayCard() }
             } else {
                 item {
                     AppCard {
@@ -109,7 +119,7 @@ fun DashboardScreen(
 
             // AI Tip
             item {
-                AiBadge(text = "2nd day of high grass pollen — monitor your symptoms")
+                AiBadge(text = "Druhý den vysokého pylu travin — sleduj své příznaky.")
             }
 
             item { Spacer(Modifier.height(24.dp)) }
@@ -120,14 +130,14 @@ fun DashboardScreen(
 @Composable
 fun EnvironmentCard(env: EnvironmentLog) {
     AppCard(borderColor = AccentOrange.copy(alpha = 0.3f)) {
-        CardTitle("🌿 ENVIRONMENT TODAY")
+        CardTitle("🌿 PROSTŘEDÍ DNES")
         Spacer(Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             EnvironmentStat(
-                label = "Grass Pollen",
+                label = "Pyl trav",
                 value = env.pollenGrassIndex?.toString() ?: "—",
                 color = if ((env.pollenGrassIndex ?: 0) >= 3) AccentOrange else AccentGreen
             )
@@ -137,7 +147,7 @@ fun EnvironmentCard(env: EnvironmentLog) {
                 color = if (env.aqi >= 50) AccentOrange else AccentGreen
             )
             EnvironmentStat(
-                label = "Tree Pollen",
+                label = "Pyl stromů",
                 value = env.pollenTreeIndex?.toString() ?: "—",
                 color = if ((env.pollenTreeIndex ?: 0) >= 3) AccentOrange else AccentGreen
             )
@@ -219,29 +229,25 @@ fun TimelineSymptomItem(log: SymptomLogEntity) {
 }
 
 @Composable
-fun EmptyDayCard(onAddFood: () -> Unit, onAddSymptom: () -> Unit) {
+fun EmptyDayCard() {
     AppCard {
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                "No logs yet today",
+                "Dnes zatím žádné záznamy",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = SerifFontFamily
             )
             Text(
-                "Start by logging your breakfast or how you're feeling right now.",
+                "Zaloguj snídani nebo jak se cítíš.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondary,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                SecondaryButton(text = "+ FOOD", onClick = onAddFood, modifier = Modifier.weight(1f))
-                SecondaryButton(text = "+ SYMPTOM", onClick = onAddSymptom, modifier = Modifier.weight(1f))
-            }
         }
     }
 }
@@ -260,7 +266,7 @@ fun NoEnvironmentCard() {
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                "Fetching environmental data...",
+                "Načítám data prostředí...",
                 style = MaterialTheme.typography.bodySmall,
                 color = TextDim,
                 fontFamily = MonoFontFamily

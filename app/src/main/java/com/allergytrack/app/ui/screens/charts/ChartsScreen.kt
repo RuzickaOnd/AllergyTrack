@@ -3,9 +3,8 @@ package com.allergytrack.app.ui.screens.charts
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
@@ -38,7 +37,6 @@ import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.ui.theme.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChartsScreen(
     navController: NavController,
@@ -51,77 +49,66 @@ fun ChartsScreen(
     val isPollenVisible by viewModel.isPollenVisible.collectAsStateWithLifecycle()
     val showPollenUpsell by viewModel.showPollenUpsell.collectAsStateWithLifecycle()
 
-    Scaffold(
-        containerColor = Background
-    ) { padding ->
-
-        if (uiState.isLoading) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = AccentGreen)
-            }
-            return@Scaffold
+    if (uiState.isLoading) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = AccentGreen)
         }
-
-        Column(
+    } else {
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Spacer(Modifier.height(24.dp))
+            item { Spacer(Modifier.height(8.dp)) }
 
-            SectionHeading(
-                title = "Analytics",
-                subtitle = "Trends and environmental correlation"
-            )
-
-            // Time range selector
             if (isExtendedChartsVisible) {
-                TimeRangeSelector(
-                    selected = uiState.selectedRange,
-                    canUseExtendedCharts = canUseExtendedCharts,
-                    showBadge = showExtendedChartsBadge,
-                    onSelected = viewModel::onRangeSelected
+                item {
+                    TimeRangeSelector(
+                        selected = uiState.selectedRange,
+                        canUseExtendedCharts = canUseExtendedCharts,
+                        showBadge = showExtendedChartsBadge,
+                        onSelected = viewModel::onRangeSelected
+                    )
+                }
+            }
+
+            item { SummaryRow(uiState = uiState) }
+
+            item {
+                SymptomFilterRow(
+                    selected = uiState.selectedSymptomFilter,
+                    onSelected = viewModel::onFilterSelected
                 )
             }
 
-            // Summary stats
-            SummaryRow(uiState = uiState)
-
-            // Symptom filter
-            SymptomFilterRow(
-                selected = uiState.selectedSymptomFilter,
-                onSelected = viewModel::onFilterSelected
-            )
-
-            // Chart 1: Daily symptom intensity
             uiState.chartData?.let { data ->
-                ChartCard(title = "SYMPTOM INTENSITY") {
-                    SymptomIntensityChart(data = data)
-                }
-
-                // Chart 2: Pollen vs. symptoms
-                PremiumGate(
-                    isVisible = isPollenVisible,
-                    showUpsell = showPollenUpsell,
-                    feature = PremiumFeature.POLLEN_DATA
-                ) {
-                    ChartCard(title = "POLLEN VS. SYMPTOMS") {
-                        PollenVsSymptomChart(data = data)
+                item {
+                    ChartCard(title = "INTENZITA PŘÍZNAKŮ") {
+                        SymptomIntensityChart(data = data)
                     }
                 }
-
-                // Chart 3: AQI vs. symptoms
-                ChartCard(title = "AIR QUALITY (AQI) VS. SYMPTOMS") {
-                    AqiVsSymptomChart(data = data)
+                item {
+                    PremiumGate(
+                        isVisible = isPollenVisible,
+                        showUpsell = showPollenUpsell,
+                        feature = PremiumFeature.POLLEN_DATA
+                    ) {
+                        ChartCard(title = "PYL VS. PŘÍZNAKY") {
+                            PollenVsSymptomChart(data = data)
+                        }
+                    }
+                }
+                item {
+                    ChartCard(title = "KVALITA VZDUCHU (AQI) VS. PŘÍZNAKY") {
+                        AqiVsSymptomChart(data = data)
+                    }
                 }
             } ?: run {
-                EmptyChartsCard()
+                item { EmptyChartsCard() }
             }
 
-            Spacer(Modifier.height(100.dp))
+            item { Spacer(Modifier.height(24.dp)) }
         }
     }
 }
@@ -167,17 +154,17 @@ fun SummaryRow(uiState: ChartsUiState) {
         StatCard(
             modifier = Modifier.weight(1f),
             value = uiState.totalSymptomEvents.toString(),
-            label = "TOTAL LOGS"
+            label = "CELKEM"
         )
         StatCard(
             modifier = Modifier.weight(1f),
             value = "%.1f".format(uiState.avgDailyIntensity),
-            label = "AVG SEVERITY"
+            label = "PRŮMĚR"
         )
         StatCard(
             modifier = Modifier.weight(1f),
             value = uiState.mostFrequentSymptom,
-            label = "FREQUENT"
+            label = "NEJČASTĚJŠÍ"
         )
     }
 }
@@ -209,7 +196,7 @@ fun StatCard(modifier: Modifier = Modifier, value: String, label: String) {
 @Composable
 fun SymptomFilterRow(selected: SymptomType?, onSelected: (SymptomType?) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text("Symptom Filter", style = MaterialTheme.typography.labelSmall,
+        Text("Filtr příznaků", style = MaterialTheme.typography.labelSmall,
             color = TextDim, fontFamily = MonoFontFamily)
         androidx.compose.foundation.lazy.LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -218,7 +205,7 @@ fun SymptomFilterRow(selected: SymptomType?, onSelected: (SymptomType?) -> Unit)
                 FilterChip(
                     selected = selected == null,
                     onClick = { onSelected(null) },
-                    label = { Text("ALL", fontFamily = MonoFontFamily, fontSize = 10.sp) },
+                    label = { Text("VŠE", fontFamily = MonoFontFamily, fontSize = 10.sp) },
                     shape = RoundedCornerShape(8.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = AccentBlue.copy(alpha = 0.2f),
@@ -255,7 +242,7 @@ fun ChartCard(title: String, content: @Composable () -> Unit) {
 @Composable
 fun SymptomIntensityChart(data: ChartDataSet) {
     if (data.symptomPoints.isEmpty() || data.symptomPoints.all { it.avgIntensity == 0f }) {
-        EmptyChartPlaceholder("No data for this period")
+        EmptyChartPlaceholder("Žádná data pro toto období")
         return
     }
 
@@ -301,7 +288,6 @@ fun SymptomIntensityChart(data: ChartDataSet) {
 @Composable
 fun PollenVsSymptomChart(data: ChartDataSet) {
 
-    // Pokud žádný den neměl pylová data, zobraz informaci místo prázdného grafu
     val hasAnyPollenData = data.environmentPoints.any { it.pollenAvailable }
 
     if (!hasAnyPollenData) {
@@ -318,12 +304,12 @@ fun PollenVsSymptomChart(data: ChartDataSet) {
                 )
                 Column {
                     Text(
-                        "Environmental Data Unavailable",
+                        "Data prostředí nedostupná",
                         style = MaterialTheme.typography.labelLarge,
                         color = TextPrimary
                     )
                     Text(
-                        "Pollen data is not available for this region or season (available Mar–Sep in EU).",
+                        "Pylová data nejsou dostupná pro tento region nebo roční období (dostupná bř.–zář. v EU).",
                         style = MaterialTheme.typography.bodySmall,
                         color = TextDim
                     )
@@ -338,12 +324,10 @@ fun PollenVsSymptomChart(data: ChartDataSet) {
     LaunchedEffect(data) {
         modelProducer.runTransaction {
             lineSeries {
-                // Pyl trávy
                 series(
                     x = data.environmentPoints.filter { it.pollenAvailable }.map { it.dayIndex },
                     y = data.environmentPoints.filter { it.pollenAvailable }.map { it.pollenGrass }
                 )
-                // Symptomy
                 series(
                     x = data.symptomPoints.map { it.dayIndex },
                     y = data.symptomPoints.map { it.avgIntensity }
@@ -382,8 +366,8 @@ fun PollenVsSymptomChart(data: ChartDataSet) {
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        LegendItem(color = AccentBlue, label = "Pollen (Grass)")
-        LegendItem(color = AccentOrange, label = "Symptoms")
+        LegendItem(color = AccentBlue, label = "Pyl (tráva)")
+        LegendItem(color = AccentOrange, label = "Příznaky")
     }
 }
 
@@ -435,8 +419,8 @@ fun AqiVsSymptomChart(data: ChartDataSet) {
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        LegendItem(color = AccentGreen, label = "AQI (Norm.)")
-        LegendItem(color = AccentOrange, label = "Symptoms")
+        LegendItem(color = AccentGreen, label = "AQI (norm.)")
+        LegendItem(color = AccentOrange, label = "Příznaky")
     }
 }
 
@@ -481,12 +465,12 @@ fun EmptyChartsCard() {
         ) {
             Text("📊", style = androidx.compose.ui.text.TextStyle(fontSize = 40.sp))
             Text(
-                "Insufficient Data",
+                "Nedostatek dat",
                 style = MaterialTheme.typography.headlineMedium,
                 color = TextPrimary
             )
             Text(
-                "Log your food and symptoms daily. Charts will appear once we have enough entries to visualize trends.",
+                "Zaznamenávej jídlo a příznaky každý den. Grafy se zobrazí, až bude dostatek záznamů.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondary,
                 textAlign = TextAlign.Center,

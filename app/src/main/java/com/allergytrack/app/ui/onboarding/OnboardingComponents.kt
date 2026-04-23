@@ -87,14 +87,14 @@ fun OnboardingSelectCard(
 }
 
 /**
- * Common bottom bar for onboarding screens with Back and Next/Continue buttons.
+ * Společná dolní lišta pro onboarding s tlačítky Zpět a Pokračovat.
  */
 @Composable
 fun OnboardingBottomBar(
     onNext: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    nextLabel: String = "CONTINUE →",
+    nextLabel: String = "POKRAČOVAT →",
     nextEnabled: Boolean = true
 ) {
     Row(
@@ -105,7 +105,7 @@ fun OnboardingBottomBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         com.allergytrack.app.ui.components.SecondaryButton(
-            text = "BACK",
+            text = "ZPĚT",
             onClick = onBack,
             modifier = Modifier.weight(1f)
         )
@@ -113,7 +113,8 @@ fun OnboardingBottomBar(
         com.allergytrack.app.ui.components.PrimaryButton(
             text = nextLabel.uppercase(),
             onClick = onNext,
-            modifier = Modifier.weight(1.5f)
+            modifier = Modifier.weight(1.5f),
+            enabled = nextEnabled
         )
     }
 }

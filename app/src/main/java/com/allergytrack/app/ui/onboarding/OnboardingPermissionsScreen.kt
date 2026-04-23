@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,6 +26,7 @@ import com.allergytrack.app.domain.model.OnboardingStep
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.theme.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingPermissionsScreen(
     uiState: OnboardingUiState,
@@ -49,100 +51,119 @@ fun OnboardingPermissionsScreen(
         ActivityResultContracts.RequestPermission()
     ) { onPermissionsRefreshed() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Background),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Scaffold(
+        containerColor = Background,
+        topBar = {
+            TopAppBar(
+                title = { Text("Potřebné přístupy", fontFamily = SerifFontFamily) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Zpět")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Background,
+                    titleContentColor = TextPrimary,
+                    navigationIconContentColor = TextPrimary
+                )
+            )
+        }
+    ) { padding ->
         Column(
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp)
-                .padding(top = 48.dp),
-            verticalArrangement = Arrangement.spacedBy(32.dp)
+                .fillMaxSize()
+                .padding(padding),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header
-            SectionHeading(
-                title = "Required Access",
-                subtitle = "To automatically track your environment and log meals. You can revoke any permission in settings anytime."
-            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(32.dp)
+            ) {
+                // Subtitle
+                Text(
+                    text = "Tyto přístupy jsou nezbytné pro automatické sledování prostředí a logování jídel. Oprávnění můžeš kdykoliv změnit v nastavení.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextDim
+                )
 
-            // GPS — Required for environmental data
-            PermissionCard(
-                icon = Icons.Default.LocationOn,
-                title = "Location",
-                description = "Automatically load pollen data and air quality based on where you move.",
-                isGranted = permissions.location,
-                onRequest = {
-                    locationLauncher.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        )
-                    )
-                }
-            )
-
-            // Camera — Optional (for photo logging)
-            PermissionCard(
-                icon = Icons.Default.CameraAlt,
-                title = "Camera",
-                description = "AI food recognition from photos. You can also log meals manually without camera.",
-                isGranted = permissions.camera,
-                onRequest = {
-                    cameraLauncher.launch(Manifest.permission.CAMERA)
-                }
-            )
-
-            // Notifications — Optional (reminders)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // GPS — Required for environmental data
                 PermissionCard(
-                    icon = Icons.Default.Notifications,
-                    title = "Notifications",
-                    description = "Evening reminders and alerts for high pollen levels.",
-                    isGranted = permissions.notifications,
+                    icon = Icons.Default.LocationOn,
+                    title = "Poloha",
+                    description = "Automaticky načítá pylová data a kvalitu ovzduší podle tvého pohybu.",
+                    isGranted = permissions.location,
                     onRequest = {
-                        notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        locationLauncher.launch(
+                            arrayOf(
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
+                        )
                     }
                 )
-            }
 
-            // Privacy Info
-            AppCard(borderColor = Border) {
-                Row(
-                    modifier = Modifier.padding(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        Icons.Default.Lock, null,
-                        tint = TextDim,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text(
-                        text = "Your health data stays on your device. We never share it with third parties.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary,
-                        lineHeight = 18.sp
+                // Camera — Optional (for photo logging)
+                PermissionCard(
+                    icon = Icons.Default.CameraAlt,
+                    title = "Fotoaparát",
+                    description = "AI rozpoznávání jídla z fotek. Jídlo lze zadávat i ručně bez fotoaparátu.",
+                    isGranted = permissions.camera,
+                    onRequest = {
+                        cameraLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                )
+
+                // Notifications — Optional (reminders)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    PermissionCard(
+                        icon = Icons.Default.Notifications,
+                        title = "Oznámení",
+                        description = "Večerní připomínky a upozornění na vysoké hladiny pylu.",
+                        isGranted = permissions.notifications,
+                        onRequest = {
+                            notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
                     )
                 }
+
+                // Privacy Info
+                AppCard(borderColor = Border) {
+                    Row(
+                        modifier = Modifier.padding(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Lock, null,
+                            tint = TextDim,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = "Tvá data zůstávají pouze v zařízení. Nikdy je nesdílíme s třetími stranami.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary,
+                            lineHeight = 18.sp
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(32.dp))
             }
 
-            Spacer(Modifier.height(32.dp))
-        }
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            OnboardingProgressDots(
-                currentStep = OnboardingStep.PERMISSIONS,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            OnboardingBottomBar(
-                onNext = onNext,
-                onBack = onBack,
-                nextLabel = if (permissions.location) "CONTINUE →" else "CONTINUE WITHOUT LOCATION →",
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                OnboardingProgressDots(
+                    currentStep = OnboardingStep.PERMISSIONS,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                OnboardingBottomBar(
+                    onNext = onNext,
+                    onBack = onBack,
+                    nextLabel = if (permissions.location) "POKRAČOVAT →" else "POKRAČOVAT BEZ POLOHY →",
+                )
+            }
         }
     }
 }

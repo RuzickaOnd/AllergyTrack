@@ -165,7 +165,7 @@ fun AiBadge(text: String) {
     ) {
         Column {
             Text(
-                text = "✨ CLINICAL INSIGHT",
+                text = "✨ KLINICKÝ VHLED",
                 style = MaterialTheme.typography.labelSmall,
                 color = AccentPurple,
                 fontWeight = FontWeight.Bold,

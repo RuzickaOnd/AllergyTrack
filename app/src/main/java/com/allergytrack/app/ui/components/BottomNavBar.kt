@@ -26,7 +26,6 @@ data class BottomNavItem(
 fun BottomNavBar(navController: NavController) {
     val items = listOf(
         BottomNavItem(Screen.Dashboard, "PŘEHLED", "🏠"),
-        BottomNavItem(Screen.FoodLog, "LOGOVAT", "➕"),
         BottomNavItem(Screen.Charts, "GRAFY", "📊"),
         BottomNavItem(Screen.Analysis, "ANALÝZA", "🧠"),
         BottomNavItem(Screen.Profile, "PROFIL", "⚙️"),

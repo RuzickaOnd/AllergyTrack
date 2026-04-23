@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,7 +19,6 @@ import androidx.navigation.NavController
 import com.allergytrack.app.data.remote.food.RecognizedFood
 import com.allergytrack.app.ui.navigation.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoodManualSearchScreen(
     navController: NavController,
@@ -35,46 +32,47 @@ fun FoodManualSearchScreen(
         focusRequester.requestFocus()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    OutlinedTextField(
-                        value = searchState.query,
-                        onValueChange = viewModel::onSearchQueryChange,
-                        placeholder = { Text("Hledat potravinu...") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester),
-                        shape = RoundedCornerShape(12.dp),
-                        singleLine = true,
-                        leadingIcon = { Icon(Icons.Default.Search, null) },
-                        trailingIcon = {
-                            if (searchState.query.isNotEmpty()) {
-                                IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
-                                    Icon(Icons.Default.Clear, "Vymazat")
-                                }
-                            }
-                        }
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Zpět")
+    // Poznámka: Vyhledávací pole je nyní součástí TopAppBar v MainAppScaffold pro tuto obrazovku?
+    // Ne, v MainAppScaffold jsme definovali jen textový titulek. 
+    // Pro lepší UX ponecháme vyhledávací logiku zde, ale musíme vyřešit TopAppBar.
+    
+    // Rozhodnutí: MainAppScaffold TopAppBar je pro tuto obrazovku příliš statický.
+    // Abychom zachovali "jeden scaffold", musíme buď přesunout vyhledávací pole do MainAppScaffold,
+    // nebo nechat TopAppBar v MainAppScaffold prázdný a vykreslit hledání zde jako první prvek.
+    
+    // Druhá možnost (vykreslení zde) je čistší pro kód screenu.
+    
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        Spacer(Modifier.height(8.dp))
+        
+        OutlinedTextField(
+            value = searchState.query,
+            onValueChange = viewModel::onSearchQueryChange,
+            placeholder = { Text("Hledat potravinu...") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
+            shape = RoundedCornerShape(12.dp),
+            singleLine = true,
+            leadingIcon = { Icon(Icons.Default.Search, null) },
+            trailingIcon = {
+                if (searchState.query.isNotEmpty()) {
+                    IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
+                        Icon(Icons.Default.Clear, "Vymazat")
                     }
                 }
-            )
-        }
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            item { Spacer(Modifier.height(4.dp)) }
+            }
+        )
 
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(vertical = 16.dp)
+        ) {
             if (searchState.isSearching) {
                 item {
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -166,7 +164,7 @@ fun FoodSearchResultItem(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant)
             Column(Modifier.weight(1f)) {
                 Text(food.name, style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium)
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium)
                 if (food.allergens.isNotEmpty()) {
                     Text(
                         "⚠️ ${food.allergens.joinToString(", ")}",

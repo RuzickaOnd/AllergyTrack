@@ -24,13 +24,12 @@ import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*
 
-// Body parts definition
+// Definice částí těla v češtině
 private val BODY_PARTS = listOf(
-    "Face", "Neck", "Chest", "Back",
-    "Arms", "Hands", "Abdomen", "Legs", "Feet"
+    "Obličej", "Krk", "Hrudník", "Záda",
+    "Paže", "Ruce", "Břicho", "Nohy", "Chodidla"
 )
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SymptomLogScreen(
     navController: NavController,
@@ -38,7 +37,7 @@ fun SymptomLogScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Navigation after save
+    // Navigace po uložení
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) {
             viewModel.reset()
@@ -48,87 +47,68 @@ fun SymptomLogScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Log Symptom", fontFamily = SerifFontFamily) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Background,
-                    titleContentColor = TextPrimary,
-                    navigationIconContentColor = TextPrimary
-                )
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            Spacer(Modifier.height(8.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Spacer(Modifier.height(8.dp))
 
-            // 1. Symptom Type
-            SymptomTypeSection(
-                selectedType = uiState.selectedType,
-                onTypeSelected = viewModel::onTypeSelected
+        // 1. Typ příznaku
+        SymptomTypeSection(
+            selectedType = uiState.selectedType,
+            onTypeSelected = viewModel::onTypeSelected
+        )
+
+        // 2. Intenzita
+        if (uiState.selectedType != null) {
+            IntensitySection(
+                intensity = uiState.intensity,
+                onIntensityChanged = viewModel::onIntensityChanged
             )
 
-            // 2. Intensity
-            if (uiState.selectedType != null) {
-                IntensitySection(
-                    intensity = uiState.intensity,
-                    onIntensityChanged = viewModel::onIntensityChanged
+            // 3. Části těla
+            BodyPartSection(
+                selectedParts = uiState.selectedBodyParts,
+                onPartToggled = viewModel::onBodyPartToggled
+            )
+
+            // 4. Poznámky
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    "POZNÁMKY",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextDim,
+                    fontFamily = MonoFontFamily
                 )
-
-                // 3. Body Parts
-                BodyPartSection(
-                    selectedParts = uiState.selectedBodyParts,
-                    onPartToggled = viewModel::onBodyPartToggled
-                )
-
-                // 4. Notes
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        "NOTES",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = TextDim,
-                        fontFamily = MonoFontFamily
-                    )
-                    OutlinedTextField(
-                        value = uiState.notes,
-                        onValueChange = viewModel::onNotesChanged,
-                        placeholder = { Text("Any specific triggers or details...", color = TextDim) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        maxLines = 3,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = Surface,
-                            focusedContainerColor = Surface,
-                            unfocusedBorderColor = Border,
-                            focusedBorderColor = AccentBlue
-                        )
-                    )
-                }
-
-                // 5. Save
-                PrimaryButton(
-                    text = if (uiState.isSaving) "SAVING..." else "LOG SYMPTOM",
-                    onClick = viewModel::saveSymptom,
+                OutlinedTextField(
+                    value = uiState.notes,
+                    onValueChange = viewModel::onNotesChanged,
+                    placeholder = { Text("Specifické spouštěče nebo detaily...", color = TextDim) },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = !uiState.isSaving
+                    shape = RoundedCornerShape(12.dp),
+                    maxLines = 3,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = Surface,
+                        focusedContainerColor = Surface,
+                        unfocusedBorderColor = Border,
+                        focusedBorderColor = AccentBlue
+                    )
                 )
             }
 
-            Spacer(Modifier.height(80.dp))
+            // 5. Uložit
+            PrimaryButton(
+                text = if (uiState.isSaving) "UKLÁDÁM..." else "ULOŽIT PŘÍZNAK",
+                onClick = viewModel::saveSymptom,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !uiState.isSaving
+            )
         }
+
+        Spacer(Modifier.height(80.dp))
     }
 }
 
@@ -138,9 +118,9 @@ fun SymptomTypeSection(
     onTypeSelected: (SymptomType) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        CardTitle("SYMPTOM TYPE")
+        CardTitle("TYP PŘÍZNAKU")
         
-        // Grid 2 columns
+        // Mřížka 2 sloupce
         val types = SymptomType.entries
         for (row in types.chunked(2)) {
             Row(
@@ -155,7 +135,7 @@ fun SymptomTypeSection(
                         modifier = Modifier.weight(1f)
                     )
                 }
-                // Fill space if odd number
+                // Vyrovnání pokud je lichý počet
                 if (row.size == 1) Spacer(Modifier.weight(1f))
             }
         }
@@ -203,11 +183,11 @@ fun IntensitySection(
     onIntensityChanged: (Int) -> Unit
 ) {
     val intensityLabels = mapOf(
-        1 to "Mild",
-        2 to "Light",
-        3 to "Moderate",
-        4 to "Severe",
-        5 to "Critical"
+        1 to "Mírná",
+        2 to "Lehká",
+        3 to "Střední",
+        4 to "Silná",
+        5 to "Kritická"
     )
     val intensityColors = listOf(
         AccentGreen,
@@ -223,7 +203,7 @@ fun IntensitySection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
-            CardTitle("INTENSITY")
+            CardTitle("INTENZITA")
             Text(
                 "${intensityLabels[intensity]} ($intensity/5)".uppercase(),
                 style = MaterialTheme.typography.labelSmall,
@@ -232,7 +212,7 @@ fun IntensitySection(
             )
         }
 
-        // 5 segmented buttons
+        // 5 tlačítek
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -275,7 +255,7 @@ fun BodyPartSection(
     onPartToggled: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        CardTitle("AFFECTED AREA")
+        CardTitle("ZASAŽENÁ OBLAST")
         
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),

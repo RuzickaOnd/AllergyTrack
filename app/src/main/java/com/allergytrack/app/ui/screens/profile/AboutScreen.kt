@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,106 +12,93 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.allergytrack.app.BuildConfig
+import com.allergytrack.app.ui.theme.SerifFontFamily
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(navController: NavController) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("O aplikaci") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Zpět")
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Spacer(Modifier.height(8.dp))
+
+        // Logo / ikona
+        Surface(
+            modifier = Modifier.size(80.dp),
+            shape = RoundedCornerShape(20.dp),
+            color = MaterialTheme.colorScheme.primaryContainer
         ) {
-            Spacer(Modifier.height(8.dp))
-
-            // Logo / ikona
-            Surface(
-                modifier = Modifier.size(80.dp),
-                shape = RoundedCornerShape(20.dp),
-                color = MaterialTheme.colorScheme.primaryContainer
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text("🌿", style = MaterialTheme.typography.displaySmall)
-                }
+            Box(contentAlignment = Alignment.Center) {
+                Text("🌿", style = MaterialTheme.typography.displaySmall)
             }
+        }
 
-            Text(
-                "AllergyTrack",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
+        Text(
+            "AllergyTrack",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            fontFamily = SerifFontFamily
+        )
 
-            Text(
-                "Verze ${BuildConfig.VERSION_NAME}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        Text(
+            "Verze ${BuildConfig.VERSION_NAME}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
 
-            HorizontalDivider()
+        HorizontalDivider()
 
-            // Co aplikace dělá
-            AboutSection(
-                title = "Co AllergyTrack dělá",
-                content = "AllergyTrack ti pomáhá identifikovat spouštěče tvých alergií. " +
+        // Co aplikace dělá
+        AboutSection(
+            title = "Co AllergyTrack dělá",
+            content = "AllergyTrack ti pomáhá identifikovat spouštěče tvých alergií. " +
                     "Zaznamenáváš, co jíš, kde se pohybuješ a jaké alergické projevy " +
                     "pociťuješ — aplikace pak hledá vzorce a korelace mezi těmito daty."
-            )
+        )
 
-            AboutSection(
-                title = "Jak to funguje",
-                content = "Každý den loguješ jídlo (foto nebo ruční zadání), " +
+        AboutSection(
+            title = "Jak to funguje",
+            content = "Každý den loguješ jídlo (foto nebo ruční zadání), " +
                     "alergické symptomy (ekzém, rýma, svědění...) a aplikace automaticky " +
                     "načítá data o kvalitě ovzduší a pylu podle tvé GPS polohy. " +
                     "Po nashromáždění dat analýza odhalí, co tvé alergie nejčastěji spouští."
-            )
+        )
 
-            AboutSection(
-                title = "Tvá data",
-                content = "Veškerá data jsou uložena pouze v tvém zařízení a nikdy " +
+        AboutSection(
+            title = "Tvá data",
+            content = "Veškerá data jsou uložena pouze v tvém zařízení a nikdy " +
                     "nejsou sdílena s třetími stranami. Aplikace nesbírá žádná osobní data."
-            )
+        )
 
-            AboutSection(
-                title = "Zdroje dat",
-                content = "Kvalita ovzduší a pylová data: Open-Meteo (open-meteo.com)\n" +
+        AboutSection(
+            title = "Zdroje dat",
+            content = "Kvalita ovzduší a pylová data: Open-Meteo (open-meteo.com)\n" +
                     "Databáze potravin: Open Food Facts (openfoodfacts.org)"
-            )
+        )
 
-            // Disclaimer
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "⚠️ Tato aplikace není zdravotnický prostředek a neposkytuje " +
+        // Disclaimer
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = "⚠️ Tato aplikace není zdravotnický prostředek a neposkytuje " +
                         "lékařskou diagnózu ani léčbu. Pro lékařskou radu se vždy obraťte " +
                         "na kvalifikovaného zdravotnického pracovníka.",
-                    modifier = Modifier.padding(14.dp),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Spacer(Modifier.height(24.dp))
+                modifier = Modifier.padding(14.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
+
+        Spacer(Modifier.height(24.dp))
     }
 }
 

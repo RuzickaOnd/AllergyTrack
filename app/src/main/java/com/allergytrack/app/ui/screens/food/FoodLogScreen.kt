@@ -1,20 +1,13 @@
 package com.allergytrack.app.ui.screens.food
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,44 +17,22 @@ import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FoodLogScreen(
     navController: NavController,
     viewModel: FoodLogViewModel = hiltViewModel()
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Log Food", fontFamily = SerifFontFamily) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Background,
-                    titleContentColor = TextPrimary,
-                    navigationIconContentColor = TextPrimary
-                )
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            Spacer(Modifier.height(8.dp))
-            
-            SectionHeading(
-                title = "Identify Your Food",
-                subtitle = "Choose the most convenient way to log"
-            )
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        item { Spacer(Modifier.height(8.dp)) }
 
-            // Camera View Area
+        // Camera View Area
+        item {
             AppCard(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -73,58 +44,55 @@ fun FoodLogScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Camera Corners
                     Box(Modifier.fillMaxSize().padding(8.dp)) {
                         val cornerSize = 24.dp
                         val thickness = 3.dp
-                        
-                        // Top Left
                         Box(Modifier.size(cornerSize).border(thickness, AccentGreen, RoundedCornerShape(topStart = 8.dp)))
-                        // Top Right
                         Box(Modifier.align(Alignment.TopEnd).size(cornerSize).border(thickness, AccentGreen, RoundedCornerShape(topEnd = 8.dp)))
-                        // Bottom Left
                         Box(Modifier.align(Alignment.BottomStart).size(cornerSize).border(thickness, AccentGreen, RoundedCornerShape(bottomStart = 8.dp)))
-                        // Bottom Right
                         Box(Modifier.align(Alignment.BottomEnd).size(cornerSize).border(thickness, AccentGreen, RoundedCornerShape(bottomEnd = 8.dp)))
                     }
-
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("📷", fontSize = 48.sp)
                         Spacer(Modifier.height(12.dp))
                         Text(
-                            "TAP TO SCAN PHOTO",
+                            "KLEPNI PRO SKENOVÁNÍ",
                             style = MaterialTheme.typography.labelMedium,
                             color = AccentGreen,
                             fontFamily = MonoFontFamily,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            "Fast AI identification",
+                            "Rychlé AI rozpoznávání",
                             style = MaterialTheme.typography.bodySmall,
                             color = TextDim
                         )
                     }
                 }
             }
+        }
 
-            // Quick Actions
+        // Quick Actions
+        item {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 SecondaryButton(
-                    text = "BARCODE", 
-                    onClick = { /* TODO */ }, 
+                    text = "ČÁROVÝ KÓD",
+                    onClick = { /* TODO */ },
                     modifier = Modifier.weight(1f)
                 )
                 SecondaryButton(
-                    text = "VOICE", 
-                    onClick = { /* TODO */ }, 
+                    text = "HLASEM",
+                    onClick = { /* TODO */ },
                     modifier = Modifier.weight(1f)
                 )
             }
+        }
 
-            // Search Bar
+        // Search Bar
+        item {
             AppCard(
                 borderColor = Border,
-                onClick = { /* TODO: Manual Search */ }
+                onClick = { navController.navigate(Screen.FoodManualSearch.route) }
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -133,29 +101,33 @@ fun FoodLogScreen(
                     Text("🔍", fontSize = 18.sp)
                     Spacer(Modifier.width(12.dp))
                     Text(
-                        "Search food manually...",
+                        "Hledat jídlo ručně...",
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextDim
                     )
                 }
             }
+        }
 
-            // Recent
+        // Recent
+        item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                CardTitle("RECENTLY LOGGED")
+                CardTitle("NEDÁVNO ZALOGOVÁNO")
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Pill(text = "Oatmeal")
-                    Pill(text = "Greek Yogurt")
-                    Pill(text = "Banana")
-                    Pill(text = "MILK ⚠️", color = DotRed.copy(alpha = 0.1f), textColor = DotRed)
-                    Pill(text = "Chicken Breast")
-                    Pill(text = "Almonds ⚠️", color = DotRed.copy(alpha = 0.1f), textColor = DotRed)
+                    Pill(text = "Ovesné vločky")
+                    Pill(text = "Řecký jogurt")
+                    Pill(text = "Banán")
+                    Pill(text = "MLÉKO ⚠️", color = DotRed.copy(alpha = 0.1f), textColor = DotRed)
+                    Pill(text = "Kuřecí prsa")
+                    Pill(text = "Mandle ⚠️", color = DotRed.copy(alpha = 0.1f), textColor = DotRed)
                 }
             }
         }
+
+        item { Spacer(Modifier.height(24.dp)) }
     }
 }
