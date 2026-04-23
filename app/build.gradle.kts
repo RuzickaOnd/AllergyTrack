@@ -87,5 +87,12 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.vico.compose)
     implementation(libs.vico.core)
+    implementation(libs.mlkit.image.labeling)
     debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.testing.ui.manifest)
+    testImplementation(libs.testing.junit)
+    androidTestImplementation(libs.testing.androidx.junit)
+    androidTestImplementation(libs.testing.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.testing.ui.junit4)
 }

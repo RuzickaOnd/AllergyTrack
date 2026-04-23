@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.remote.food.RecognizedFood
 import com.allergytrack.app.domain.model.FoodLog
 import com.allergytrack.app.domain.repository.FoodRepository
+import com.allergytrack.app.domain.usecase.RecognizeFoodFromImageUseCase
 import com.allergytrack.app.domain.usecase.SaveFoodLogUseCase
 import com.allergytrack.app.domain.usecase.SearchFoodUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,6 +39,7 @@ data class FoodSearchState(
 class FoodLogViewModel @Inject constructor(
     private val saveFoodLogUseCase: SaveFoodLogUseCase,
     private val searchFoodUseCase: SearchFoodUseCase,
+    private val recognizeFoodFromImageUseCase: RecognizeFoodFromImageUseCase,
     private val foodRepository: FoodRepository,
     private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper
 ) : ViewModel() {
@@ -99,14 +101,12 @@ class FoodLogViewModel @Inject constructor(
     private fun processImage(uri: Uri) {
         viewModelScope.launch {
             try {
-                // MVP: simulace AI rozpoznání
-                // TODO: nahradit voláním FatSecret Image Recognition API
-                kotlinx.coroutines.delay(1500)
-                _uiState.value = FoodLogUiState.RecognitionResult(
-                    listOf(
-                        RecognizedFood("Rozpoznané jídlo — implementuj API", 0.85f)
-                    )
-                )
+                val results = recognizeFoodFromImageUseCase(uri)
+                _uiState.value = if (results.isNotEmpty()) {
+                    FoodLogUiState.RecognitionResult(results)
+                } else {
+                    FoodLogUiState.Error("Jídlo se nepodařilo rozpoznat, zkus jiný záběr")
+                }
             } catch (e: Exception) {
                 _uiState.value = FoodLogUiState.Error("Rozpoznání selhalo: ${e.message}")
             }

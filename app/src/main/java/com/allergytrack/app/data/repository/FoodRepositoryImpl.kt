@@ -2,6 +2,7 @@ package com.allergytrack.app.data.repository
 
 import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
+import com.allergytrack.app.data.local.recognition.FoodImageRecognizer
 import com.allergytrack.app.data.remote.food.OpenFoodFactsApiService
 import com.allergytrack.app.data.remote.food.RecognizedFood
 import com.allergytrack.app.domain.model.FoodLog
@@ -16,7 +17,8 @@ import javax.inject.Inject
 class FoodRepositoryImpl @Inject constructor(
     private val foodLogDao: FoodLogDao,
     private val openFoodFactsApi: OpenFoodFactsApiService,
-    private val json: Json
+    private val json: Json,
+    private val foodImageRecognizer: FoodImageRecognizer
 ) : FoodRepository {
 
     private val startOfDay: Long
@@ -90,17 +92,18 @@ class FoodRepositoryImpl @Inject constructor(
         }
     }
 
-    // MVP: rozpoznání z obrázku pomocí názvu souboru / simulace
-    // V produkci nahradit FatSecret Image Recognition API
     override suspend fun recognizeFoodFromImage(imageBytes: ByteArray): List<RecognizedFood> {
-        // Placeholder — v produkci volá FatSecret nebo Passio API
-        return listOf(
-            RecognizedFood(
-                name = "Rozpoznané jídlo",
-                confidence = 0.85f,
-                allergens = emptyList()
-            )
-        )
+        val labels = foodImageRecognizer.recognize(imageBytes)
+        if (labels.isEmpty()) return emptyList()
+
+        val topLabel = labels.first()
+        val searchResults = searchFoodByName(topLabel.text)
+
+        return if (searchResults.isNotEmpty()) {
+            listOf(searchResults.first().copy(confidence = topLabel.confidence))
+        } else {
+            listOf(RecognizedFood(name = topLabel.text, confidence = topLabel.confidence))
+        }
     }
 
     // Mapper extension functions
