@@ -1,0 +1,93 @@
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+/build
+/captures
+.externalNativeBuild
+.cxx
+
+# =============================================
+# BEZPEČNOST — nikdy nezahrnovat
+# =============================================
+local.properties
+*.jks
+*.keystore
+google-services.json
+*.p12
+*.pepk
+
+# =============================================
+# BUILD ARTEFAKTY
+# =============================================
+.gradle/
+build/
+app/build/
+*/build/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+
+# =============================================
+# ANDROID STUDIO / INTELLIJ
+# =============================================
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+.idea/modules.xml
+.idea/.gitignore
+.idea/navEditor.xml
+.idea/usage.statistics.xml
+*.iml
+*.ipr
+*.iws
+
+# Kotlin plugin generované soubory
+.kotlin/
+
+# =============================================
+# OS SOUBORY
+# =============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# =============================================
+# LOGS A TEMP SOUBORY
+# =============================================
+*.log
+*.tmp
+*.temp
+*.swp
+.navigation/
+captures/
+profiling/
+
+# =============================================
+# CO ZAHRNOUT (explicitní výjimky)
+# =============================================
+# Tyto soubory PATŘÍ do gitu:
+# - gradle/libs.versions.toml
+# - gradle/wrapper/gradle-wrapper.properties
+# - gradle/wrapper/gradle-wrapper.jar
+# - gradlew, gradlew.bat
+# - build.gradle.kts (project i app)
+# - settings.gradle.kts
+# - AndroidManifest.xml
+# - veškerý zdrojový kód v src/
+# - AGENTS.md, CLAUDE.md, PROJECT dokumenty
