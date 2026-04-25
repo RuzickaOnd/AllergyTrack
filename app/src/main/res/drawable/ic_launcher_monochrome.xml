@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AllergyTrack — Monochromatická ikona jako Android Vector Drawable
+    res/drawable/ic_launcher_monochrome.xml
+
+    Systém (Android 13+) při themed icons:
+      1. Vezme tento drawable
+      2. Aplikuje jednu barvu z uživatelovy tapety (Material You)
+      3. Zobrazí na pozadí odvozeném z tapety
+
+    Canvas: 108×108 dp (standard adaptive icon)
+    Safe zone: 72×72 dp (18dp padding každou stranu)
+    Ikona je vycentrována a vejde se do safe zone.
+-->
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+  <!-- Stopka -->
+  <path
+      android:pathData="M54,18 L54,29"
+      android:strokeColor="#000000"
+      android:strokeWidth="3.5"
+      android:strokeLineCap="round"
+      android:fillColor="@android:color/transparent"/>
+
+  <!-- Tělo listu — lipový tvar -->
+  <path
+      android:pathData="
+            M54,29
+            C52.5,29 49.5,26 46,25
+            C38,23 26,30 26,41
+            C26,49 29,56 33.5,62
+            C38,68 44.5,73 49,77
+            C51,79 52.5,80.5 54,83
+            C55.5,80.5 57,79 59,77
+            C63.5,73 70,68 74.5,62
+            C79,56 82,49 82,41
+            C82,30 70,23 62,25
+            C58.5,26 55.5,29 54,29Z
+        "
+      android:fillColor="#000000"/>
+
+  <!-- Středová žilka — negativní prostor (bílá) -->
+  <path
+      android:pathData="M54,32 L54,79"
+      android:strokeColor="#FFFFFF"
+      android:strokeWidth="2"
+      android:strokeLineCap="round"
+      android:fillColor="@android:color/transparent"/>
+
+  <!-- EKG křivka — negativní prostor (bílá) -->
+  <path
+      android:pathData="
+            M30,54
+            L38,54
+            L41,47
+            L44,61
+            L47,50
+            L50,57
+            L54,54
+            L78,54
+        "
+      android:strokeColor="#FFFFFF"
+      android:strokeWidth="2.8"
+      android:strokeLineCap="round"
+      android:strokeLineJoin="round"
+      android:fillColor="@android:color/transparent"/>
+
+</vector>

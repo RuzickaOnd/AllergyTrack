@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <!--
+        AllergyTrack — Adaptive Icon
+        res/mipmap-anydpi-v26/ic_launcher.xml
+
+        Tři vrstvy:
+          background  → pevná zelená barva #4A7C59
+          foreground  → lipový list se stopkou a EKG (barevná verze)
+          monochrome  → stejný tvar, jednobarevný (pro themed icons Android 13+)
+    -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Zelené pozadí — Forest500 -->
+    <background android:drawable="@drawable/ic_launcher_background" />
+
+    <!-- Barevná ikona — foreground vrstva -->
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+
+    <!-- Monochromatická verze — themed icons (Android 13+) -->
+    <monochrome android:drawable="@drawable/ic_launcher_monochrome" />
+
+</adaptive-icon>
