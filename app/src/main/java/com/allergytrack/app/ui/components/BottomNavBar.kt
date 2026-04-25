@@ -1,10 +1,10 @@
 package com.allergytrack.app.ui.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Analytics
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -30,10 +30,10 @@ private data class BottomNavItem(
 @Composable
 fun BottomNavBar(navController: NavController) {
     val items = listOf(
-        BottomNavItem(Screen.Dashboard, R.string.nav_dashboard, Icons.Filled.Home),
-        BottomNavItem(Screen.Charts,    R.string.nav_charts,    Icons.Filled.Analytics),
-        BottomNavItem(Screen.Analysis,  R.string.nav_analysis,  Icons.Filled.AutoAwesome),
-        BottomNavItem(Screen.Profile,   R.string.nav_profile,   Icons.Filled.Settings),
+        BottomNavItem(Screen.Dashboard, R.string.nav_dashboard, Icons.Outlined.Home),
+        BottomNavItem(Screen.Charts,    R.string.nav_charts,    Icons.Outlined.Analytics),
+        BottomNavItem(Screen.Analysis,  R.string.nav_analysis,  Icons.Outlined.AutoAwesome),
+        BottomNavItem(Screen.Profile,   R.string.nav_profile,   Icons.Outlined.Person),
     )
 
     NavigationBar(

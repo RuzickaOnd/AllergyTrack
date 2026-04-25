@@ -85,33 +85,25 @@ fun OnboardingSelectCard(
 }
 
 /**
- * Společná dolní lišta pro onboarding s tlačítky Zpět a Pokračovat.
+ * Společná dolní lišta pro onboarding s tlačítkem Pokračovat.
  */
 @Composable
 fun OnboardingBottomBar(
     onNext: () -> Unit,
-    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     nextLabel: String = "POKRAČOVAT →",
     nextEnabled: Boolean = true
 ) {
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(24.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        contentAlignment = Alignment.Center
     ) {
-        com.allergytrack.app.ui.components.SecondaryButton(
-            text = stringResource(R.string.btn_back),
-            onClick = onBack,
-            modifier = Modifier.weight(1f)
-        )
-        
         com.allergytrack.app.ui.components.PrimaryButton(
             text = nextLabel.uppercase(),
             onClick = onNext,
-            modifier = Modifier.weight(1.5f),
+            modifier = Modifier.fillMaxWidth(),
             enabled = nextEnabled
         )
     }

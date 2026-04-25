@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,17 +23,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.allergytrack.app.R
-import com.allergytrack.app.domain.model.OnboardingStep
 import com.allergytrack.app.ui.components.*
-import com.allergytrack.app.ui.theme.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OnboardingPermissionsScreen(
+fun OnboardingPermissionsContent(
     uiState: OnboardingUiState,
     onPermissionsRefreshed: () -> Unit,
-    onNext: () -> Unit,
-    onBack: () -> Unit
 ) {
     val permissions = uiState.permissionsState
 
@@ -53,120 +47,84 @@ fun OnboardingPermissionsScreen(
         ActivityResultContracts.RequestPermission()
     ) { onPermissionsRefreshed() }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.onboarding_permissions_title), fontFamily = SerifFontFamily) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back))
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(32.dp)
+    ) {
+        // Subtitle
+        Text(
+            text = stringResource(R.string.onboarding_permissions_subtitle),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        // GPS — Required for environmental data
+        PermissionCard(
+            icon = Icons.Default.LocationOn,
+            title = stringResource(R.string.permission_location_title),
+            description = stringResource(R.string.permission_location_desc),
+            isGranted = permissions.location,
+            onRequest = {
+                locationLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
                 )
+            }
+        )
+
+        // Camera — Optional (for photo logging)
+        PermissionCard(
+            icon = Icons.Default.CameraAlt,
+            title = stringResource(R.string.permission_camera_title),
+            description = stringResource(R.string.permission_camera_desc),
+            isGranted = permissions.camera,
+            onRequest = {
+                cameraLauncher.launch(Manifest.permission.CAMERA)
+            }
+        )
+
+        // Notifications — Optional (reminders)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            PermissionCard(
+                icon = Icons.Default.Notifications,
+                title = stringResource(R.string.permission_notifications_title),
+                description = stringResource(R.string.permission_notifications_desc),
+                isGranted = permissions.notifications,
+                onRequest = {
+                    notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
             )
         }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(32.dp)
+
+        // Privacy Info
+        AppCard(borderColor = MaterialTheme.colorScheme.outline) {
+            Row(
+                modifier = Modifier.padding(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Subtitle
+                Icon(
+                    Icons.Default.Lock, null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp)
+                )
                 Text(
-                    text = stringResource(R.string.onboarding_permissions_subtitle),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                // GPS — Required for environmental data
-                PermissionCard(
-                    icon = Icons.Default.LocationOn,
-                    title = stringResource(R.string.permission_location_title),
-                    description = stringResource(R.string.permission_location_desc),
-                    isGranted = permissions.location,
-                    onRequest = {
-                        locationLauncher.launch(
-                            arrayOf(
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION
-                            )
-                        )
-                    }
-                )
-
-                // Camera — Optional (for photo logging)
-                PermissionCard(
-                    icon = Icons.Default.CameraAlt,
-                    title = stringResource(R.string.permission_camera_title),
-                    description = stringResource(R.string.permission_camera_desc),
-                    isGranted = permissions.camera,
-                    onRequest = {
-                        cameraLauncher.launch(Manifest.permission.CAMERA)
-                    }
-                )
-
-                // Notifications — Optional (reminders)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    PermissionCard(
-                        icon = Icons.Default.Notifications,
-                        title = stringResource(R.string.permission_notifications_title),
-                        description = stringResource(R.string.permission_notifications_desc),
-                        isGranted = permissions.notifications,
-                        onRequest = {
-                            notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                        }
-                    )
-                }
-
-                // Privacy Info
-                AppCard(borderColor = MaterialTheme.colorScheme.outline) {
-                    Row(
-                        modifier = Modifier.padding(4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.Lock, null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = stringResource(R.string.permission_privacy_note),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            lineHeight = 18.sp
-                        )
-                    }
-                }
-
-                Spacer(Modifier.height(32.dp))
-            }
-
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                OnboardingProgressDots(
-                    currentStep = OnboardingStep.PERMISSIONS,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                OnboardingBottomBar(
-                    onNext = onNext,
-                    onBack = onBack,
-                    nextLabel = if (permissions.location) stringResource(R.string.btn_continue_arrow) else stringResource(R.string.btn_continue_no_location),
+                    text = stringResource(R.string.permission_privacy_note),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 18.sp
                 )
             }
         }
+
+        Spacer(Modifier.height(32.dp))
     }
 }
 
