@@ -21,6 +21,7 @@ class LocationProvider @Inject constructor(
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
+    // Vrací aktuální polohu s přiměřenou přesností. Může spustit GPS/síťový fix — pomalejší.
     @SuppressLint("MissingPermission")
     suspend fun getCurrentLocation(): Location? =
         suspendCancellableCoroutine { continuation ->
@@ -34,5 +35,19 @@ class LocationProvider @Inject constructor(
                     continuation.resumeWithException(exception)
                 }
             continuation.invokeOnCancellation { cts.cancel() }
+        }
+
+    // Vrací poslední kešovanou polohu ze systému — okamžité, bez čekání na GPS/síť.
+    // Může vrátit null pokud oprávnění není uděleno nebo systém nemá žádnou kešovanou pozici.
+    @SuppressLint("MissingPermission")
+    suspend fun getLastKnownLocation(): Location? =
+        suspendCancellableCoroutine { continuation ->
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location ->
+                    continuation.resume(location)
+                }
+                .addOnFailureListener {
+                    continuation.resume(null)
+                }
         }
 }

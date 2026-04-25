@@ -29,8 +29,8 @@ data class DashboardUiState(
     val todayFoodLogs: List<FoodLogEntity> = emptyList(),
     val todaySymptomLogs: List<SymptomLogEntity> = emptyList(),
     val latestEnvironment: EnvironmentLog? = null,
-    val isRefreshingEnvironment: Boolean = true,
-    val showEnvironmentSection: Boolean = true,
+    val isRefreshingEnvironment: Boolean = false,
+    val showEnvironmentSection: Boolean = false,
     @get:StringRes val greetingRes: Int = R.string.greeting_morning,
     val insight: DashboardInsight? = null,
     val error: String? = null
@@ -43,7 +43,8 @@ class DashboardViewModel @Inject constructor(
     private val environmentRepository: EnvironmentRepository
 ) : ViewModel() {
 
-    private val _isRefreshingEnv = MutableStateFlow(true)
+    // Začíná jako false — loading se zobrazí až po potvrzení EU regionu v refreshEnvironment()
+    private val _isRefreshingEnv = MutableStateFlow(false)
     private val isFetchingEnv = AtomicBoolean(false)
 
     private val startOfDay: Long
@@ -91,6 +92,17 @@ class DashboardViewModel @Inject constructor(
     fun refreshEnvironment() {
         if (!isFetchingEnv.compareAndSet(false, true)) return
         viewModelScope.launch {
+            // Rychlý pre-check z kešované polohy (žádný GPS fix, okamžité).
+            // Pokud jsme prokazatelně mimo EU, fetch vůbec nespouštíme — API
+            // (Open-Meteo CAMS) stejně nevrátí žádná užitečná data a loading
+            // by byl zavádějící. Pro UNKNOWN (žádná kešovaná poloha, první spuštění)
+            // pokračujeme — nechceme zbytečně skrýt sekci EU uživatelům při prvním startu.
+            val knownRegion = environmentRepository.getLastKnownRegion()
+            if (knownRegion == EnvironmentRegion.GLOBAL) {
+                isFetchingEnv.set(false)
+                return@launch
+            }
+            // EU nebo neznámý region → zobrazit loading a spustit fetch
             _isRefreshingEnv.value = true
             try {
                 environmentRepository.fetchAndSaveCurrentEnvironment()

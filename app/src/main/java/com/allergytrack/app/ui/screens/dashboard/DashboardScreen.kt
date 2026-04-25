@@ -59,23 +59,13 @@ fun DashboardScreen(
             item { Spacer(Modifier.height(8.dp)) }
 
             item {
-                Text(
-                    text = stringResource(uiState.greetingRes),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontFamily = SerifFontFamily,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Normal
-                )
-            }
-
-            item {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     PrimaryButton(
                         text = stringResource(R.string.btn_add_food),
                         onClick = { navController.navigate(Screen.FoodLog.route) },
                         modifier = Modifier.weight(1f)
                     )
-                    SecondaryButton(
+                    PrimaryButton(
                         text = stringResource(R.string.btn_add_symptom),
                         onClick = { navController.navigate(Screen.SymptomLog.route) },
                         modifier = Modifier.weight(1f)

@@ -12,6 +12,7 @@ import com.allergytrack.app.domain.repository.EnvironmentRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import javax.inject.Singleton
 
 class EnvironmentRepositoryImpl @Inject constructor(
     private val environmentLogDao: EnvironmentLogDao,
@@ -30,6 +31,14 @@ class EnvironmentRepositoryImpl @Inject constructor(
 
     override suspend fun saveLog(log: EnvironmentLog) {
         environmentLogDao.insert(log.toEntity())
+    }
+
+    override suspend fun getLastKnownRegion(): EnvironmentRegion {
+        val location = locationProvider.getLastKnownLocation() ?: return EnvironmentRegion.UNKNOWN
+        return if (isEurope(location.latitude, location.longitude))
+            EnvironmentRegion.EUROPE
+        else
+            EnvironmentRegion.GLOBAL
     }
 
     override suspend fun fetchAndSaveCurrentEnvironment(): EnvironmentLog? {
