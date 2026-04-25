@@ -1,34 +1,35 @@
 package com.allergytrack.app.ui.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.allergytrack.app.R
 import com.allergytrack.app.ui.navigation.Screen
-import com.allergytrack.app.ui.theme.TextDim
 
-data class BottomNavItem(
+private data class BottomNavItem(
     val screen: Screen,
-    val label: String,
-    val icon: String // Using Emoji strings to match wireframe style, but could be Icons too
+    val labelRes: Int,
+    val icon: String
 )
 
 @Composable
 fun BottomNavBar(navController: NavController) {
     val items = listOf(
-        BottomNavItem(Screen.Dashboard, "PŘEHLED", "🏠"),
-        BottomNavItem(Screen.Charts, "GRAFY", "📊"),
-        BottomNavItem(Screen.Analysis, "ANALÝZA", "🧠"),
-        BottomNavItem(Screen.Profile, "PROFIL", "⚙️"),
+        BottomNavItem(Screen.Dashboard, R.string.nav_dashboard, "🏠"),
+        BottomNavItem(Screen.Charts,    R.string.nav_charts,    "📊"),
+        BottomNavItem(Screen.Analysis,  R.string.nav_analysis,  "🧠"),
+        BottomNavItem(Screen.Profile,   R.string.nav_profile,   "⚙️"),
     )
 
     NavigationBar(
@@ -40,7 +41,7 @@ fun BottomNavBar(navController: NavController) {
 
         items.forEach { item ->
             val selected = currentRoute == item.screen.route
-            
+
             NavigationBarItem(
                 selected = selected,
                 onClick = {
@@ -52,17 +53,14 @@ fun BottomNavBar(navController: NavController) {
                 },
                 icon = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = item.icon,
-                            fontSize = 20.sp
-                        )
+                        Text(text = item.icon, fontSize = 20.sp)
                     }
                 },
                 label = {
                     Text(
-                        text = item.label,
+                        text = stringResource(item.labelRes),
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (selected) MaterialTheme.colorScheme.primary else TextDim
+                        color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(

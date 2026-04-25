@@ -1,7 +1,9 @@
 package com.allergytrack.app.ui.screens.charts
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.allergytrack.app.R
 import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
 import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
@@ -11,10 +13,10 @@ import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-enum class TimeRange(val days: Int, val label: String) {
-    WEEK(7, "7 dní"),
-    TWO_WEEKS(14, "14 dní"),
-    MONTH(30, "30 dní")
+enum class TimeRange(val days: Int, @StringRes val labelRes: Int) {
+    WEEK(7, R.string.time_range_week),
+    TWO_WEEKS(14, R.string.time_range_two_weeks),
+    MONTH(30, R.string.time_range_month)
 }
 
 data class ChartsUiState(
@@ -23,7 +25,7 @@ data class ChartsUiState(
     val selectedSymptomFilter: SymptomType? = null,
     val chartData: ChartDataSet? = null,
     val totalSymptomEvents: Int = 0,
-    val mostFrequentSymptom: String = "",
+    val mostFrequentSymptomType: SymptomType? = null,
     val avgDailyIntensity: Float = 0f
 )
 
@@ -83,8 +85,7 @@ class ChartsViewModel @Inject constructor(
         val mostFrequent = filteredSymptoms
             .groupBy { it.type }
             .maxByOrNull { it.value.size }
-            ?.let { SymptomType.valueOf(it.key).label }
-            ?: "—"
+            ?.let { try { SymptomType.valueOf(it.key) } catch (_: IllegalArgumentException) { null } }
 
         val avgIntensity = if (filteredSymptoms.isEmpty()) 0f
         else filteredSymptoms.map { it.intensity }.average().toFloat()
@@ -95,7 +96,7 @@ class ChartsViewModel @Inject constructor(
             selectedSymptomFilter = filter,
             chartData = chartData,
             totalSymptomEvents = filteredSymptoms.size,
-            mostFrequentSymptom = mostFrequent,
+            mostFrequentSymptomType = mostFrequent,
             avgDailyIntensity = avgIntensity
         )
     }.stateIn(

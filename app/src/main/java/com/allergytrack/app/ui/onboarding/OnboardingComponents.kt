@@ -11,13 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.OnboardingStep
-import com.allergytrack.app.ui.theme.Border
-import com.allergytrack.app.ui.theme.DotRed
-import com.allergytrack.app.ui.theme.SurfaceVariant
-
 import com.allergytrack.app.ui.theme.*
 
 /**
@@ -42,7 +40,7 @@ fun OnboardingProgressDots(
                     .height(6.dp)
                     .width(if (isActive) 24.dp else 6.dp)
                     .clip(RoundedCornerShape(3.dp))
-                    .background(if (isActive) AccentGreen else Border)
+                    .background(if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline)
             )
         }
     }
@@ -62,10 +60,10 @@ fun OnboardingSelectCard(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(if (isSelected) AccentGreen.copy(alpha = 0.1f) else SurfaceVariant)
+            .background(if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant)
             .border(
                 width = 1.dp,
-                color = if (isSelected) AccentGreen else Border,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable { onClick() }
@@ -78,7 +76,7 @@ fun OnboardingSelectCard(
             Text(
                 text = label.uppercase(),
                 style = MaterialTheme.typography.labelSmall,
-                color = if (isSelected) TextPrimary else TextSecondary,
+                color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 fontSize = 9.sp
             )
@@ -105,7 +103,7 @@ fun OnboardingBottomBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         com.allergytrack.app.ui.components.SecondaryButton(
-            text = "ZPĚT",
+            text = stringResource(R.string.btn_back),
             onClick = onBack,
             modifier = Modifier.weight(1f)
         )

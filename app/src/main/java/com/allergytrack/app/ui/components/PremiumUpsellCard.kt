@@ -9,10 +9,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.util.displayNameRes
 
 /**
  * Zobrazí se POUZE v VISIBLE módu pro FREE uživatele.
@@ -26,28 +29,32 @@ fun PremiumUpsellCard(
 ) {
     AppCard(
         modifier = modifier,
-        borderColor = AccentOrange.copy(alpha = 0.5f),
-        backgroundColor = SurfaceVariant
+        borderColor = MaterialTheme.colorScheme.warningColor.copy(alpha = 0.5f),
+        backgroundColor = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Column(
             modifier = Modifier.padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Icon(Icons.Default.Lock, null,
+            Icon(
+                Icons.Default.Lock, null,
                 modifier = Modifier.size(36.dp),
-                tint = AccentOrange)
-            Text(feature.displayName,
+                tint = MaterialTheme.colorScheme.warningColor
+            )
+            Text(
+                stringResource(feature.displayNameRes()),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary)
+                color = MaterialTheme.colorScheme.onSurface
+            )
             Text(
-                "This feature is available in the Premium version.",
+                stringResource(R.string.premium_upsell_desc),
                 style = MaterialTheme.typography.bodySmall,
-                color = TextSecondary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             PrimaryButton(
-                text = "Upgrade to Premium",
+                text = stringResource(R.string.btn_upgrade_premium),
                 onClick = onUpgradeClick,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -63,23 +70,27 @@ fun PremiumUpsellCard(
 fun PremiumBadge(modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier,
-        color = AccentPurple.copy(alpha = 0.15f),
+        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
         shape = RoundedCornerShape(20.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, AccentPurple.copy(alpha = 0.3f))
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f))
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(3.dp)
         ) {
-            Icon(Icons.Default.Star, null,
+            Icon(
+                Icons.Default.Star, null,
                 modifier = Modifier.size(12.dp),
-                tint = AccentPurple)
-            Text("PREMIUM",
+                tint = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                stringResource(R.string.premium_badge_label),
                 style = MaterialTheme.typography.labelSmall,
-                color = AccentPurple,
+                color = MaterialTheme.colorScheme.secondary,
                 fontWeight = FontWeight.Bold,
-                fontFamily = MonoFontFamily)
+                fontFamily = MonoFontFamily
+            )
         }
     }
 }

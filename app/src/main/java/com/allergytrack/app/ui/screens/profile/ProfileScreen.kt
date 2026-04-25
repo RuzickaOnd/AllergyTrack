@@ -13,13 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.allergytrack.app.BuildConfig
+import com.allergytrack.app.R
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.SerifFontFamily
-import com.allergytrack.app.ui.theme.TextPrimary
 
 @Composable
 fun ProfileScreen(
@@ -33,7 +35,6 @@ fun ProfileScreen(
     ) {
         item {
             Spacer(Modifier.height(8.dp))
-            // User Avatar Placeholder
             Surface(
                 modifier = Modifier.size(100.dp),
                 shape = CircleShape,
@@ -41,8 +42,7 @@ fun ProfileScreen(
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        Icons.Default.Person,
-                        contentDescription = null,
+                        Icons.Default.Person, null,
                         modifier = Modifier.size(60.dp),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
@@ -52,7 +52,7 @@ fun ProfileScreen(
 
         item {
             Text(
-                text = "Uživatel",
+                text = stringResource(R.string.profile_user_name),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -65,17 +65,17 @@ fun ProfileScreen(
             ) {
                 ProfileOptionItem(
                     icon = Icons.Default.Star,
-                    label = "Premium",
+                    label = stringResource(R.string.profile_option_premium),
                     onClick = { /* TODO: Navigate to Premium upsell or status */ }
                 )
                 ProfileOptionItem(
                     icon = Icons.Default.Settings,
-                    label = "Nastavení",
+                    label = stringResource(R.string.screen_settings),
                     onClick = { navController.navigate(Screen.Settings.route) }
                 )
                 ProfileOptionItem(
                     icon = Icons.Default.Info,
-                    label = "O aplikaci",
+                    label = stringResource(R.string.screen_about),
                     onClick = { navController.navigate(Screen.About.route) }
                 )
             }
@@ -83,7 +83,7 @@ fun ProfileScreen(
 
         item {
             Text(
-                "Verze 1.0.0",
+                stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 24.dp)
@@ -111,7 +111,7 @@ fun ProfileOptionItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Icon(icon, null, tint = MaterialTheme.colorScheme.primary)
             Text(label, style = MaterialTheme.typography.bodyLarge)
             Spacer(Modifier.weight(1f))
             Text("›", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.outline)

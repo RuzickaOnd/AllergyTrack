@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -27,7 +28,9 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.allergytrack.app.R
 import com.allergytrack.app.ui.navigation.Screen
+import com.allergytrack.app.ui.theme.MonoFontFamily
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -44,7 +47,6 @@ fun CameraScreen(
 
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
 
-    // Naviguj při úspěšném výsledku
     LaunchedEffect(uiState) {
         when (val state = uiState) {
             is FoodLogUiState.RecognitionResult -> {
@@ -64,7 +66,6 @@ fun CameraScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        // Camera preview
         AndroidView(
             factory = { ctx ->
                 val previewView = PreviewView(ctx)
@@ -76,7 +77,6 @@ fun CameraScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-        // Loading overlay
         if (uiState is FoodLogUiState.Processing) {
             Box(
                 Modifier
@@ -87,15 +87,13 @@ fun CameraScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     CircularProgressIndicator(color = Color.White)
                     Spacer(Modifier.height(16.dp))
-                    Text("Rozpoznávám jídlo...", color = Color.White)
+                    Text(stringResource(R.string.camera_recognizing), color = Color.White, fontFamily = MonoFontFamily)
                 }
             }
         }
 
-        // Viewfinder corners overlay
         CameraViewfinder()
 
-        // Top bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,19 +107,18 @@ fun CameraScreen(
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.5f))
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Zpět", tint = Color.White)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back), tint = Color.White)
             }
             Spacer(Modifier.weight(1f))
             Text(
-                "Vyfoť jídlo",
+                stringResource(R.string.camera_title),
                 color = Color.White,
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(Modifier.weight(1f))
-            Spacer(Modifier.size(48.dp)) // balance
+            Spacer(Modifier.size(48.dp))
         }
 
-        // Bottom controls
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -131,7 +128,6 @@ fun CameraScreen(
                 .padding(32.dp),
             contentAlignment = Alignment.Center
         ) {
-            // Capture button
             IconButton(
                 onClick = {
                     imageCapture?.let { capture ->
@@ -148,7 +144,7 @@ fun CameraScreen(
             ) {
                 Icon(
                     Icons.Default.Camera,
-                    contentDescription = "Vyfotit",
+                    contentDescription = stringResource(R.string.cd_take_photo),
                     tint = Color.Black,
                     modifier = Modifier.size(36.dp)
                 )
@@ -172,47 +168,10 @@ fun CameraViewfinder() {
             val cornerSize = 24.dp
             val strokeWidth = 3.dp
 
-            // Corners drawn via Box borders
-            Box(
-                Modifier
-                    .size(cornerSize)
-                    .align(Alignment.TopStart)
-                    .border(
-                        width = strokeWidth,
-                        color = cornerColor,
-                        shape = RoundedCornerShape(topStart = 8.dp)
-                    )
-            )
-            Box(
-                Modifier
-                    .size(cornerSize)
-                    .align(Alignment.TopEnd)
-                    .border(
-                        width = strokeWidth,
-                        color = cornerColor,
-                        shape = RoundedCornerShape(topEnd = 8.dp)
-                    )
-            )
-            Box(
-                Modifier
-                    .size(cornerSize)
-                    .align(Alignment.BottomStart)
-                    .border(
-                        width = strokeWidth,
-                        color = cornerColor,
-                        shape = RoundedCornerShape(bottomStart = 8.dp)
-                    )
-            )
-            Box(
-                Modifier
-                    .size(cornerSize)
-                    .align(Alignment.BottomEnd)
-                    .border(
-                        width = strokeWidth,
-                        color = cornerColor,
-                        shape = RoundedCornerShape(bottomEnd = 8.dp)
-                    )
-            )
+            Box(Modifier.size(cornerSize).align(Alignment.TopStart).border(width = strokeWidth, color = cornerColor, shape = RoundedCornerShape(topStart = 8.dp)))
+            Box(Modifier.size(cornerSize).align(Alignment.TopEnd).border(width = strokeWidth, color = cornerColor, shape = RoundedCornerShape(topEnd = 8.dp)))
+            Box(Modifier.size(cornerSize).align(Alignment.BottomStart).border(width = strokeWidth, color = cornerColor, shape = RoundedCornerShape(bottomStart = 8.dp)))
+            Box(Modifier.size(cornerSize).align(Alignment.BottomEnd).border(width = strokeWidth, color = cornerColor, shape = RoundedCornerShape(bottomEnd = 8.dp)))
         }
     }
 }
@@ -234,12 +193,7 @@ private fun setupCamera(
             .build()
         try {
             cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
-                lifecycleOwner,
-                CameraSelector.DEFAULT_BACK_CAMERA,
-                preview,
-                imageCapture
-            )
+            cameraProvider.bindToLifecycle(lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageCapture)
             onImageCaptureReady(imageCapture)
         } catch (e: Exception) {
             e.printStackTrace()

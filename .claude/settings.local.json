@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /Users/ondrejruzicka/MyProjects/AllergyTrack/app/src/main/res/values-cs)",
+      "Bash(mkdir -p /Users/ondrejruzicka/MyProjects/AllergyTrack/app/src/main/java/com/allergytrack/app/ui/util)"
+    ]
+  }
+}

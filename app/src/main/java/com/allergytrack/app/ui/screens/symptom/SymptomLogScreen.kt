@@ -1,30 +1,29 @@
 package com.allergytrack.app.ui.screens.symptom
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.util.BODY_PART_RES
+import com.allergytrack.app.ui.util.labelRes
 
-// Definice částí těla v češtině
+// Interní klíče pro části těla (uloženy v DB jako Czech strings pro zpětnou kompatibilitu)
 private val BODY_PARTS = listOf(
     "Obličej", "Krk", "Hrudník", "Záda",
     "Paže", "Ruce", "Břicho", "Nohy", "Chodidla"
@@ -37,7 +36,6 @@ fun SymptomLogScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Navigace po uložení
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) {
             viewModel.reset()
@@ -56,52 +54,52 @@ fun SymptomLogScreen(
     ) {
         Spacer(Modifier.height(8.dp))
 
-        // 1. Typ příznaku
         SymptomTypeSection(
             selectedType = uiState.selectedType,
             onTypeSelected = viewModel::onTypeSelected
         )
 
-        // 2. Intenzita
         if (uiState.selectedType != null) {
             IntensitySection(
                 intensity = uiState.intensity,
                 onIntensityChanged = viewModel::onIntensityChanged
             )
 
-            // 3. Části těla
             BodyPartSection(
                 selectedParts = uiState.selectedBodyParts,
                 onPartToggled = viewModel::onBodyPartToggled
             )
 
-            // 4. Poznámky
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    "POZNÁMKY",
+                    stringResource(R.string.label_notes),
                     style = MaterialTheme.typography.labelSmall,
-                    color = TextDim,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontFamily = MonoFontFamily
                 )
                 OutlinedTextField(
                     value = uiState.notes,
                     onValueChange = viewModel::onNotesChanged,
-                    placeholder = { Text("Specifické spouštěče nebo detaily...", color = TextDim) },
+                    placeholder = { Text(stringResource(R.string.notes_placeholder_symptom), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     maxLines = 3,
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Surface,
-                        focusedContainerColor = Surface,
-                        unfocusedBorderColor = Border,
-                        focusedBorderColor = AccentBlue
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary
                     )
                 )
             }
 
-            // 5. Uložit
+            val savingLabel = if (uiState.isSaving)
+                stringResource(R.string.btn_saving)
+            else
+                stringResource(R.string.btn_save_symptom)
+
             PrimaryButton(
-                text = if (uiState.isSaving) "UKLÁDÁM..." else "ULOŽIT PŘÍZNAK",
+                text = savingLabel,
                 onClick = viewModel::saveSymptom,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isSaving
@@ -118,9 +116,8 @@ fun SymptomTypeSection(
     onTypeSelected: (SymptomType) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        CardTitle("TYP PŘÍZNAKU")
-        
-        // Mřížka 2 sloupce
+        CardTitle(stringResource(R.string.section_symptom_type))
+
         val types = SymptomType.entries
         for (row in types.chunked(2)) {
             Row(
@@ -135,7 +132,6 @@ fun SymptomTypeSection(
                         modifier = Modifier.weight(1f)
                     )
                 }
-                // Vyrovnání pokud je lichý počet
                 if (row.size == 1) Spacer(Modifier.weight(1f))
             }
         }
@@ -149,13 +145,13 @@ fun SymptomTypeCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = if (isSelected) AccentOrange else Border
+    val borderColor = if (isSelected) MaterialTheme.colorScheme.warningColor else MaterialTheme.colorScheme.outline
 
     AppCard(
         onClick = onClick,
         modifier = modifier,
         borderColor = borderColor.copy(alpha = if (isSelected) 1f else 0.5f),
-        backgroundColor = if (isSelected) AccentOrange.copy(alpha = 0.1f) else Surface
+        backgroundColor = if (isSelected) MaterialTheme.colorScheme.warningColor.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surface
     ) {
         Column(
             modifier = Modifier
@@ -166,12 +162,12 @@ fun SymptomTypeCard(
         ) {
             Text(type.emoji, style = MaterialTheme.typography.headlineSmall)
             Text(
-                type.label.uppercase(),
+                stringResource(type.labelRes()).uppercase(),
                 style = MaterialTheme.typography.labelMedium,
                 textAlign = TextAlign.Center,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                 fontFamily = MonoFontFamily,
-                color = if (isSelected) AccentOrange else TextPrimary
+                color = if (isSelected) MaterialTheme.colorScheme.warningColor else MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -182,19 +178,19 @@ fun IntensitySection(
     intensity: Int,
     onIntensityChanged: (Int) -> Unit
 ) {
-    val intensityLabels = mapOf(
-        1 to "Mírná",
-        2 to "Lehká",
-        3 to "Střední",
-        4 to "Silná",
-        5 to "Kritická"
+    val intensityLabels = listOf(
+        stringResource(R.string.intensity_1),
+        stringResource(R.string.intensity_2),
+        stringResource(R.string.intensity_3),
+        stringResource(R.string.intensity_4),
+        stringResource(R.string.intensity_5)
     )
     val intensityColors = listOf(
-        AccentGreen,
-        Color(0xFF8BC34A),
-        Color(0xFFFFC107),
-        AccentOrange,
-        DotRed
+        MaterialTheme.colorScheme.okColor,
+        MaterialTheme.colorScheme.okColor,
+        MaterialTheme.colorScheme.warningColor,
+        MaterialTheme.colorScheme.warningColor,
+        MaterialTheme.colorScheme.symptomColor
     )
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -203,16 +199,15 @@ fun IntensitySection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
-            CardTitle("INTENZITA")
+            CardTitle(stringResource(R.string.section_intensity))
             Text(
-                "${intensityLabels[intensity]} ($intensity/5)".uppercase(),
+                stringResource(R.string.intensity_format, intensityLabels[intensity - 1], intensity).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 color = intensityColors[intensity - 1],
                 fontFamily = MonoFontFamily
             )
         }
 
-        // 5 tlačítek
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -220,17 +215,17 @@ fun IntensitySection(
             (1..5).forEach { level ->
                 val isSelected = intensity >= level
                 val color = intensityColors[level - 1]
-                
+
                 Surface(
                     onClick = { onIntensityChanged(level) },
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp),
                     shape = RoundedCornerShape(8.dp),
-                    color = if (isSelected) color.copy(alpha = 0.2f) else Surface,
+                    color = if (isSelected) color.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surface,
                     border = androidx.compose.foundation.BorderStroke(
-                        1.dp, 
-                        if (intensity == level) color else Border.copy(alpha = 0.5f)
+                        1.dp,
+                        if (intensity == level) color else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                     )
                 ) {
                     Box(contentAlignment = Alignment.Center) {
@@ -238,7 +233,7 @@ fun IntensitySection(
                             text = "$level",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = if (intensity == level) FontWeight.Bold else FontWeight.Normal,
-                            color = if (isSelected) color else TextDim,
+                            color = if (isSelected) color else MaterialTheme.colorScheme.onSurfaceVariant,
                             fontFamily = MonoFontFamily
                         )
                     }
@@ -255,35 +250,37 @@ fun BodyPartSection(
     onPartToggled: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        CardTitle("ZASAŽENÁ OBLAST")
-        
+        CardTitle(stringResource(R.string.section_body_area))
+
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             BODY_PARTS.forEach { part ->
                 val isSelected = part in selectedParts
+                val displayLabel = BODY_PART_RES[part]?.let { stringResource(it) } ?: part
+
                 FilterChip(
                     selected = isSelected,
                     onClick = { onPartToggled(part) },
-                    label = { 
+                    label = {
                         Text(
-                            part.uppercase(), 
+                            displayLabel.uppercase(),
                             fontFamily = MonoFontFamily,
                             style = MaterialTheme.typography.labelSmall
-                        ) 
+                        )
                     },
                     colors = FilterChipDefaults.filterChipColors(
-                        containerColor = Surface,
-                        selectedContainerColor = AccentBlue.copy(alpha = 0.2f),
-                        labelColor = TextDim,
-                        selectedLabelColor = AccentBlue
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         enabled = true,
                         selected = isSelected,
-                        borderColor = Border.copy(alpha = 0.5f),
-                        selectedBorderColor = AccentBlue,
+                        borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        selectedBorderColor = MaterialTheme.colorScheme.primary,
                         borderWidth = 1.dp
                     ),
                     shape = RoundedCornerShape(8.dp)

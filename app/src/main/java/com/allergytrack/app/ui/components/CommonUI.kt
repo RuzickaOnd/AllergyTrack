@@ -11,16 +11,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.allergytrack.app.R
 import com.allergytrack.app.ui.theme.*
 
 @Composable
 fun AppCard(
     modifier: Modifier = Modifier,
-    borderColor: Color = Border,
-    backgroundColor: Color = Surface,
+    borderColor: Color = MaterialTheme.colorScheme.outline,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface,
     onClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -29,7 +31,7 @@ fun AppCard(
         .clip(RoundedCornerShape(14.dp))
         .background(backgroundColor)
         .border(1.dp, borderColor, RoundedCornerShape(14.dp))
-        
+
     val clickableModifier = if (onClick != null) {
         baseModifier.clickable(onClick = onClick)
     } else {
@@ -47,7 +49,7 @@ fun CardTitle(text: String) {
     Text(
         text = text.uppercase(),
         style = MaterialTheme.typography.labelSmall,
-        color = TextDim,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         letterSpacing = 0.8.sp,
         fontWeight = FontWeight.Bold,
         fontFamily = MonoFontFamily,
@@ -68,10 +70,10 @@ fun PrimaryButton(
         enabled = enabled,
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = AccentGreen,
-            contentColor = Background,
-            disabledContainerColor = Border,
-            disabledContentColor = TextDim
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.outline,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
         ),
         contentPadding = PaddingValues(16.dp)
     ) {
@@ -97,9 +99,9 @@ fun SecondaryButton(
         enabled = enabled,
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = TextPrimary
+            contentColor = MaterialTheme.colorScheme.onSurface
         ),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Border),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         contentPadding = PaddingValues(16.dp)
     ) {
         Text(
@@ -114,8 +116,8 @@ fun SecondaryButton(
 @Composable
 fun Pill(
     text: String,
-    color: Color = SurfaceVariant,
-    textColor: Color = TextSecondary
+    color: Color = MaterialTheme.colorScheme.surfaceVariant,
+    textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) {
     Surface(
         color = color,
@@ -141,14 +143,14 @@ fun SectionHeading(
         Text(
             text = title,
             style = MaterialTheme.typography.headlineLarge,
-            color = TextPrimary,
+            color = MaterialTheme.colorScheme.onSurface,
             fontFamily = SerifFontFamily
         )
         subtitle?.let {
             Text(
                 text = it,
                 style = MaterialTheme.typography.bodyMedium,
-                color = TextDim
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -159,15 +161,15 @@ fun AiBadge(text: String) {
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(AccentPurple.copy(alpha = 0.1f))
-            .border(1.dp, AccentPurple.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f))
+            .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
             .padding(14.dp)
     ) {
         Column {
             Text(
-                text = "✨ KLINICKÝ VHLED",
+                text = stringResource(R.string.ai_badge_label),
                 style = MaterialTheme.typography.labelSmall,
-                color = AccentPurple,
+                color = MaterialTheme.colorScheme.secondary,
                 fontWeight = FontWeight.Bold,
                 fontFamily = MonoFontFamily
             )
@@ -175,7 +177,7 @@ fun AiBadge(text: String) {
             Text(
                 text = text,
                 style = MaterialTheme.typography.bodyMedium,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }

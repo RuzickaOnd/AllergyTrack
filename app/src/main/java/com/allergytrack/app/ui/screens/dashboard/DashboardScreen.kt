@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -15,7 +16,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
+import com.allergytrack.app.R
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
+import com.allergytrack.app.ui.util.labelRes
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
 import com.allergytrack.app.domain.model.EnvironmentLog
 import com.allergytrack.app.ui.components.*
@@ -51,23 +54,21 @@ fun DashboardScreen(
         ) {
             item { Spacer(Modifier.height(8.dp)) }
 
-            // Stálá tlačítka pro logování — vždy viditelná
             item {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     PrimaryButton(
-                        text = "+ JÍDLO",
+                        text = stringResource(R.string.btn_add_food),
                         onClick = { navController.navigate(Screen.FoodLog.route) },
                         modifier = Modifier.weight(1f)
                     )
                     SecondaryButton(
-                        text = "+ PŘÍZNAK",
+                        text = stringResource(R.string.btn_add_symptom),
                         onClick = { navController.navigate(Screen.SymptomLog.route) },
                         modifier = Modifier.weight(1f)
                     )
                 }
             }
 
-            // Environment card — zobrazíme pouze pokud jsme v Evropě (nebo ještě načítáme)
             if (uiState.showEnvironmentSection) {
                 item {
                     uiState.latestEnvironment?.let { env ->
@@ -76,12 +77,10 @@ fun DashboardScreen(
                 }
             }
 
-            // Today's records header
             item {
-                CardTitle(text = "📋 DNEŠNÍ ZÁZNAMY")
+                CardTitle(text = stringResource(R.string.section_today_records))
             }
 
-            // Merged and sorted timeline
             val allItems = buildList {
                 uiState.todayFoodLogs.forEach { add(Pair("food", it)) }
                 uiState.todaySymptomLogs.forEach { add(Pair("symptom", it)) }
@@ -117,7 +116,6 @@ fun DashboardScreen(
                 }
             }
 
-            // AI Tip
             item {
                 AiBadge(text = "Druhý den vysokého pylu travin — sleduj své příznaky.")
             }
@@ -129,27 +127,27 @@ fun DashboardScreen(
 
 @Composable
 fun EnvironmentCard(env: EnvironmentLog) {
-    AppCard(borderColor = AccentOrange.copy(alpha = 0.3f)) {
-        CardTitle("🌿 PROSTŘEDÍ DNES")
+    AppCard(borderColor = MaterialTheme.colorScheme.warningColor.copy(alpha = 0.3f)) {
+        CardTitle(stringResource(R.string.env_section_title))
         Spacer(Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             EnvironmentStat(
-                label = "Pyl trav",
+                label = stringResource(R.string.env_label_pollen_grass),
                 value = env.pollenGrassIndex?.toString() ?: "—",
-                color = if ((env.pollenGrassIndex ?: 0) >= 3) AccentOrange else AccentGreen
+                color = if ((env.pollenGrassIndex ?: 0) >= 3) MaterialTheme.colorScheme.warningColor else MaterialTheme.colorScheme.okColor
             )
             EnvironmentStat(
-                label = "AQI",
+                label = stringResource(R.string.env_label_aqi),
                 value = env.aqi.toString(),
-                color = if (env.aqi >= 50) AccentOrange else AccentGreen
+                color = if (env.aqi >= 50) MaterialTheme.colorScheme.warningColor else MaterialTheme.colorScheme.okColor
             )
             EnvironmentStat(
-                label = "Pyl stromů",
+                label = stringResource(R.string.env_label_pollen_tree),
                 value = env.pollenTreeIndex?.toString() ?: "—",
-                color = if ((env.pollenTreeIndex ?: 0) >= 3) AccentOrange else AccentGreen
+                color = if ((env.pollenTreeIndex ?: 0) >= 3) MaterialTheme.colorScheme.warningColor else MaterialTheme.colorScheme.okColor
             )
         }
     }
@@ -168,7 +166,7 @@ fun EnvironmentStat(label: String, value: String, color: androidx.compose.ui.gra
         Text(
             text = label.uppercase(),
             style = MaterialTheme.typography.labelSmall,
-            color = TextDim,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontFamily = MonoFontFamily
         )
     }
@@ -181,20 +179,20 @@ fun TimelineFoodItem(log: FoodLogEntity) {
         Box(
             modifier = Modifier
                 .size(8.dp)
-                .background(AccentGreen, androidx.compose.foundation.shape.CircleShape)
+                .background(MaterialTheme.colorScheme.okColor, androidx.compose.foundation.shape.CircleShape)
         )
         Spacer(Modifier.width(16.dp))
         Column {
             Text(
                 text = timeFormat.format(Date(log.timestamp)),
                 style = MaterialTheme.typography.labelMedium,
-                color = TextDim,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontFamily = MonoFontFamily
             )
             Text(
                 text = log.foodName,
                 style = MaterialTheme.typography.bodyLarge,
-                color = TextPrimary,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -204,24 +202,27 @@ fun TimelineFoodItem(log: FoodLogEntity) {
 @Composable
 fun TimelineSymptomItem(log: SymptomLogEntity) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val symptomType = try { com.allergytrack.app.domain.model.SymptomType.valueOf(log.type) } catch (_: IllegalArgumentException) { null }
+    val typeLabel = symptomType?.let { stringResource(it.labelRes()) } ?: log.type
+
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier
                 .size(8.dp)
-                .background(AccentOrange, androidx.compose.foundation.shape.CircleShape)
+                .background(MaterialTheme.colorScheme.symptomColor, androidx.compose.foundation.shape.CircleShape)
         )
         Spacer(Modifier.width(16.dp))
         Column {
             Text(
                 text = timeFormat.format(Date(log.timestamp)),
                 style = MaterialTheme.typography.labelMedium,
-                color = AccentOrange.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.7f),
                 fontFamily = MonoFontFamily
             )
             Text(
-                text = "${log.type} (${log.intensity}/5)",
+                text = "$typeLabel (${log.intensity}/5)",
                 style = MaterialTheme.typography.bodyLarge,
-                color = AccentOrange,
+                color = MaterialTheme.colorScheme.symptomColor,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -237,15 +238,15 @@ fun EmptyDayCard() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                "Dnes zatím žádné záznamy",
+                stringResource(R.string.empty_day_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = SerifFontFamily
             )
             Text(
-                "Zaloguj snídani nebo jak se cítíš.",
+                stringResource(R.string.empty_day_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
         }
@@ -262,13 +263,13 @@ fun NoEnvironmentCard() {
             CircularProgressIndicator(
                 modifier = Modifier.size(16.dp),
                 strokeWidth = 2.dp,
-                color = AccentBlue
+                color = MaterialTheme.colorScheme.secondary
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                "Načítám data prostředí...",
+                stringResource(R.string.loading_environment),
                 style = MaterialTheme.typography.bodySmall,
-                color = TextDim,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontFamily = MonoFontFamily
             )
         }

@@ -19,9 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.OnboardingStep
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.theme.*
@@ -52,19 +54,19 @@ fun OnboardingPermissionsScreen(
     ) { onPermissionsRefreshed() }
 
     Scaffold(
-        containerColor = Background,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Potřebné přístupy", fontFamily = SerifFontFamily) },
+                title = { Text(stringResource(R.string.onboarding_permissions_title), fontFamily = SerifFontFamily) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Zpět")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Background,
-                    titleContentColor = TextPrimary,
-                    navigationIconContentColor = TextPrimary
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         }
@@ -84,16 +86,16 @@ fun OnboardingPermissionsScreen(
             ) {
                 // Subtitle
                 Text(
-                    text = "Tyto přístupy jsou nezbytné pro automatické sledování prostředí a logování jídel. Oprávnění můžeš kdykoliv změnit v nastavení.",
+                    text = stringResource(R.string.onboarding_permissions_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextDim
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 // GPS — Required for environmental data
                 PermissionCard(
                     icon = Icons.Default.LocationOn,
-                    title = "Poloha",
-                    description = "Automaticky načítá pylová data a kvalitu ovzduší podle tvého pohybu.",
+                    title = stringResource(R.string.permission_location_title),
+                    description = stringResource(R.string.permission_location_desc),
                     isGranted = permissions.location,
                     onRequest = {
                         locationLauncher.launch(
@@ -108,8 +110,8 @@ fun OnboardingPermissionsScreen(
                 // Camera — Optional (for photo logging)
                 PermissionCard(
                     icon = Icons.Default.CameraAlt,
-                    title = "Fotoaparát",
-                    description = "AI rozpoznávání jídla z fotek. Jídlo lze zadávat i ručně bez fotoaparátu.",
+                    title = stringResource(R.string.permission_camera_title),
+                    description = stringResource(R.string.permission_camera_desc),
                     isGranted = permissions.camera,
                     onRequest = {
                         cameraLauncher.launch(Manifest.permission.CAMERA)
@@ -120,8 +122,8 @@ fun OnboardingPermissionsScreen(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     PermissionCard(
                         icon = Icons.Default.Notifications,
-                        title = "Oznámení",
-                        description = "Večerní připomínky a upozornění na vysoké hladiny pylu.",
+                        title = stringResource(R.string.permission_notifications_title),
+                        description = stringResource(R.string.permission_notifications_desc),
                         isGranted = permissions.notifications,
                         onRequest = {
                             notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -130,7 +132,7 @@ fun OnboardingPermissionsScreen(
                 }
 
                 // Privacy Info
-                AppCard(borderColor = Border) {
+                AppCard(borderColor = MaterialTheme.colorScheme.outline) {
                     Row(
                         modifier = Modifier.padding(4.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -138,13 +140,13 @@ fun OnboardingPermissionsScreen(
                     ) {
                         Icon(
                             Icons.Default.Lock, null,
-                            tint = TextDim,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
-                            text = "Tvá data zůstávají pouze v zařízení. Nikdy je nesdílíme s třetími stranami.",
+                            text = stringResource(R.string.permission_privacy_note),
                             style = MaterialTheme.typography.bodySmall,
-                            color = TextSecondary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             lineHeight = 18.sp
                         )
                     }
@@ -161,7 +163,7 @@ fun OnboardingPermissionsScreen(
                 OnboardingBottomBar(
                     onNext = onNext,
                     onBack = onBack,
-                    nextLabel = if (permissions.location) "POKRAČOVAT →" else "POKRAČOVAT BEZ POLOHY →",
+                    nextLabel = if (permissions.location) stringResource(R.string.btn_continue_arrow) else stringResource(R.string.btn_continue_no_location),
                 )
             }
         }
@@ -177,7 +179,7 @@ fun PermissionCard(
     onRequest: () -> Unit
 ) {
     AppCard(
-        borderColor = if (isGranted) AccentGreen.copy(alpha = 0.3f) else Border
+        borderColor = if (isGranted) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) else MaterialTheme.colorScheme.outline
     ) {
         Row(
             modifier = Modifier.padding(4.dp),
@@ -189,12 +191,12 @@ fun PermissionCard(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(if (isGranted) AccentGreen.copy(alpha = 0.1f) else Border.copy(alpha = 0.5f)),
+                    .background(if (isGranted) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     icon, null,
-                    tint = if (isGranted) AccentGreen else TextSecondary,
+                    tint = if (isGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -204,12 +206,12 @@ fun PermissionCard(
                     title,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp),
                     lineHeight = 18.sp
                 )
@@ -220,7 +222,7 @@ fun PermissionCard(
                 Icon(
                     Icons.Default.CheckCircle,
                     contentDescription = "Granted",
-                    tint = AccentGreen,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
             } else {
@@ -229,12 +231,12 @@ fun PermissionCard(
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(AccentGreen)
+                        .background(MaterialTheme.colorScheme.primary)
                 ) {
                     Icon(
                         Icons.Default.Add,
                         contentDescription = "Grant",
-                        tint = Background,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                 }

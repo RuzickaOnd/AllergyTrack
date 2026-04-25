@@ -9,10 +9,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.allergytrack.app.R
 import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
 
 @Composable
@@ -30,7 +32,7 @@ fun DebugMenuScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            "Nastavení přepsání Premium",
+            stringResource(R.string.debug_premium_override_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -76,16 +78,16 @@ fun DebugMenuScreen(
         HorizontalDivider()
         
         Text(
-            "Ostatní možnosti",
+            stringResource(R.string.debug_other_options),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
-        
+
         Button(
             onClick = { viewModel.seedTestData() },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Vložit testovací data (Jídlo a Příznaky)")
+            Text(stringResource(R.string.debug_seed_test_data))
         }
 
         Button(
@@ -93,14 +95,14 @@ fun DebugMenuScreen(
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Simulovat pád aplikace")
+            Text(stringResource(R.string.debug_crash_app))
         }
 
         HorizontalDivider()
         Spacer(Modifier.height(8.dp))
 
         Text(
-            "Onboarding",
+            stringResource(R.string.debug_onboarding_section),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
@@ -112,11 +114,11 @@ fun DebugMenuScreen(
         ) {
             Icon(Icons.Default.Refresh, null)
             Spacer(Modifier.width(8.dp))
-            Text("Resetovat onboarding (restartuje app)")
+            Text(stringResource(R.string.debug_reset_onboarding_btn))
         }
 
         Text(
-            "Po resetu se onboarding zobrazí při dalším spuštění aplikace.",
+            stringResource(R.string.debug_reset_onboarding_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

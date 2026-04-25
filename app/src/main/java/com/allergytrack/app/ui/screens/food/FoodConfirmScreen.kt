@@ -10,12 +10,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.allergytrack.app.R
 import com.allergytrack.app.data.remote.food.RecognizedFood
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
@@ -36,7 +38,6 @@ fun FoodConfirmScreen(
         .split("|")
         .filter { it.isNotEmpty() }
 
-    // Navigace po uložení
     LaunchedEffect(uiState) {
         if (uiState is FoodLogUiState.Saved) {
             viewModel.reset()
@@ -54,11 +55,10 @@ fun FoodConfirmScreen(
     ) {
         item { Spacer(Modifier.height(8.dp)) }
 
-        // Recognized food card
         item {
             AppCard(
-                borderColor = AccentGreen.copy(alpha = 0.5f),
-                backgroundColor = AccentGreen.copy(alpha = 0.05f)
+                borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -68,7 +68,7 @@ fun FoodConfirmScreen(
                     Box(
                         modifier = Modifier
                             .size(56.dp)
-                            .background(AccentGreen.copy(alpha = 0.1f), RoundedCornerShape(12.dp)),
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), RoundedCornerShape(12.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Text("🍽", fontSize = 28.sp)
@@ -78,12 +78,12 @@ fun FoodConfirmScreen(
                             text = foodName,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            color = TextPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "IDENTIFIKOVÁNO POMOCÍ AI",
+                            text = stringResource(R.string.food_ai_identified),
                             style = MaterialTheme.typography.labelSmall,
-                            color = AccentGreen,
+                            color = MaterialTheme.colorScheme.primary,
                             fontFamily = MonoFontFamily,
                             fontWeight = FontWeight.Bold
                         )
@@ -92,13 +92,12 @@ fun FoodConfirmScreen(
             }
         }
 
-        // Allergens section
         item {
-            CardTitle(text = "DETEKOVANÉ ALERGENY")
+            CardTitle(text = stringResource(R.string.section_detected_allergens))
             if (parsedAllergens.isNotEmpty()) {
                 AppCard(
-                    borderColor = DotRed.copy(alpha = 0.3f),
-                    backgroundColor = DotRed.copy(alpha = 0.05f)
+                    borderColor = MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.3f),
+                    backgroundColor = MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.05f)
                 ) {
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -108,8 +107,8 @@ fun FoodConfirmScreen(
                         parsedAllergens.forEach { allergen ->
                             Pill(
                                 text = allergen.uppercase(),
-                                color = DotRed.copy(alpha = 0.15f),
-                                textColor = DotRed
+                                color = MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.15f),
+                                textColor = MaterialTheme.colorScheme.symptomColor
                             )
                         }
                     }
@@ -120,61 +119,55 @@ fun FoodConfirmScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Icon(Icons.Default.CheckCircle, null, tint = AccentGreen, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.CheckCircle, null, tint = MaterialTheme.colorScheme.okColor, modifier = Modifier.size(20.dp))
                         Text(
-                            "Nebyly detekovány žádné běžné alergeny",
+                            stringResource(R.string.no_allergens_detected),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             }
         }
 
-        // Notes field
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    "POZNÁMKY",
+                    stringResource(R.string.label_notes),
                     style = MaterialTheme.typography.labelSmall,
-                    color = TextDim,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontFamily = MonoFontFamily
                 )
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    placeholder = { Text("Přidej detaily (např. domácí, ingredience)...", color = TextDim) },
+                    placeholder = { Text(stringResource(R.string.notes_placeholder_food), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     maxLines = 3,
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Surface,
-                        focusedContainerColor = Surface,
-                        unfocusedBorderColor = Border,
-                        focusedBorderColor = AccentBlue
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary
                     )
                 )
             }
         }
 
-        // Action buttons
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 PrimaryButton(
-                    text = "ULOŽIT ZÁZNAM",
+                    text = stringResource(R.string.btn_save_record),
                     onClick = {
                         viewModel.saveFood(
-                            food = RecognizedFood(
-                                name = foodName,
-                                allergens = parsedAllergens
-                            ),
+                            food = RecognizedFood(name = foodName, allergens = parsedAllergens),
                             notes = notes
                         )
                     }
                 )
-
                 SecondaryButton(
-                    text = "UPRAVIT VÝBĚR",
+                    text = stringResource(R.string.btn_edit_selection),
                     onClick = { navController.popBackStack() }
                 )
             }

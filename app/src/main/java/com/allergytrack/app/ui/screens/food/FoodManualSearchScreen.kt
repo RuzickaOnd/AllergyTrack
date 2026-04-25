@@ -12,10 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.allergytrack.app.R
 import com.allergytrack.app.data.remote.food.RecognizedFood
 import com.allergytrack.app.ui.navigation.Screen
 
@@ -32,27 +34,17 @@ fun FoodManualSearchScreen(
         focusRequester.requestFocus()
     }
 
-    // Poznámka: Vyhledávací pole je nyní součástí TopAppBar v MainAppScaffold pro tuto obrazovku?
-    // Ne, v MainAppScaffold jsme definovali jen textový titulek. 
-    // Pro lepší UX ponecháme vyhledávací logiku zde, ale musíme vyřešit TopAppBar.
-    
-    // Rozhodnutí: MainAppScaffold TopAppBar je pro tuto obrazovku příliš statický.
-    // Abychom zachovali "jeden scaffold", musíme buď přesunout vyhledávací pole do MainAppScaffold,
-    // nebo nechat TopAppBar v MainAppScaffold prázdný a vykreslit hledání zde jako první prvek.
-    
-    // Druhá možnost (vykreslení zde) je čistší pro kód screenu.
-    
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
         Spacer(Modifier.height(8.dp))
-        
+
         OutlinedTextField(
             value = searchState.query,
             onValueChange = viewModel::onSearchQueryChange,
-            placeholder = { Text("Hledat potravinu...") },
+            placeholder = { Text(stringResource(R.string.search_food_query_hint)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester),
@@ -62,7 +54,7 @@ fun FoodManualSearchScreen(
             trailingIcon = {
                 if (searchState.query.isNotEmpty()) {
                     IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
-                        Icon(Icons.Default.Clear, "Vymazat")
+                        Icon(Icons.Default.Clear, stringResource(R.string.cd_clear))
                     }
                 }
             }
@@ -91,13 +83,12 @@ fun FoodManualSearchScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(
-                            Icons.Default.Search,
-                            null,
+                            Icons.Default.Search, null,
                             modifier = Modifier.size(48.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            "Zadej alespoň 2 znaky pro vyhledání",
+                            stringResource(R.string.search_min_chars),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -123,18 +114,22 @@ fun FoodManualSearchScreen(
                         modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Nic nebylo nalezeno",
-                            style = MaterialTheme.typography.titleSmall)
-                        Text("Zkus jiný název nebo přidej ručně",
+                        Text(
+                            stringResource(R.string.search_no_results_title),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            stringResource(R.string.search_no_results_subtitle),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                         Spacer(Modifier.height(16.dp))
                         OutlinedButton(onClick = {
                             navController.navigate(
                                 Screen.FoodConfirm.createRoute(searchState.query, "")
                             )
                         }) {
-                            Text("Přidat \"${searchState.query}\" ručně")
+                            Text(stringResource(R.string.search_add_manually, searchState.query))
                         }
                     }
                 }
@@ -160,11 +155,13 @@ fun FoodSearchResultItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Icon(Icons.Default.Restaurant, null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            Icon(Icons.Default.Restaurant, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             Column(Modifier.weight(1f)) {
-                Text(food.name, style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium)
+                Text(
+                    food.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
+                )
                 if (food.allergens.isNotEmpty()) {
                     Text(
                         "⚠️ ${food.allergens.joinToString(", ")}",
@@ -173,8 +170,7 @@ fun FoodSearchResultItem(
                     )
                 }
             }
-            Icon(Icons.Default.ChevronRight, null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

@@ -9,12 +9,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.AllergyType
 import com.allergytrack.app.domain.model.OnboardingStep
 import com.allergytrack.app.domain.model.SymptomTypeOnboarding
 import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.util.labelRes
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -26,18 +29,18 @@ fun OnboardingProfileScreen(
     onBack: () -> Unit
 ) {
     Scaffold(
-        containerColor = Background,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Alergický profil", fontFamily = SerifFontFamily) },
+                title = { Text(stringResource(R.string.onboarding_profile_title), fontFamily = SerifFontFamily) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Zpět")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Background,
-                    titleContentColor = TextPrimary
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         }
@@ -57,17 +60,17 @@ fun OnboardingProfileScreen(
             ) {
                 // Subtitle
                 Text(
-                    text = "Tyto informace nám pomohou přizpůsobit analýzu a zaměřit se na to, co je pro tebe nejdůležitější.",
+                    text = stringResource(R.string.onboarding_profile_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextDim
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 // Allergy Types
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(
-                        text = "JAKÉ MÁŠ ALERGIE?",
+                        text = stringResource(R.string.onboarding_allergies_heading),
                         style = MaterialTheme.typography.labelSmall,
-                        color = TextDim,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Bold
                     )
                     
@@ -82,7 +85,7 @@ fun OnboardingProfileScreen(
                                 OnboardingSelectCard(
                                     modifier = Modifier.weight(1f),
                                     emoji = type.emoji,
-                                    label = type.label,
+                                    label = stringResource(type.labelRes()),
                                     isSelected = type in uiState.selectedAllergyTypes,
                                     onClick = { onAllergyTypeToggled(type) }
                                 )
@@ -98,9 +101,9 @@ fun OnboardingProfileScreen(
                 // Symptoms
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(
-                        text = "JAKÉ JSOU TVÉ OBVYKLÉ PŘÍZNAKY?",
+                        text = stringResource(R.string.onboarding_symptoms_heading),
                         style = MaterialTheme.typography.labelSmall,
-                        color = TextDim,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Bold
                     )
                     
@@ -114,7 +117,7 @@ fun OnboardingProfileScreen(
                                 OnboardingSelectCard(
                                     modifier = Modifier.weight(1f),
                                     emoji = type.emoji,
-                                    label = type.label,
+                                    label = stringResource(type.labelRes()),
                                     isSelected = type in uiState.selectedSymptomTypes,
                                     onClick = { onSymptomTypeToggled(type) }
                                 )
@@ -144,7 +147,7 @@ fun OnboardingProfileScreen(
                     val isAnySelected = uiState.selectedAllergyTypes.isNotEmpty() || uiState.selectedSymptomTypes.isNotEmpty()
                     
                     com.allergytrack.app.ui.components.PrimaryButton(
-                        text = if (isAnySelected) "POKRAČOVAT" else "PŘESKOČIT",
+                        text = if (isAnySelected) stringResource(R.string.btn_continue) else stringResource(R.string.btn_skip),
                         onClick = onNext
                     )
                 }

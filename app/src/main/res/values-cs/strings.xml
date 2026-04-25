@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name">AllergyTrack</string>
+
+    <!-- Společná tlačítka -->
+    <string name="btn_back">ZPĚT</string>
+    <string name="btn_continue">POKRAČOVAT</string>
+    <string name="btn_continue_arrow">POKRAČOVAT →</string>
+    <string name="btn_skip">PŘESKOČIT</string>
+    <string name="btn_close">ZAVŘÍT</string>
+    <string name="btn_save_record">ULOŽIT ZÁZNAM</string>
+    <string name="btn_upgrade_premium">Upgradovat na Premium</string>
+    <string name="btn_saving">UKLÁDÁM…</string>
+
+    <!-- Popisky pro čtečky obrazovky -->
+    <string name="nav_back">Zpět</string>
+    <string name="cd_export_report">Exportovat report</string>
+    <string name="cd_reset_all">Resetovat vše</string>
+    <string name="cd_clear">Vymazat</string>
+    <string name="cd_take_photo">Vyfotit</string>
+    <string name="cd_permission_granted">Povoleno</string>
+    <string name="cd_permission_grant">Povolit</string>
+
+    <!-- Spodní navigace -->
+    <string name="nav_dashboard">PŘEHLED</string>
+    <string name="nav_charts">GRAFY</string>
+    <string name="nav_analysis">ANALÝZA</string>
+    <string name="nav_profile">PROFIL</string>
+
+    <!-- Názvy obrazovek -->
+    <string name="screen_profile">Profil</string>
+    <string name="screen_analytics">Analytika</string>
+    <string name="screen_ai_analysis">AI Analýza</string>
+    <string name="screen_log_food">Zalogovat jídlo</string>
+    <string name="screen_log_symptom">Zalogovat příznak</string>
+    <string name="screen_settings">Nastavení</string>
+    <string name="screen_about">O aplikaci</string>
+    <string name="screen_debug_menu">Debug Menu</string>
+    <string name="screen_confirm_food">Potvrdit jídlo</string>
+    <string name="screen_search_food">Hledat potravinu</string>
+    <string name="subtitle_charts">Trendy a environmentální korelace</string>
+
+    <!-- Přehled (Dashboard) -->
+    <string name="btn_add_food">+ JÍDLO</string>
+    <string name="btn_add_symptom">+ PŘÍZNAK</string>
+    <string name="section_today_records">📋 DNEŠNÍ ZÁZNAMY</string>
+    <string name="env_section_title">🌿 PROSTŘEDÍ DNES</string>
+    <string name="env_label_pollen_grass">Pyl trav</string>
+    <string name="env_label_aqi">AQI</string>
+    <string name="env_label_pollen_tree">Pyl stromů</string>
+    <string name="loading_environment">Načítám data prostředí…</string>
+    <string name="empty_day_title">Dnes zatím žádné záznamy</string>
+    <string name="empty_day_subtitle">Zaloguj snídani nebo jak se cítíš.</string>
+
+    <!-- Logování jídla -->
+    <string name="btn_scan_tap">KLEPNI PRO SKENOVÁNÍ</string>
+    <string name="btn_scan_subtitle">Rychlé AI rozpoznávání</string>
+    <string name="btn_barcode">ČÁROVÝ KÓD</string>
+    <string name="btn_voice_input">HLASEM</string>
+    <string name="search_food_hint">Hledat jídlo ručně…</string>
+    <string name="section_recently_logged">NEDÁVNO ZALOGOVÁNO</string>
+
+    <!-- Vyhledávání jídla -->
+    <string name="search_food_query_hint">Hledat potravinu…</string>
+    <string name="search_min_chars">Zadej alespoň 2 znaky pro vyhledání</string>
+    <string name="search_no_results_title">Nic nebylo nalezeno</string>
+    <string name="search_no_results_subtitle">Zkus jiný název nebo přidej ručně</string>
+    <string name="search_add_manually">Přidat \"%s\" ručně</string>
+
+    <!-- Potvrzení jídla -->
+    <string name="food_ai_identified">IDENTIFIKOVÁNO POMOCÍ AI</string>
+    <string name="section_detected_allergens">DETEKOVANÉ ALERGENY</string>
+    <string name="no_allergens_detected">Nebyly detekovány žádné běžné alergeny</string>
+    <string name="label_notes">POZNÁMKY</string>
+    <string name="notes_placeholder_food">Přidej detaily (např. domácí, ingredience)…</string>
+    <string name="btn_edit_selection">UPRAVIT VÝBĚR</string>
+
+    <!-- Kamera -->
+    <string name="camera_title">Vyfoť jídlo</string>
+    <string name="camera_recognizing">Rozpoznávám jídlo…</string>
+
+    <!-- Logování příznaků -->
+    <string name="section_symptom_type">TYP PŘÍZNAKU</string>
+    <string name="section_intensity">INTENZITA</string>
+    <string name="section_body_area">ZASAŽENÁ OBLAST</string>
+    <string name="notes_placeholder_symptom">Specifické spouštěče nebo detaily…</string>
+    <string name="btn_save_symptom">ULOŽIT PŘÍZNAK</string>
+    <string name="intensity_1">Mírná</string>
+    <string name="intensity_2">Lehká</string>
+    <string name="intensity_3">Střední</string>
+    <string name="intensity_4">Silná</string>
+    <string name="intensity_5">Kritická</string>
+    <string name="intensity_format">%1$s (%2$d/5)</string>
+
+    <!-- Části těla -->
+    <string name="body_part_face">Obličej</string>
+    <string name="body_part_neck">Krk</string>
+    <string name="body_part_chest">Hrudník</string>
+    <string name="body_part_back">Záda</string>
+    <string name="body_part_arms">Paže</string>
+    <string name="body_part_hands">Ruce</string>
+    <string name="body_part_stomach">Břicho</string>
+    <string name="body_part_legs">Nohy</string>
+    <string name="body_part_feet">Chodidla</string>
+
+    <!-- Typy příznaků -->
+    <string name="symptom_eczema">Ekzém</string>
+    <string name="symptom_rhinitis">Rýma</string>
+    <string name="symptom_eye_itching">Svědění očí</string>
+    <string name="symptom_urticaria">Kopřivka</string>
+    <string name="symptom_asthma">Astma</string>
+    <string name="symptom_itching">Svědění</string>
+    <string name="symptom_other">Jiné</string>
+    <string name="symptom_sneezing">Kýchání</string>
+
+    <!-- Typy alergií -->
+    <string name="allergy_pollen">Pylová (senná rýma)</string>
+    <string name="allergy_food">Potravinová</string>
+    <string name="allergy_animal">Zvířata</string>
+    <string name="allergy_dust">Prach a roztoči</string>
+    <string name="allergy_mold">Plísně</string>
+    <string name="allergy_unknown">Nevím / jiné</string>
+
+    <!-- Analýza -->
+    <string name="feature_unavailable">Tato funkce je momentálně nedostupná.</string>
+    <string name="analysis_top_triggers">Hlavní spouštěče</string>
+    <string name="analysis_no_patterns">Zatím nebyly nalezeny žádné výrazné vzory. Pokračuj v logování.</string>
+    <string name="btn_export_pdf">Exportovat PDF report</string>
+    <string name="correlation_reliability">SPOLEHLIVOST KORELACE</string>
+    <string name="stat_matches">SHODY</string>
+    <string name="stat_latency">LATENCE</string>
+    <string name="stat_impact">DOPAD</string>
+    <string name="correlation_insight_title">Klinický vhled</string>
+    <string name="correlation_recommendation_title">Doporučení</string>
+    <string name="analysis_locked_title">Analýza se připravuje</string>
+    <string name="analysis_locked_desc">Náš AI model potřebuje více dat pro přesnou identifikaci vzorců. Pokračuj v logování příznaků a jídla.</string>
+    <string name="data_maturity">ZRÁLOST DAT</string>
+    <string name="data_records_progress">%1$d / 5 ZÁZNAMŮ</string>
+    <string name="correlation_item_details">%1$s • %2$d z %3$d</string>
+    <string name="recommendation_food">Zvaž 14denní eliminační test pro %s a sleduj, zda se příznaky zlepší.</string>
+    <string name="recommendation_environment">Snaž se minimalizovat pobyt venku, když je hladina %s vysoká, nebo používej čističku vzduchu.</string>
+    <string name="recommendation_combined">Tato kombinace naznačuje více faktorů. Konzultuj tento report se svým alergologem.</string>
+    <string name="interpretation_food">%1$s byl identifikován jako silný spouštěč pro %2$s s %3$d%% jistotou. Příznaky se typicky objevují ~%4$dh po konzumaci.</string>
+    <string name="interpretation_environment">Vysoké hladiny %1$s silně korelují s tvými epizodami %2$s. Tento vzorec jsme detekovali v %3$d%% sledovaných dnů.</string>
+    <string name="interpretation_combined">Detekován synergický efekt: Kombinace %s a nedávných faktorů prostředí výrazně zvyšuje intenzitu reakce.</string>
+
+    <!-- Grafy -->
+    <string name="filter_symptoms_label">Filtr příznaků</string>
+    <string name="filter_all">VŠE</string>
+    <string name="stat_total">CELKEM</string>
+    <string name="stat_avg">PRŮMĚR</string>
+    <string name="stat_most_frequent">NEJČASTĚJŠÍ</string>
+    <string name="chart_symptom_intensity">INTENZITA PŘÍZNAKŮ</string>
+    <string name="chart_pollen_vs_symptoms">PYL VS. PŘÍZNAKY</string>
+    <string name="chart_aqi_vs_symptoms">KVALITA VZDUCHU (AQI) VS. PŘÍZNAKY</string>
+    <string name="chart_empty_period">Žádná data pro toto období</string>
+    <string name="pollen_unavailable_title">Data prostředí nedostupná</string>
+    <string name="pollen_unavailable_desc">Pylová data nejsou dostupná pro tento region nebo roční období (dostupná bř.–zář. v EU).</string>
+    <string name="legend_pollen_grass">Pyl (tráva)</string>
+    <string name="legend_symptoms">Příznaky</string>
+    <string name="legend_aqi">AQI (norm.)</string>
+    <string name="empty_charts_title">Nedostatek dat</string>
+    <string name="empty_charts_desc">Zaznamenávej jídlo a příznaky každý den. Grafy se zobrazí, až bude dostatek záznamů.</string>
+    <string name="time_range_week">7 dní</string>
+    <string name="time_range_two_weeks">14 dní</string>
+    <string name="time_range_month">30 dní</string>
+
+    <!-- Profil -->
+    <string name="profile_user_name">Uživatel</string>
+    <string name="profile_option_premium">Premium</string>
+    <string name="about_version">Verze %s</string>
+
+    <!-- O aplikaci -->
+    <string name="about_section_what_title">Co AllergyTrack dělá</string>
+    <string name="about_section_what_content">AllergyTrack ti pomáhá identifikovat spouštěče tvých alergií. Zaznamenáváš, co jíš, kde se pohybuješ a jaké alergické projevy pociťuješ — aplikace pak hledá vzorce a korelace mezi těmito daty.</string>
+    <string name="about_section_how_title">Jak to funguje</string>
+    <string name="about_section_how_content">Každý den loguješ jídlo (foto nebo ruční zadání), alergické symptomy (ekzém, rýma, svědění…) a aplikace automaticky načítá data o kvalitě ovzduší a pylu podle tvé GPS polohy. Po nashromáždění dat analýza odhalí, co tvé alergie nejčastěji spouští.</string>
+    <string name="about_section_data_title">Tvá data</string>
+    <string name="about_section_data_content">Veškerá data jsou uložena pouze v tvém zařízení a nikdy nejsou sdílena s třetími stranami. Aplikace nesbírá žádná osobní data.</string>
+    <string name="about_section_sources_title">Zdroje dat</string>
+    <string name="about_section_sources_content">Kvalita ovzduší a pylová data: Open-Meteo (open-meteo.com)\nDatabáze potravin: Open Food Facts (openfoodfacts.org)</string>
+    <string name="about_disclaimer">⚠️ Tato aplikace není zdravotnický prostředek a neposkytuje lékařskou diagnózu ani léčbu. Pro lékařskou radu se vždy obraťte na kvalifikovaného zdravotnického pracovníka.</string>
+
+    <!-- Nastavení -->
+    <string name="settings_section_general">OBECNÉ</string>
+    <string name="settings_dark_mode">Tmavý režim (vynucený)</string>
+    <string name="settings_push_notifications">Push notifikace</string>
+    <string name="settings_section_data_privacy">DATA A SOUKROMÍ</string>
+    <string name="settings_export_data">Exportovat moje data</string>
+    <string name="settings_delete_data">Smazat všechny záznamy</string>
+    <string name="settings_section_developer">VÝVOJÁŘ</string>
+    <string name="settings_debug_menu_label">Debug menu</string>
+    <string name="settings_version_format">Verze %1$s (%2$s)</string>
+
+    <!-- Debug -->
+    <string name="debug_premium_override_title">Nastavení přepsání Premium</string>
+    <string name="debug_other_options">Ostatní možnosti</string>
+    <string name="debug_seed_test_data">Vložit testovací data (Jídlo a Příznaky)</string>
+    <string name="debug_crash_app">Simulovat pád aplikace</string>
+    <string name="debug_onboarding_section">Onboarding</string>
+    <string name="debug_reset_onboarding_btn">Resetovat onboarding (restartuje app)</string>
+    <string name="debug_reset_onboarding_note">Po resetu se onboarding zobrazí při dalším spuštění aplikace.</string>
+
+    <!-- Premium -->
+    <string name="premium_upsell_desc">Tato funkce je dostupná v Premium verzi.</string>
+    <string name="premium_badge_label">PREMIUM</string>
+    <string name="ai_badge_label">✨ KLINICKÝ VHLED</string>
+
+    <!-- Prémiové funkce -->
+    <string name="premium_feature_food_photo">Foto rozpoznávání jídla</string>
+    <string name="premium_feature_pollen">Pylová data</string>
+    <string name="premium_feature_extended_charts">Grafy 30+ dní</string>
+    <string name="premium_feature_ai_analysis">AI analýza spouštěčů</string>
+    <string name="premium_feature_pdf_export">Export PDF pro lékaře</string>
+    <string name="premium_feature_unlimited_history">Neomezená historie</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">PŘESKOČIT</string>
+    <string name="onboarding_title">Najdi své\nspouštěče</string>
+    <string name="onboarding_description">AllergyTrack automaticky propojuje tvé jídlo, prostředí a symptomy, aby ti pomohl odhalit, co stojí za tvými alergiemi.</string>
+    <string name="onboarding_cta">ZAČÍT →</string>
+    <string name="onboarding_no_registration">Není vyžadována žádná registrace</string>
+    <string name="onboarding_profile_title">Alergický profil</string>
+    <string name="onboarding_profile_subtitle">Tyto informace nám pomohou přizpůsobit analýzu a zaměřit se na to, co je pro tebe nejdůležitější.</string>
+    <string name="onboarding_allergies_heading">JAKÉ MÁŠ ALERGIE?</string>
+    <string name="onboarding_symptoms_heading">JAKÉ JSOU TVÉ OBVYKLÉ PŘÍZNAKY?</string>
+    <string name="onboarding_permissions_title">Potřebné přístupy</string>
+    <string name="onboarding_permissions_subtitle">Tyto přístupy jsou nezbytné pro automatické sledování prostředí a logování jídel. Oprávnění můžeš kdykoliv změnit v nastavení.</string>
+    <string name="permission_location_title">Poloha</string>
+    <string name="permission_location_desc">Automaticky načítá pylová data a kvalitu ovzduší podle tvého pohybu.</string>
+    <string name="permission_camera_title">Fotoaparát</string>
+    <string name="permission_camera_desc">AI rozpoznávání jídla z fotek. Jídlo lze zadávat i ručně bez fotoaparátu.</string>
+    <string name="permission_notifications_title">Oznámení</string>
+    <string name="permission_notifications_desc">Večerní připomínky a upozornění na vysoké hladiny pylu.</string>
+    <string name="permission_privacy_note">Tvá data zůstávají pouze v zařízení. Nikdy je nesdílíme s třetími stranami.</string>
+    <string name="btn_continue_no_location">POKRAČOVAT BEZ POLOHY →</string>
+    <string name="onboarding_ready_title">Vše je připraveno!</string>
+    <string name="onboarding_ready_subtitle">Během 14 dnů logování AI odhalí tvé první vzorce a potenciální spouštěče alergií.</string>
+    <string name="ready_settings_title">TVÉ NASTAVENÍ</string>
+    <string name="ready_allergies_label">Typy alergií</string>
+    <string name="ready_allergies_not_set">Nenastaveno</string>
+    <string name="ready_location_label">Poloha</string>
+    <string name="ready_camera_label">Fotoaparát</string>
+    <string name="ready_notifications_label">Oznámení</string>
+    <string name="ready_status_granted">✓ Povoleno</string>
+    <string name="ready_status_denied">✗ Zakázáno</string>
+    <string name="ready_first_day_title">TVŮJ PRVNÍ DEN</string>
+    <string name="ready_tip_breakfast">Vyfoť nebo zapiš svou snídani</string>
+    <string name="ready_tip_feeling">Zaznamenej, jak se cítíš</string>
+    <string name="ready_tip_environment">Prostředí se sleduje automaticky</string>
+    <string name="btn_go_to_dashboard">PŘEJÍT NA PŘEHLED →</string>
+
+    <!-- Obrazovka zamítnutého oprávnění -->
+    <string name="permission_denied_title">Oprávnění zamítnuto</string>
+
+</resources>

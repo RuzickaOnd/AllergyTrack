@@ -6,10 +6,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.OnboardingStep
 import com.allergytrack.app.ui.components.PrimaryButton
 import com.allergytrack.app.ui.theme.*
@@ -21,7 +23,7 @@ fun OnboardingWelcomeScreen(
     onSkip: () -> Unit
 ) {
     Scaffold(
-        containerColor = Background,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { },
@@ -31,15 +33,15 @@ fun OnboardingWelcomeScreen(
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
                         Text(
-                            text = "PŘESKOČIT",
+                            text = stringResource(R.string.onboarding_skip),
                             style = MaterialTheme.typography.labelLarge,
-                            color = TextDim,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             letterSpacing = 1.sp
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Background
+                    containerColor = MaterialTheme.colorScheme.background
                 )
             )
         }
@@ -62,10 +64,10 @@ fun OnboardingWelcomeScreen(
 
             // Title
             Text(
-                text = "Najdi své\nspouštěče",
+                text = stringResource(R.string.onboarding_title),
                 style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center,
-                color = TextPrimary,
+                color = MaterialTheme.colorScheme.onSurface,
                 lineHeight = 44.sp,
                 fontFamily = SerifFontFamily
             )
@@ -74,10 +76,10 @@ fun OnboardingWelcomeScreen(
 
             // Description
             Text(
-                text = "AllergyTrack automaticky propojuje tvé jídlo, prostředí a symptomy, aby ti pomohl odhalit, co stojí za tvými alergiemi.",
+                text = stringResource(R.string.onboarding_description),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
-                color = TextSecondary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 26.sp,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -97,15 +99,15 @@ fun OnboardingWelcomeScreen(
                 )
 
                 PrimaryButton(
-                    text = "ZAČÍT →",
+                    text = stringResource(R.string.onboarding_cta),
                     onClick = onNext,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
-                
+
                 Text(
-                    text = "Není vyžadována žádná registrace",
+                    text = stringResource(R.string.onboarding_no_registration),
                     style = MaterialTheme.typography.labelSmall,
-                    color = TextDim,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = 0.5.sp
                 )
             }

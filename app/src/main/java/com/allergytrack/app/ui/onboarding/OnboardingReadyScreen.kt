@@ -9,10 +9,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.OnboardingStep
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.theme.*
@@ -27,18 +29,18 @@ fun OnboardingReadyScreen(
     val permissions = uiState.permissionsState
 
     Scaffold(
-        containerColor = Background,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Vše je připraveno!", fontFamily = SerifFontFamily) },
+                title = { Text(stringResource(R.string.onboarding_ready_title), fontFamily = SerifFontFamily) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Zpět")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Background,
-                    titleContentColor = TextPrimary
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         }
@@ -59,9 +61,9 @@ fun OnboardingReadyScreen(
             ) {
                 // Subtitle
                 Text(
-                    text = "Během 14 dnů logování AI odhalí tvé první vzorce a potenciální spouštěče alergií.",
+                    text = stringResource(R.string.onboarding_ready_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextDim,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
 
@@ -73,43 +75,43 @@ fun OnboardingReadyScreen(
                 )
 
                 // Settings Summary
-                AppCard(borderColor = Border) {
+                AppCard(borderColor = MaterialTheme.colorScheme.outline) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        CardTitle("TVÉ NASTAVENÍ")
+                        CardTitle(stringResource(R.string.ready_settings_title))
 
                         ReadySummaryItem(
-                            label = "Typy alergií",
+                            label = stringResource(R.string.ready_allergies_label),
                             value = if (uiState.selectedAllergyTypes.isEmpty())
-                                "Nenastaveno"
+                                stringResource(R.string.ready_allergies_not_set)
                             else
                                 uiState.selectedAllergyTypes.joinToString(" ") { it.emoji }
                         )
 
                         ReadySummaryItem(
-                            label = "Poloha",
-                            value = if (permissions.location) "✓ Povoleno" else "✗ Zakázáno"
+                            label = stringResource(R.string.ready_location_label),
+                            value = if (permissions.location) stringResource(R.string.ready_status_granted) else stringResource(R.string.ready_status_denied)
                         )
 
                         ReadySummaryItem(
-                            label = "Fotoaparát",
-                            value = if (permissions.camera) "✓ Povoleno" else "✗ Zakázáno"
+                            label = stringResource(R.string.ready_camera_label),
+                            value = if (permissions.camera) stringResource(R.string.ready_status_granted) else stringResource(R.string.ready_status_denied)
                         )
 
                         ReadySummaryItem(
-                            label = "Oznámení",
-                            value = if (permissions.notifications) "✓ Povoleno" else "✗ Zakázáno"
+                            label = stringResource(R.string.ready_notifications_label),
+                            value = if (permissions.notifications) stringResource(R.string.ready_status_granted) else stringResource(R.string.ready_status_denied)
                         )
                     }
                 }
 
                 // First Day Recommendations
-                AppCard(borderColor = AccentBlue.copy(alpha = 0.3f)) {
+                AppCard(borderColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        CardTitle("TVŮJ PRVNÍ DEN")
-                        
-                        FirstDayItem("📸", "Vyfoť nebo zapiš svou snídani")
-                        FirstDayItem("😊", "Zaznamenej, jak se cítíš")
-                        FirstDayItem("📊", "Prostředí se sleduje automaticky")
+                        CardTitle(stringResource(R.string.ready_first_day_title))
+
+                        FirstDayItem("📸", stringResource(R.string.ready_tip_breakfast))
+                        FirstDayItem("😊", stringResource(R.string.ready_tip_feeling))
+                        FirstDayItem("📊", stringResource(R.string.ready_tip_environment))
                     }
                 }
 
@@ -124,7 +126,7 @@ fun OnboardingReadyScreen(
                 OnboardingBottomBar(
                     onNext = onComplete,
                     onBack = onBack,
-                    nextLabel = "PŘEJÍT NA PŘEHLED →",
+                    nextLabel = stringResource(R.string.btn_go_to_dashboard),
                 )
             }
         }
@@ -141,13 +143,13 @@ private fun ReadySummaryItem(label: String, value: String) {
         Text(
             label,
             style = MaterialTheme.typography.bodyMedium,
-            color = TextSecondary
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
             value,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
-            color = TextPrimary
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -163,7 +165,7 @@ private fun FirstDayItem(emoji: String, text: String) {
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
-            color = TextPrimary
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

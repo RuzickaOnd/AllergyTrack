@@ -11,11 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.allergytrack.app.BuildConfig
+import com.allergytrack.app.R
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*
@@ -34,41 +36,41 @@ fun SettingsScreen(
     ) {
         Spacer(Modifier.height(8.dp))
 
-        SettingsHeader(title = "OBECNÉ")
+        SettingsHeader(title = stringResource(R.string.settings_section_general))
 
         AppCard {
             SettingsSwitchItem(
-                label = "Tmavý režim (vynucený)",
+                label = stringResource(R.string.settings_dark_mode),
                 checked = true,
                 onCheckedChange = { /* Always dark in MVP */ }
             )
-            HorizontalDivider(color = Border.copy(alpha = 0.5f), thickness = 0.5.dp)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
             SettingsSwitchItem(
-                label = "Push notifikace",
+                label = stringResource(R.string.settings_push_notifications),
                 checked = true,
                 onCheckedChange = { /* TODO */ }
             )
         }
 
-        SettingsHeader(title = "DATA A SOUKROMÍ")
+        SettingsHeader(title = stringResource(R.string.settings_section_data_privacy))
 
         AppCard {
             SettingsActionItem(
-                label = "Exportovat moje data",
+                label = stringResource(R.string.settings_export_data),
                 onClick = { /* TODO */ }
             )
-            HorizontalDivider(color = Border.copy(alpha = 0.5f), thickness = 0.5.dp)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
             SettingsActionItem(
-                label = "Smazat všechny záznamy",
+                label = stringResource(R.string.settings_delete_data),
                 onClick = { /* TODO: Show confirmation dialog */ }
             )
         }
 
         if (BuildConfig.DEBUG) {
-            SettingsHeader(title = "VÝVOJÁŘ")
+            SettingsHeader(title = stringResource(R.string.settings_section_developer))
             AppCard {
                 SettingsActionItem(
-                    label = "Debug menu",
+                    label = stringResource(R.string.settings_debug_menu_label),
                     icon = Icons.Default.Build,
                     onClick = { navController.navigate(Screen.DebugMenu.route) }
                 )
@@ -77,9 +79,9 @@ fun SettingsScreen(
 
         Spacer(Modifier.height(40.dp))
         Text(
-            text = "Version ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+            text = stringResource(R.string.settings_version_format, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE.toString()),
             style = MaterialTheme.typography.labelSmall,
-            color = TextDim,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             fontFamily = MonoFontFamily
         )
@@ -91,7 +93,7 @@ fun SettingsHeader(title: String) {
     Text(
         text = title,
         style = MaterialTheme.typography.labelSmall,
-        color = TextDim,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontWeight = FontWeight.Bold,
         fontFamily = MonoFontFamily,
         modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
@@ -111,19 +113,15 @@ fun SettingsSwitchItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            label, 
-            style = MaterialTheme.typography.bodyLarge,
-            color = TextPrimary
-        )
+        Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
         Switch(
-            checked = checked, 
+            checked = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = AccentGreen,
-                checkedTrackColor = AccentGreen.copy(alpha = 0.3f),
-                uncheckedThumbColor = TextDim,
-                uncheckedTrackColor = Border
+                checkedThumbColor = MaterialTheme.colorScheme.primary,
+                checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                uncheckedTrackColor = MaterialTheme.colorScheme.outline
             )
         )
     }
@@ -146,15 +144,11 @@ fun SettingsActionItem(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (icon != null) {
-                Icon(icon, contentDescription = null, tint = AccentBlue)
+                Icon(icon, null, tint = MaterialTheme.colorScheme.secondary)
             }
-            Text(
-                label, 
-                style = MaterialTheme.typography.bodyLarge,
-                color = TextPrimary
-            )
+            Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
             Spacer(Modifier.weight(1f))
-            Text("›", style = MaterialTheme.typography.headlineSmall, color = TextDim)
+            Text("›", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

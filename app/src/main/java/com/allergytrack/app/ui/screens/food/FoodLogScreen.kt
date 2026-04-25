@@ -8,11 +8,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.allergytrack.app.R
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*
@@ -31,13 +33,12 @@ fun FoodLogScreen(
     ) {
         item { Spacer(Modifier.height(8.dp)) }
 
-        // Camera View Area
         item {
             AppCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(220.dp),
-                borderColor = AccentGreen.copy(alpha = 0.3f),
+                borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
                 onClick = { navController.navigate(Screen.Camera.route) }
             ) {
                 Box(
@@ -47,51 +48,49 @@ fun FoodLogScreen(
                     Box(Modifier.fillMaxSize().padding(8.dp)) {
                         val cornerSize = 24.dp
                         val thickness = 3.dp
-                        Box(Modifier.size(cornerSize).border(thickness, AccentGreen, RoundedCornerShape(topStart = 8.dp)))
-                        Box(Modifier.align(Alignment.TopEnd).size(cornerSize).border(thickness, AccentGreen, RoundedCornerShape(topEnd = 8.dp)))
-                        Box(Modifier.align(Alignment.BottomStart).size(cornerSize).border(thickness, AccentGreen, RoundedCornerShape(bottomStart = 8.dp)))
-                        Box(Modifier.align(Alignment.BottomEnd).size(cornerSize).border(thickness, AccentGreen, RoundedCornerShape(bottomEnd = 8.dp)))
+                        Box(Modifier.size(cornerSize).border(thickness, MaterialTheme.colorScheme.primary, RoundedCornerShape(topStart = 8.dp)))
+                        Box(Modifier.align(Alignment.TopEnd).size(cornerSize).border(thickness, MaterialTheme.colorScheme.primary, RoundedCornerShape(topEnd = 8.dp)))
+                        Box(Modifier.align(Alignment.BottomStart).size(cornerSize).border(thickness, MaterialTheme.colorScheme.primary, RoundedCornerShape(bottomStart = 8.dp)))
+                        Box(Modifier.align(Alignment.BottomEnd).size(cornerSize).border(thickness, MaterialTheme.colorScheme.primary, RoundedCornerShape(bottomEnd = 8.dp)))
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("📷", fontSize = 48.sp)
                         Spacer(Modifier.height(12.dp))
                         Text(
-                            "KLEPNI PRO SKENOVÁNÍ",
+                            stringResource(R.string.btn_scan_tap),
                             style = MaterialTheme.typography.labelMedium,
-                            color = AccentGreen,
+                            color = MaterialTheme.colorScheme.primary,
                             fontFamily = MonoFontFamily,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            "Rychlé AI rozpoznávání",
+                            stringResource(R.string.btn_scan_subtitle),
                             style = MaterialTheme.typography.bodySmall,
-                            color = TextDim
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             }
         }
 
-        // Quick Actions
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 SecondaryButton(
-                    text = "ČÁROVÝ KÓD",
+                    text = stringResource(R.string.btn_barcode),
                     onClick = { /* TODO */ },
                     modifier = Modifier.weight(1f)
                 )
                 SecondaryButton(
-                    text = "HLASEM",
+                    text = stringResource(R.string.btn_voice_input),
                     onClick = { /* TODO */ },
                     modifier = Modifier.weight(1f)
                 )
             }
         }
 
-        // Search Bar
         item {
             AppCard(
-                borderColor = Border,
+                borderColor = MaterialTheme.colorScheme.outline,
                 onClick = { navController.navigate(Screen.FoodManualSearch.route) }
             ) {
                 Row(
@@ -101,18 +100,17 @@ fun FoodLogScreen(
                     Text("🔍", fontSize = 18.sp)
                     Spacer(Modifier.width(12.dp))
                     Text(
-                        "Hledat jídlo ručně...",
+                        stringResource(R.string.search_food_hint),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = TextDim
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
         }
 
-        // Recent
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                CardTitle("NEDÁVNO ZALOGOVÁNO")
+                CardTitle(stringResource(R.string.section_recently_logged))
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -121,9 +119,17 @@ fun FoodLogScreen(
                     Pill(text = "Ovesné vločky")
                     Pill(text = "Řecký jogurt")
                     Pill(text = "Banán")
-                    Pill(text = "MLÉKO ⚠️", color = DotRed.copy(alpha = 0.1f), textColor = DotRed)
+                    Pill(
+                        text = "MLÉKO ⚠️",
+                        color = MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.1f),
+                        textColor = MaterialTheme.colorScheme.symptomColor
+                    )
                     Pill(text = "Kuřecí prsa")
-                    Pill(text = "Mandle ⚠️", color = DotRed.copy(alpha = 0.1f), textColor = DotRed)
+                    Pill(
+                        text = "Mandle ⚠️",
+                        color = MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.1f),
+                        textColor = MaterialTheme.colorScheme.symptomColor
+                    )
                 }
             }
         }
