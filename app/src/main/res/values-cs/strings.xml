@@ -42,6 +42,16 @@
     <string name="screen_search_food">Hledat potravinu</string>
     <string name="subtitle_charts">Trendy a environmentální korelace</string>
 
+    <!-- Pozdravy -->
+    <string name="greeting_morning">Dobré ráno</string>
+    <string name="greeting_afternoon">Dobré odpoledne</string>
+    <string name="greeting_evening">Dobrý večer</string>
+
+    <!-- Vhledy přehledu -->
+    <string name="dashboard_insight_high_pollen">Pylový index %1$d dnes – sleduj své příznaky.</string>
+    <string name="dashboard_insight_high_aqi">Kvalita vzduchu AQI %1$d – zvaž omezení venkovních aktivit.</string>
+    <string name="dashboard_insight_good_day">Dnes příznivé podmínky ovzduší. Ideální den na venkovní aktivity.</string>
+
     <!-- Přehled (Dashboard) -->
     <string name="btn_add_food">+ JÍDLO</string>
     <string name="btn_add_symptom">+ PŘÍZNAK</string>
@@ -50,6 +60,7 @@
     <string name="env_label_pollen_grass">Pyl trav</string>
     <string name="env_label_aqi">AQI</string>
     <string name="env_label_pollen_tree">Pyl stromů</string>
+    <string name="env_label_pollen_weed">Pyl plevelů</string>
     <string name="loading_environment">Načítám data prostředí…</string>
     <string name="empty_day_title">Dnes zatím žádné záznamy</string>
     <string name="empty_day_subtitle">Zaloguj snídani nebo jak se cítíš.</string>

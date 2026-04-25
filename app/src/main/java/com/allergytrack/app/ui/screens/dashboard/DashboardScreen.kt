@@ -3,10 +3,13 @@ package com.allergytrack.app.ui.screens.dashboard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -18,12 +21,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
-import com.allergytrack.app.ui.util.labelRes
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
 import com.allergytrack.app.domain.model.EnvironmentLog
+import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.util.labelRes
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -53,6 +57,16 @@ fun DashboardScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item { Spacer(Modifier.height(8.dp)) }
+
+            item {
+                Text(
+                    text = stringResource(uiState.greetingRes),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontFamily = SerifFontFamily,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Normal
+                )
+            }
 
             item {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -116,9 +130,7 @@ fun DashboardScreen(
                 }
             }
 
-            item {
-                AiBadge(text = "Druhý den vysokého pylu travin — sleduj své příznaky.")
-            }
+            item { InsightBadge(uiState.insight) }
 
             item { Spacer(Modifier.height(24.dp)) }
         }
@@ -126,31 +138,82 @@ fun DashboardScreen(
 }
 
 @Composable
+fun InsightBadge(insight: DashboardInsight?) {
+    if (insight == null) return
+    val message = when (insight) {
+        is DashboardInsight.HighPollen ->
+            stringResource(R.string.dashboard_insight_high_pollen, insight.maxLevel)
+        is DashboardInsight.HighAqi ->
+            stringResource(R.string.dashboard_insight_high_aqi, insight.aqi)
+        DashboardInsight.GoodDay ->
+            stringResource(R.string.dashboard_insight_good_day)
+    }
+    AiBadge(text = message)
+}
+
+@Composable
 fun EnvironmentCard(env: EnvironmentLog) {
-    AppCard(borderColor = MaterialTheme.colorScheme.warningColor.copy(alpha = 0.3f)) {
+    val maxPollen = if (env.pollenAvailable) {
+        maxOf(env.pollenGrassIndex ?: 0, env.pollenTreeIndex ?: 0, env.pollenWeedIndex ?: 0)
+    } else null
+
+    val borderColor = when {
+        maxPollen != null && maxPollen >= 4 -> MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.4f)
+        maxPollen != null && maxPollen >= 2 -> MaterialTheme.colorScheme.warningColor.copy(alpha = 0.4f)
+        env.aqi >= 100 -> MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.3f)
+        env.aqi >= 50 -> MaterialTheme.colorScheme.warningColor.copy(alpha = 0.3f)
+        else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+    }
+
+    AppCard(borderColor = borderColor) {
         CardTitle(stringResource(R.string.env_section_title))
-        Spacer(Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            EnvironmentStat(
-                label = stringResource(R.string.env_label_pollen_grass),
-                value = env.pollenGrassIndex?.toString() ?: "—",
-                color = if ((env.pollenGrassIndex ?: 0) >= 3) MaterialTheme.colorScheme.warningColor else MaterialTheme.colorScheme.okColor
-            )
-            EnvironmentStat(
-                label = stringResource(R.string.env_label_aqi),
-                value = env.aqi.toString(),
-                color = if (env.aqi >= 50) MaterialTheme.colorScheme.warningColor else MaterialTheme.colorScheme.okColor
-            )
-            EnvironmentStat(
-                label = stringResource(R.string.env_label_pollen_tree),
-                value = env.pollenTreeIndex?.toString() ?: "—",
-                color = if ((env.pollenTreeIndex ?: 0) >= 3) MaterialTheme.colorScheme.warningColor else MaterialTheme.colorScheme.okColor
-            )
+        Spacer(Modifier.height(12.dp))
+        if (env.pollenAvailable) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                EnvironmentStat(
+                    label = stringResource(R.string.env_label_pollen_grass),
+                    value = env.pollenGrassIndex?.toString() ?: "—",
+                    color = pollenStatColor(env.pollenGrassIndex)
+                )
+                EnvironmentStat(
+                    label = stringResource(R.string.env_label_aqi),
+                    value = env.aqi.toString(),
+                    color = aqiStatColor(env.aqi)
+                )
+                EnvironmentStat(
+                    label = stringResource(R.string.env_label_pollen_tree),
+                    value = env.pollenTreeIndex?.toString() ?: "—",
+                    color = pollenStatColor(env.pollenTreeIndex)
+                )
+            }
+        } else {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                EnvironmentStat(
+                    label = stringResource(R.string.env_label_aqi),
+                    value = env.aqi.toString(),
+                    color = aqiStatColor(env.aqi)
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun pollenStatColor(index: Int?) = when {
+    index == null -> MaterialTheme.colorScheme.onSurfaceVariant
+    index >= 4 -> MaterialTheme.colorScheme.symptomColor
+    index >= 2 -> MaterialTheme.colorScheme.warningColor
+    else -> MaterialTheme.colorScheme.okColor
+}
+
+@Composable
+private fun aqiStatColor(aqi: Int) = when {
+    aqi >= 100 -> MaterialTheme.colorScheme.symptomColor
+    aqi >= 50 -> MaterialTheme.colorScheme.warningColor
+    else -> MaterialTheme.colorScheme.okColor
 }
 
 @Composable
@@ -175,14 +238,19 @@ fun EnvironmentStat(label: String, value: String, color: androidx.compose.ui.gra
 @Composable
 fun TimelineFoodItem(log: FoodLogEntity) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    val hasAllergens = log.allergens.length > 2  // more than "[]"
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Box(
             modifier = Modifier
                 .size(8.dp)
-                .background(MaterialTheme.colorScheme.okColor, androidx.compose.foundation.shape.CircleShape)
+                .background(MaterialTheme.colorScheme.okColor, CircleShape)
         )
         Spacer(Modifier.width(16.dp))
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = timeFormat.format(Date(log.timestamp)),
                 style = MaterialTheme.typography.labelMedium,
@@ -196,35 +264,73 @@ fun TimelineFoodItem(log: FoodLogEntity) {
                 fontWeight = FontWeight.Medium
             )
         }
+        if (hasAllergens) {
+            Surface(
+                shape = RoundedCornerShape(6.dp),
+                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
+            ) {
+                Text(
+                    text = "⚠️",
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                )
+            }
+        }
     }
 }
 
 @Composable
 fun TimelineSymptomItem(log: SymptomLogEntity) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    val symptomType = try { com.allergytrack.app.domain.model.SymptomType.valueOf(log.type) } catch (_: IllegalArgumentException) { null }
+    val symptomType = try { SymptomType.valueOf(log.type) } catch (_: IllegalArgumentException) { null }
     val typeLabel = symptomType?.let { stringResource(it.labelRes()) } ?: log.type
+    val emoji = symptomType?.emoji ?: "⚡"
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    val intensityColor = when {
+        log.intensity >= 4 -> MaterialTheme.colorScheme.symptomColor
+        log.intensity >= 3 -> MaterialTheme.colorScheme.warningColor
+        else -> MaterialTheme.colorScheme.okColor
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Box(
             modifier = Modifier
                 .size(8.dp)
-                .background(MaterialTheme.colorScheme.symptomColor, androidx.compose.foundation.shape.CircleShape)
+                .background(intensityColor, CircleShape)
         )
         Spacer(Modifier.width(16.dp))
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = timeFormat.format(Date(log.timestamp)),
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.7f),
+                color = intensityColor.copy(alpha = 0.7f),
                 fontFamily = MonoFontFamily
             )
             Text(
-                text = "$typeLabel (${log.intensity}/5)",
+                text = "$emoji $typeLabel",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.symptomColor,
-                fontWeight = FontWeight.Bold
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Medium
             )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(3.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            repeat(5) { i ->
+                Box(
+                    modifier = Modifier
+                        .size(5.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (i < log.intensity) intensityColor
+                            else MaterialTheme.colorScheme.outline
+                        )
+                )
+            }
         }
     }
 }

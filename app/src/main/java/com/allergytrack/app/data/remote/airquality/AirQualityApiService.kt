@@ -3,6 +3,18 @@ package com.allergytrack.app.data.remote.airquality
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+// OMEZENÍ POKRYTÍ: Tento service používá Open-Meteo Air Quality API s CAMS modelem
+// (Copernicus Atmosphere Monitoring Service), který je provozován EU a pokrývá POUZE Evropu.
+//
+// Konkrétně:
+//  - `european_aqi` → CAMS European AQI index, dostupný POUZE v Evropě (lat 34–72, lon -25–45)
+//  - Pylová data (grass_pollen, birch_pollen, …) → EU + sezónně (únor–říjen)
+//  - pm2_5, no2, ozone → rovněž z CAMS, primárně EU
+//
+// Pro non-EU souřadnice API vrátí null pro všechna tato pole. Proto v aplikaci
+// nezobrazujeme sekci prostředí mimo Evropu — hodnota 0 by byla zavádějící.
+// Pokud by bylo potřeba globální pokrytí, je třeba integrovat jiný zdroj
+// (např. WAQI API, IQAir nebo Open-Meteo US-AQI endpoint).
 interface AirQualityApiService {
 
     // Aktuální hodnoty — AQI + pyl v jednom volání

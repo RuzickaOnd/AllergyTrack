@@ -56,7 +56,7 @@ fun MainAppScaffold() {
                     title = {
                         Column {
                             val title = when {
-                                currentRoute == Screen.Dashboard.route -> dashboardState.greeting
+                                currentRoute == Screen.Dashboard.route -> stringResource(dashboardState.greetingRes)
                                 currentRoute == Screen.Charts.route -> stringResource(R.string.screen_analytics)
                                 currentRoute == Screen.Analysis.route -> stringResource(R.string.screen_ai_analysis)
                                 currentRoute == Screen.Profile.route -> stringResource(R.string.screen_profile)

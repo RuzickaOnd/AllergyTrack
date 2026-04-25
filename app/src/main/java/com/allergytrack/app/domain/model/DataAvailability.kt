@@ -7,10 +7,14 @@ data class DataAvailability(
     val region: EnvironmentRegion = EnvironmentRegion.UNKNOWN
 )
 
+// POZNÁMKA K REGIONŮM: Aktuálně používané API (Open-Meteo CAMS) pokrývá POUZE Evropu.
+// Hodnoty european_aqi a pylová data jsou pro non-EU souřadnice null.
+// GLOBAL je rezervováno pro budoucí integraci globálního AQI zdroje.
+// Do té doby se sekce prostředí v UI zobrazuje POUZE pro region EUROPE.
 enum class EnvironmentRegion {
-    EUROPE,      // Plná data: AQI + pyl
-    GLOBAL,      // Částečná data: pouze AQI
-    UNKNOWN      // Ještě nenačteno
+    EUROPE,   // Plná data: european_aqi + pyl (CAMS model, EU bounding box)
+    GLOBAL,   // Rezervováno — žádný aktuální zdroj dat; API vrací null pro non-EU souřadnice
+    UNKNOWN   // Ještě nenačteno / GPS nedostupné
 }
 
 // Extension pro určení regionu z GPS souřadnic

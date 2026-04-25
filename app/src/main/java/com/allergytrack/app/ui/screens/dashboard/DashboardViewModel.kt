@@ -1,7 +1,9 @@
 package com.allergytrack.app.ui.screens.dashboard
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.allergytrack.app.R
 import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
@@ -16,15 +18,21 @@ import java.util.Calendar
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
+sealed interface DashboardInsight {
+    data class HighPollen(val maxLevel: Int) : DashboardInsight
+    data class HighAqi(val aqi: Int) : DashboardInsight
+    data object GoodDay : DashboardInsight
+}
+
 data class DashboardUiState(
     val isLoading: Boolean = true,
     val todayFoodLogs: List<FoodLogEntity> = emptyList(),
     val todaySymptomLogs: List<SymptomLogEntity> = emptyList(),
     val latestEnvironment: EnvironmentLog? = null,
     val isRefreshingEnvironment: Boolean = true,
-    // true jen pokud: načítáme a region ještě neznáme, nebo jsme v Evropě
     val showEnvironmentSection: Boolean = true,
-    val greeting: String = "",
+    @get:StringRes val greetingRes: Int = R.string.greeting_morning,
+    val insight: DashboardInsight? = null,
     val error: String? = null
 )
 
@@ -55,16 +63,24 @@ class DashboardViewModel @Inject constructor(
         _isRefreshingEnv
     ) { foodLogs, symptomLogs, envLogs, isRefreshing ->
         val latest = envLogs.maxByOrNull { it.timestamp }
+        // DŮLEŽITÉ: Sekce prostředí se zobrazuje POUZE pro uživatele v Evropě.
+        // Používáme Open-Meteo Air Quality API s modelem CAMS (Copernicus), který
+        // pokrývá pouze Evropu. Pole `european_aqi` vrací null mimo EU — uložilo by se
+        // jako 0, což je zavádějící hodnota ("dobrá kvalita vzduchu" vs "data nejsou k dispozici").
+        // Pyl je také EU-only a sezónní (únor–říjen). Pro globální podporu by bylo
+        // nutné integrovat jiný datový zdroj (např. IQAir, AirVisual nebo WAQI API).
         val isEurope = latest?.region == EnvironmentRegion.EUROPE
         DashboardUiState(
             isLoading = false,
             todayFoodLogs = foodLogs,
             todaySymptomLogs = symptomLogs,
+            // Null pro non-EU: AQI by byl uložen jako 0 (chybějící data, ne skutečná hodnota).
             latestEnvironment = if (isEurope) latest else null,
             isRefreshingEnvironment = isRefreshing,
-            // Sekci zobrazíme jen pokud ještě načítáme (region neznámý) nebo jsme v EU
+            // Zobrazit sekci: dokud načítáme (region ještě neznáme) NEBO jsme v EU.
             showEnvironmentSection = (latest == null && isRefreshing) || isEurope,
-            greeting = getGreeting()
+            greetingRes = getGreeting(),
+            insight = computeInsight(if (isEurope) latest else null)
         )
     }.stateIn(
         scope = viewModelScope,
@@ -72,7 +88,6 @@ class DashboardViewModel @Inject constructor(
         initialValue = DashboardUiState()
     )
 
-    // Voláno ze Screenu při každém RESUMED — bezpečné pro souběžná volání
     fun refreshEnvironment() {
         if (!isFetchingEnv.compareAndSet(false, true)) return
         viewModelScope.launch {
@@ -88,12 +103,28 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    private fun getGreeting(): String {
+    @StringRes
+    private fun getGreeting(): Int {
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
         return when {
-            hour < 12 -> "Dobré ráno"
-            hour < 18 -> "Dobré odpoledne"
-            else -> "Dobrý večer"
+            hour < 12 -> R.string.greeting_morning
+            hour < 18 -> R.string.greeting_afternoon
+            else -> R.string.greeting_evening
         }
+    }
+
+    private fun computeInsight(env: EnvironmentLog?): DashboardInsight? {
+        env ?: return null
+        if (env.pollenAvailable) {
+            val maxPollen = maxOf(
+                env.pollenGrassIndex ?: 0,
+                env.pollenTreeIndex ?: 0,
+                env.pollenWeedIndex ?: 0
+            )
+            if (maxPollen >= 3) return DashboardInsight.HighPollen(maxPollen)
+        }
+        if (env.aqi >= 50) return DashboardInsight.HighAqi(env.aqi)
+        if (env.aqi > 0) return DashboardInsight.GoodDay
+        return null
     }
 }

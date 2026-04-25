@@ -56,7 +56,10 @@ class EnvironmentRepositoryImpl @Inject constructor(
             latitude = lat,
             longitude = lon,
             region = region,
-            // AQI — globálně dostupné, při chybě 0
+            // POZOR: european_aqi je null pro non-EU souřadnice (CAMS model pokrývá jen EU).
+            // Ukládáme 0 jako fallback, ale tato hodnota NESMÍ být zobrazována mimo EU —
+            // 0 by bylo chybně interpretováno jako "dobrá kvalita vzduchu" místo "data nejsou k dispozici".
+            // UI proto filtruje zobrazení podle region == EUROPE (viz DashboardViewModel).
             aqi    = current?.europeanAqi ?: 0,
             pm25   = current?.pm25 ?: 0f,
             no2    = current?.no2 ?: 0f,
