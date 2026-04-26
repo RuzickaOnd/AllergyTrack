@@ -200,6 +200,7 @@
     <string name="settings_dark_mode">Dark mode (forced)</string>
     <string name="settings_push_notifications">Push notifications</string>
     <string name="settings_section_data_privacy">DATA AND PRIVACY</string>
+    <string name="settings_section_permissions">PERMISSIONS</string>
     <string name="settings_export_data">Export my data</string>
     <string name="settings_delete_data">Delete all records</string>
     <string name="settings_section_developer">DEVELOPER</string>

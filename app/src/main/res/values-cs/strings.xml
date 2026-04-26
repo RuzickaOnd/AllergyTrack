@@ -200,6 +200,7 @@
     <string name="settings_dark_mode">Tmavý režim (vynucený)</string>
     <string name="settings_push_notifications">Push notifikace</string>
     <string name="settings_section_data_privacy">DATA A SOUKROMÍ</string>
+    <string name="settings_section_permissions">OPRÁVNĚNÍ</string>
     <string name="settings_export_data">Exportovat moje data</string>
     <string name="settings_delete_data">Smazat všechny záznamy</string>
     <string name="settings_section_developer">VÝVOJÁŘ</string>
