@@ -69,7 +69,7 @@ class CorrelationEngine @Inject constructor(
                     symptomType = symptomType,
                     foodLogs = foodLogs,
                     symptomLogs = symptomLogs,
-                    isExpected = allergen.uppercase() in knownAllergies || symptomType.name in knownSymptoms
+                    isExpected = "FOOD" in knownAllergies || symptomType.name in knownSymptoms
                 )
                 correlation
             }

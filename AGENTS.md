@@ -318,6 +318,11 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 3. Ve ViewModelu vystav `canUse...`, `show...Upsell` a `show...Badge` pomocí `PremiumHelper`.
 4. V UI použij `PremiumGate` nebo `PremiumBadge`.
 
+**Q: Jak pracovat s alergickým profilem uživatele?**
+1. Profil je v `OnboardingDataStore` (`selectedAllergyTypes`, `selectedSymptomTypes`).
+2. V analytice použij `knownAllergies` a `knownSymptoms`.
+3. Vždy prioritizuj nálezy, které jsou v profilu označeny jako `isExpected`.
+
 ---
 
 ## 13. ENVIRONMENTÁLNÍ DATA (Open-Meteo)

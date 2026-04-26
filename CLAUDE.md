@@ -220,17 +220,28 @@ https://air-quality-api.open-meteo.com/v1/air-quality
 
 UI zobrazuje `PollenUnavailableBanner` s vysvětlením místo prázdného stavu.
 
-### 3. Onboarding
+### 3. Onboarding a Alergický profil
 
 Jednosměrný flow, stav v `OnboardingDataStore`:
 ```
 Welcome → AllergyProfile → Permissions → Ready → Dashboard
 ```
 
-`MainActivity` čte `onboardingDataStore.isCompleted.first()` synchronně před
-prvním sestavením UI. Po dokončení `AppRoot` přepne bez restartu Activity.
+**Ukládání profilu:**
+- Zdroj: `OnboardingProfileScreen.kt` -> `OnboardingViewModel.kt`
+- Úložiště: `OnboardingDataStore.kt` (Jetpack DataStore Preferences)
+- Klíče: `selected_allergy_types`, `selected_symptom_types`
+- Formát: Čárkou oddělené názvy Enumů (např. `"FOOD,POLLEN"`)
 
-Debug menu obsahuje "Reset onboardingu" pro opakované testování.
+**Využití profilu (Analýza):**
+- `AnalysisViewModel` odebírá profil a předává ho do `CorrelationEngine.analyze()`.
+- **Prioritizace:** Pokud nález (korelace) odpovídá profilu (např. uživatel vybral "Potravinovou alergii" a engine najde souvislost s mlékem), nastaví se `isExpected = true`.
+- **Efekt:** 10% bonus ke skóre, prioritní řazení na začátek seznamu a zobrazení štítku **"SHODA"** v UI.
+
+**Co zatím profil neovlivňuje (Backlog):**
+- `AllergyType.ANIMAL/DUST/MOLD` — uloženo, ale engine zatím nemá příslušné datové zdroje.
+- Filtrování potravin — vyhledávání v Open Food Facts zatím nebere profil v úvahu.
+- Dashboard — hlavní obrazovka je zatím pro všechny stejná.
 
 ### 4. Korelační engine
 
