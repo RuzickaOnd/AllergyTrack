@@ -150,6 +150,7 @@
     <string name="data_maturity">DATA MATURITY</string>
     <string name="data_records_progress">%1$d / 5 RECORDS</string>
     <string name="correlation_item_details">%1$s • %2$d of %3$d</string>
+    <string name="correlation_badge_expected">MATCH</string>
     <string name="recommendation_food">Consider a 14-day elimination test for %s and track whether symptoms improve.</string>
     <string name="recommendation_environment">Try to minimise time outdoors when %s levels are high, or use an air purifier.</string>
     <string name="recommendation_combined">This combination suggests multiple factors. Consult this report with your allergist.</string>

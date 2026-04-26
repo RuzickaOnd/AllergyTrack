@@ -32,6 +32,7 @@ class AnalysisViewModel @Inject constructor(
     private val environmentLogDao: EnvironmentLogDao,
     private val correlationEngine: CorrelationEngine,
     private val aiSummaryService: AiSummaryService,
+    private val onboardingDataStore: com.allergytrack.app.data.local.datastore.OnboardingDataStore,
     private val medicalReportExporter: com.allergytrack.app.domain.export.MedicalReportExporter,
     private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper
 ) : ViewModel() {
@@ -72,16 +73,24 @@ class AnalysisViewModel @Inject constructor(
             combine(
                 symptomLogDao.getAllLogs(),
                 foodLogDao.getAllLogs(),
-                environmentLogDao.getAllLogs()
-            ) { symptoms, foods, env ->
-                Triple(symptoms, foods, env)
-            }.collect { (symptoms, foods, env) ->
-
+                environmentLogDao.getAllLogs(),
+                onboardingDataStore.selectedAllergyTypes,
+                onboardingDataStore.selectedSymptomTypes
+            ) { symptoms, foods, env, allergies, userSymptoms ->
+                val allergySet = allergies.split(",").filter { it.isNotEmpty() }.toSet()
+                val symptomSet = userSymptoms.split(",").filter { it.isNotEmpty() }.toSet()
+                
                 val hasEnough = correlationEngine.hasEnoughData(symptoms)
                 val daysLeft = correlationEngine.daysUntilAnalysis(symptoms)
 
                 if (hasEnough) {
-                    val correlations = correlationEngine.analyze(foods, symptoms, env)
+                    val correlations = correlationEngine.analyze(
+                        foodLogs = foods, 
+                        symptomLogs = symptoms, 
+                        environmentLogs = env,
+                        knownAllergies = allergySet,
+                        knownSymptoms = symptomSet
+                    )
                     val summary = aiSummaryService.generateSummary(correlations)
                     _uiState.update {
                         it.copy(
@@ -102,7 +111,7 @@ class AnalysisViewModel @Inject constructor(
                         )
                     }
                 }
-            }
+            }.collect()
         }
     }
 

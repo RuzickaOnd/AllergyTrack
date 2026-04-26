@@ -23,28 +23,32 @@ class CorrelationEngine @Inject constructor(
     fun analyze(
         foodLogs: List<FoodLogEntity>,
         symptomLogs: List<SymptomLogEntity>,
-        environmentLogs: List<EnvironmentLogEntity>
+        environmentLogs: List<EnvironmentLogEntity>,
+        knownAllergies: Set<String> = emptySet(),
+        knownSymptoms: Set<String> = emptySet()
     ): List<Correlation> {
         if (symptomLogs.size < 5) return emptyList() // Min. dat pro analýzu
 
         val results = mutableListOf<Correlation>()
 
         // 1. Korelace: Jídlo → Symptom
-        results.addAll(analyzeFoodCorrelations(foodLogs, symptomLogs))
+        results.addAll(analyzeFoodCorrelations(foodLogs, symptomLogs, knownAllergies, knownSymptoms))
 
         // 2. Korelace: Prostředí → Symptom
-        results.addAll(analyzeEnvironmentCorrelations(environmentLogs, symptomLogs))
+        results.addAll(analyzeEnvironmentCorrelations(environmentLogs, symptomLogs, knownAllergies, knownSymptoms))
 
-        // 3. Seřaď podle skóre
+        // 3. Seřaď podle skóre (se započítáním isExpected prioritizace)
         return results
             .filter { it.score > 0.3f }  // Minimální práh relevance
-            .sortedByDescending { it.score }
+            .sortedWith(compareByDescending<Correlation> { it.isExpected }.thenByDescending { it.score })
             .take(10)
     }
 
     private fun analyzeFoodCorrelations(
         foodLogs: List<FoodLogEntity>,
-        symptomLogs: List<SymptomLogEntity>
+        symptomLogs: List<SymptomLogEntity>,
+        knownAllergies: Set<String>,
+        knownSymptoms: Set<String>
     ): List<Correlation> {
         // Extrahuj unikátní alergeny ze všech záznamů jídla
         val allergens = foodLogs
@@ -64,7 +68,8 @@ class CorrelationEngine @Inject constructor(
                     allergen = allergen,
                     symptomType = symptomType,
                     foodLogs = foodLogs,
-                    symptomLogs = symptomLogs
+                    symptomLogs = symptomLogs,
+                    isExpected = allergen.uppercase() in knownAllergies || symptomType.name in knownSymptoms
                 )
                 correlation
             }
@@ -75,7 +80,8 @@ class CorrelationEngine @Inject constructor(
         allergen: String,
         symptomType: SymptomType,
         foodLogs: List<FoodLogEntity>,
-        symptomLogs: List<SymptomLogEntity>
+        symptomLogs: List<SymptomLogEntity>,
+        isExpected: Boolean
     ): Correlation? {
         val symptomLogsOfType = symptomLogs.filter { it.type == symptomType.name }
         if (symptomLogsOfType.isEmpty()) return null
@@ -107,10 +113,13 @@ class CorrelationEngine @Inject constructor(
 
         if (matchCount < 2) return null
 
-        val score = matchCount.toFloat() / foodEventsWithAllergen.size.toFloat()
+        var score = matchCount.toFloat() / foodEventsWithAllergen.size.toFloat()
         val avgDelayHours = if (matchCount > 0)
             TimeUnit.MILLISECONDS.toHours(totalDelayMs / matchCount).toFloat()
         else 0f
+
+        // Lehký boost pro očekávané korelace, aby se dostaly výše
+        if (isExpected) score = (score * 1.1f).coerceAtMost(1.0f)
 
         return Correlation(
             trigger = allergen,
@@ -124,13 +133,16 @@ class CorrelationEngine @Inject constructor(
                 score >= 0.7f -> CorrelationSeverity.HIGH
                 score >= 0.4f -> CorrelationSeverity.MEDIUM
                 else -> CorrelationSeverity.LOW
-            }
+            },
+            isExpected = isExpected
         )
     }
 
     private fun analyzeEnvironmentCorrelations(
         environmentLogs: List<EnvironmentLogEntity>,
-        symptomLogs: List<SymptomLogEntity>
+        symptomLogs: List<SymptomLogEntity>,
+        knownAllergies: Set<String>,
+        knownSymptoms: Set<String>
     ): List<Correlation> {
         val correlations = mutableListOf<Correlation>()
         val symptoms = symptomLogs.map { it.intensity.toFloat() }
@@ -143,7 +155,7 @@ class CorrelationEngine @Inject constructor(
                 symptoms.take(aqiValues.size)
             )
             if (pearson > 0.25f) {
-                correlations.add(buildAqiCorrelation(pearson, environmentLogs))
+                correlations.add(buildAqiCorrelation(pearson, environmentLogs, knownSymptoms))
             }
         }
 
@@ -156,17 +168,17 @@ class CorrelationEngine @Inject constructor(
                 symptoms.take(grassValues.size)
             )
             if (pearson > 0.3f) {
-                correlations.add(buildPollenCorrelation(pearson, pollenLogs))
+                correlations.add(buildPollenCorrelation(pearson, pollenLogs, knownAllergies, knownSymptoms))
             }
         }
-        // Mimo EU nebo mimo sezónu: pyl korelace se tiše přeskočí — žádná chyba
 
         return correlations
     }
 
     private fun buildAqiCorrelation(
         pearson: Float,
-        logs: List<EnvironmentLogEntity>
+        logs: List<EnvironmentLogEntity>,
+        knownSymptoms: Set<String>
     ) = Correlation(
         trigger = "Kvalita vzduchu (AQI)",
         triggerType = TriggerType.ENVIRONMENT,
@@ -175,12 +187,15 @@ class CorrelationEngine @Inject constructor(
         occurrences = logs.count { it.aqi >= 50 },
         totalEvents = logs.size,
         avgDelayHours = 1f,
-        severity = if (pearson >= 0.7f) CorrelationSeverity.HIGH else CorrelationSeverity.MEDIUM
+        severity = if (pearson >= 0.7f) CorrelationSeverity.HIGH else CorrelationSeverity.MEDIUM,
+        isExpected = SymptomType.ASTHMA.name in knownSymptoms
     )
 
     private fun buildPollenCorrelation(
         pearson: Float,
-        pollenLogs: List<EnvironmentLogEntity>
+        pollenLogs: List<EnvironmentLogEntity>,
+        knownAllergies: Set<String>,
+        knownSymptoms: Set<String>
     ) = Correlation(
         trigger = "Pyl trávy",
         triggerType = TriggerType.ENVIRONMENT,
@@ -193,7 +208,8 @@ class CorrelationEngine @Inject constructor(
             pearson >= 0.7f -> CorrelationSeverity.HIGH
             pearson >= 0.4f -> CorrelationSeverity.MEDIUM
             else            -> CorrelationSeverity.LOW
-        }
+        },
+        isExpected = "POLLEN" in knownAllergies || SymptomType.RHINITIS.name in knownSymptoms
     )
 
     // Pearsonova korelace dvou časových řad stejné délky

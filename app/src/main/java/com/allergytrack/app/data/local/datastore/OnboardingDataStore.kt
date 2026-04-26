@@ -38,6 +38,12 @@ class OnboardingDataStore @Inject constructor(
             prefs[KEY_ALLERGY_TYPES] ?: ""
         }
 
+    /** Vybrané typy příznaků z onboardingu */
+    val selectedSymptomTypes: Flow<String> =
+        context.onboardingDataStore.data.map { prefs ->
+            prefs[KEY_SYMPTOM_TYPES] ?: ""
+        }
+
     suspend fun setCompleted() {
         context.onboardingDataStore.edit { prefs ->
             prefs[KEY_COMPLETED] = true

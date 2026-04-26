@@ -150,6 +150,7 @@
     <string name="data_maturity">ZRÁLOST DAT</string>
     <string name="data_records_progress">%1$d / 5 ZÁZNAMŮ</string>
     <string name="correlation_item_details">%1$s • %2$d z %3$d</string>
+    <string name="correlation_badge_expected">SHODA</string>
     <string name="recommendation_food">Zvaž 14denní eliminační test pro %s a sleduj, zda se příznaky zlepší.</string>
     <string name="recommendation_environment">Snaž se minimalizovat pobyt venku, když je hladina %s vysoká, nebo používej čističku vzduchu.</string>
     <string name="recommendation_combined">Tato kombinace naznačuje více faktorů. Konzultuj tento report se svým alergologem.</string>

@@ -175,12 +175,31 @@ fun CorrelationItem(
             }
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    "$triggerIcon ${correlation.trigger}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        "$triggerIcon ${correlation.trigger}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                    if (correlation.isExpected) {
+                        Spacer(Modifier.width(8.dp))
+                        Surface(
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.correlation_badge_expected),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                fontSize = 8.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
                 Text(
                     detailsText,
                     style = MaterialTheme.typography.labelSmall,

@@ -8,7 +8,8 @@ data class Correlation(
     val occurrences: Int,
     val totalEvents: Int,
     val avgDelayHours: Float,
-    val severity: CorrelationSeverity
+    val severity: CorrelationSeverity,
+    val isExpected: Boolean = false
 )
 
 enum class TriggerType { FOOD, ENVIRONMENT, COMBINED }
