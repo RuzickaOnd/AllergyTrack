@@ -33,9 +33,22 @@ class DebugMenuViewModel @Inject constructor(
             initialValue = DebugPremiumOverride.USE_APP_STATE
         )
 
+    val symptomCountOverride: StateFlow<Int> = debugPreferences.symptomCountOverride
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = -1
+        )
+
     fun setPremiumOverride(override: DebugPremiumOverride) {
         viewModelScope.launch {
             debugPreferences.setPremiumOverride(override)
+        }
+    }
+
+    fun setSymptomCountOverride(count: Int) {
+        viewModelScope.launch {
+            debugPreferences.setSymptomCountOverride(count)
         }
     }
 

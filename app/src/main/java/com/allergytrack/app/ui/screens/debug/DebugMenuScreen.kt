@@ -14,8 +14,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 @Composable
 fun DebugMenuScreen(
@@ -68,6 +70,54 @@ fun DebugMenuScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }
+                }
+            }
+        }
+
+        val symptomCountOverride by viewModel.symptomCountOverride.collectAsState()
+
+        if (BuildConfig.DEBUG) {
+            HorizontalDivider()
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                "Analýza — simulace počtu symptomů",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                "Přepíše skutečný počet symptomů pro testování stavů analýzy. " +
+                "-1 = skutečná data.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) {
+                Column {
+                    listOf(
+                        -1 to "Skutečná data",
+                        0  to "0 symptomů (Locked — prázdný progress)",
+                        3  to "3 symptomy (Locked — 60% progress)",
+                        5  to "5 symptomů (Partial — první analýza)",
+                        8  to "8 symptomů (Partial — disclaimer)",
+                        10 to "10 symptomů (Full — bez disclaimeru)"
+                    ).forEachIndexed { index, (count, label) ->
+                        if (index > 0) HorizontalDivider()
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = symptomCountOverride == count,
+                                onClick = { viewModel.setSymptomCountOverride(count) }
+                            )
+                            Text(
+                                label,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(end = 12.dp, top = 8.dp, bottom = 8.dp)
+                            )
+                        }
                     }
                 }
             }

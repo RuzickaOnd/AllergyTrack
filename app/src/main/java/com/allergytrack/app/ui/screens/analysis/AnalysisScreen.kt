@@ -24,6 +24,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.R
+import com.allergytrack.app.domain.model.AnalysisReadiness
 import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.CorrelationSeverity
 import com.allergytrack.app.domain.model.PremiumFeature
@@ -57,6 +58,17 @@ fun AnalysisScreen(
         return
     }
 
+    // Zobrazení podle stavu připravenosti
+    when (val readiness = uiState.readiness) {
+        is AnalysisReadiness.Locked -> {
+            AnalysisLockedScreen(readiness = readiness)
+            return
+        }
+        is AnalysisReadiness.Partial, is AnalysisReadiness.Full -> {
+            // Pokračovat k zobrazení analýzy
+        }
+    }
+
     uiState.selectedCorrelation?.let { corr ->
         CorrelationDetailSheet(
             correlation = corr,
@@ -73,14 +85,13 @@ fun AnalysisScreen(
     ) {
         item { Spacer(Modifier.height(8.dp)) }
 
-        if (!uiState.hasEnoughData) {
+        if (uiState.showDisclaimer) {
             item {
-                AnalysisLockedCard(
-                    symptomCount = uiState.symptomCount,
-                    daysUntilAnalysis = uiState.daysUntilAnalysis
-                )
+                AnalysisDisclaimerBanner(disclaimer = uiState.disclaimer)
             }
-        } else if (showAnalysisUpsell) {
+        }
+
+        if (showAnalysisUpsell) {
             item { PremiumUpsellCard(feature = PremiumFeature.AI_CORRELATION_ANALYSIS) }
         } else {
             item { AiBadge(text = uiState.aiSummary) }
@@ -107,18 +118,16 @@ fun AnalysisScreen(
             }
         }
 
-        if (uiState.hasEnoughData) {
-            item {
-                PremiumGate(
-                    isVisible = isExportVisible,
-                    showUpsell = showExportUpsell,
-                    feature = PremiumFeature.PDF_EXPORT
-                ) {
-                    SecondaryButton(
-                        text = stringResource(R.string.btn_export_pdf),
-                        onClick = viewModel::exportReport
-                    )
-                }
+        item {
+            PremiumGate(
+                isVisible = isExportVisible,
+                showUpsell = showExportUpsell,
+                feature = PremiumFeature.PDF_EXPORT
+            ) {
+                SecondaryButton(
+                    text = stringResource(R.string.btn_export_pdf),
+                    onClick = viewModel::exportReport
+                )
             }
         }
 
@@ -312,55 +321,91 @@ fun DetailStatCard(modifier: Modifier = Modifier, label: String, value: String) 
 }
 
 @Composable
-fun AnalysisLockedCard(symptomCount: Int, daysUntilAnalysis: Int) {
-    val progress = (symptomCount.toFloat() / 5f).coerceIn(0f, 1f)
+fun AnalysisLockedScreen(readiness: AnalysisReadiness.Locked) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("🔒", style = androidx.compose.ui.text.TextStyle(fontSize = 64.sp))
+        Spacer(Modifier.height(16.dp))
+        Text(
+            "Zatím nedostatek dat",
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            readiness.message,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(28.dp))
 
-    AppCard(borderColor = MaterialTheme.colorScheme.outline) {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                "🔒",
-                style = androidx.compose.ui.text.TextStyle(fontSize = 32.sp),
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            Text(
-                stringResource(R.string.analysis_locked_title),
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface
+        // Progress bar — počet symptomů, ne dny
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    "Zaznamenané symptomy",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Text(
+                    "${readiness.symptomCount} / ${readiness.requiredCount}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            LinearProgressIndicator(
+                progress = { readiness.progress },
+                modifier = Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.outline
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                stringResource(R.string.analysis_locked_desc),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
+                "Každý symptom se počítá — " +
+                "zaznamenej jak se cítíš kdykoli během dne.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(Modifier.height(24.dp))
+        }
+    }
+}
 
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(stringResource(R.string.data_maturity), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(
-                        stringResource(R.string.data_records_progress, symptomCount),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.okColor,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Spacer(Modifier.height(8.dp))
-                LinearProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier.fillMaxWidth().height(6.dp).clip(CircleShape),
-                    color = MaterialTheme.colorScheme.okColor,
-                    trackColor = MaterialTheme.colorScheme.outline
-                )
-            }
+@Composable
+fun AnalysisDisclaimerBanner(disclaimer: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier.size(18.dp)
+            )
+            Text(
+                disclaimer,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                lineHeight = MaterialTheme.typography.bodySmall.lineHeight
+            )
         }
     }
 }

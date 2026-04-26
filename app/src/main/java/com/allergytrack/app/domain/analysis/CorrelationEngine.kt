@@ -3,6 +3,7 @@ package com.allergytrack.app.domain.analysis
 import com.allergytrack.app.data.local.database.entity.EnvironmentLogEntity
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
+import com.allergytrack.app.domain.model.AnalysisReadiness
 import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.CorrelationSeverity
 import com.allergytrack.app.domain.model.SymptomType
@@ -27,7 +28,7 @@ class CorrelationEngine @Inject constructor(
         knownAllergies: Set<String> = emptySet(),
         knownSymptoms: Set<String> = emptySet()
     ): List<Correlation> {
-        if (symptomLogs.size < 5) return emptyList() // Min. dat pro analýzu
+        if (symptomLogs.size < AnalysisReadiness.MIN_SYMPTOMS) return emptyList() // Min. dat pro analýzu
 
         val results = mutableListOf<Correlation>()
 
@@ -149,7 +150,7 @@ class CorrelationEngine @Inject constructor(
 
         // AQI korelace — globální, vždy dostupné
         val aqiValues = environmentLogs.map { it.aqi.toFloat() }
-        if (aqiValues.size >= 5 && symptoms.size >= 5) {
+        if (aqiValues.size >= AnalysisReadiness.MIN_ENV_LOGS && symptoms.size >= AnalysisReadiness.MIN_SYMPTOMS) {
             val pearson = pearsonCorrelation(
                 aqiValues.take(symptoms.size),
                 symptoms.take(aqiValues.size)
@@ -161,7 +162,7 @@ class CorrelationEngine @Inject constructor(
 
         // Pyl korelace — pouze pokud máme alespoň 5 záznamů s dostupným pylem
         val pollenLogs = environmentLogs.filter { it.pollenAvailable }
-        if (pollenLogs.size >= 5 && symptoms.size >= 5) {
+        if (pollenLogs.size >= AnalysisReadiness.MIN_ENV_LOGS && symptoms.size >= AnalysisReadiness.MIN_SYMPTOMS) {
             val grassValues = pollenLogs.map { it.pollenGrassIndex?.toFloat() ?: 0f }
             val pearson = pearsonCorrelation(
                 grassValues.take(symptoms.size),
@@ -226,9 +227,22 @@ class CorrelationEngine @Inject constructor(
         return if (denom == 0.0) 0f else (numerator / denom).toFloat().coerceIn(-1f, 1f)
     }
 
-    fun hasEnoughData(symptomLogs: List<SymptomLogEntity>): Boolean =
-        symptomLogs.size >= 5
+    fun evaluateReadiness(
+        symptomCount: Int,
+        environmentLogCount: Int
+    ): AnalysisReadiness = AnalysisReadiness.evaluate(
+        symptomCount = symptomCount,
+        environmentLogCount = environmentLogCount
+    )
 
-    fun daysUntilAnalysis(symptomLogs: List<SymptomLogEntity>): Int =
-        (14 - symptomLogs.size).coerceAtLeast(0)
+    fun evaluateReadiness(
+        symptomLogs: List<SymptomLogEntity>,
+        environmentLogs: List<EnvironmentLogEntity>
+    ): AnalysisReadiness = evaluateReadiness(
+        symptomCount = symptomLogs.size,
+        environmentLogCount = environmentLogs.size
+    )
+
+    fun canAnalyze(readiness: AnalysisReadiness): Boolean =
+        readiness !is AnalysisReadiness.Locked
 }

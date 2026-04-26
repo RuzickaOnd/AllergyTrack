@@ -250,7 +250,7 @@
     <string name="permission_privacy_note">Tvá data zůstávají pouze v zařízení. Nikdy je nesdílíme s třetími stranami.</string>
     <string name="btn_continue_no_location">POKRAČOVAT BEZ POLOHY</string>
     <string name="onboarding_ready_title">Vše je připraveno!</string>
-    <string name="onboarding_ready_subtitle">Během 14 dnů logování AI odhalí tvé první vzorce a potenciální spouštěče alergií.</string>
+    <string name="onboarding_ready_subtitle">Po nasbírání prvních záznamů systém odhalí tvé vzorce a potenciální spouštěče alergií.</string>
     <string name="ready_settings_title">TVÉ NASTAVENÍ</string>
     <string name="ready_allergies_label">Typy alergií</string>
     <string name="ready_allergies_not_set">Nenastaveno</string>

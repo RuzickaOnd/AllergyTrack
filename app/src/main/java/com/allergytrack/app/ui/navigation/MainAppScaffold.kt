@@ -14,6 +14,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.allergytrack.app.domain.model.AnalysisReadiness
 import com.allergytrack.app.R
 import com.allergytrack.app.ui.components.BottomNavBar
 import com.allergytrack.app.ui.screens.analysis.AnalysisViewModel
@@ -91,7 +92,7 @@ fun MainAppScaffold() {
                     actions = {
                         when (currentRoute) {
                             Screen.Analysis.route -> {
-                                if (isExportVisible && analysisState.hasEnoughData) {
+                                if (isExportVisible && analysisState.readiness !is AnalysisReadiness.Locked) {
                                     IconButton(onClick = analysisViewModel::exportReport) {
                                         if (analysisState.isExporting) {
                                             CircularProgressIndicator(

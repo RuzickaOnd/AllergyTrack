@@ -250,7 +250,7 @@
     <string name="permission_privacy_note">Your data stays on your device only. We never share it with third parties.</string>
     <string name="btn_continue_no_location">CONTINUE WITHOUT LOCATION</string>
     <string name="onboarding_ready_title">All set!</string>
-    <string name="onboarding_ready_subtitle">Within 14 days of logging, AI will reveal your first patterns and potential allergy triggers.</string>
+    <string name="onboarding_ready_subtitle">After collecting the first records, system will reveal your patterns and potential allergy triggers.</string>
     <string name="ready_settings_title">YOUR SETUP</string>
     <string name="ready_allergies_label">Allergy types</string>
     <string name="ready_allergies_not_set">Not set</string>

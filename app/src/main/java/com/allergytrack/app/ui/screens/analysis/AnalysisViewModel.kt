@@ -2,12 +2,21 @@ package com.allergytrack.app.ui.screens.analysis
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
 import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
+import com.allergytrack.app.data.local.database.entity.EnvironmentLogEntity
+import com.allergytrack.app.data.local.database.entity.FoodLogEntity
+import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
+import com.allergytrack.app.data.local.datastore.DebugPreferences
+import com.allergytrack.app.data.local.datastore.OnboardingDataStore
 import com.allergytrack.app.data.remote.ai.AiSummaryService
 import com.allergytrack.app.domain.analysis.CorrelationEngine
+import com.allergytrack.app.domain.export.MedicalReportExporter
+import com.allergytrack.app.domain.model.AnalysisReadiness
 import com.allergytrack.app.domain.model.Correlation
+import com.allergytrack.app.domain.premium.PremiumHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -15,11 +24,11 @@ import javax.inject.Inject
 
 data class AnalysisUiState(
     val isLoading: Boolean = true,
-    val hasEnoughData: Boolean = false,
-    val symptomCount: Int = 0,
-    val daysUntilAnalysis: Int = 14,
+    val readiness: AnalysisReadiness = AnalysisReadiness.Locked(symptomCount = 0),
     val correlations: List<Correlation> = emptyList(),
     val aiSummary: String = "",
+    val showDisclaimer: Boolean = false,
+    val disclaimer: String = "",
     val selectedCorrelation: Correlation? = null,
     val isExporting: Boolean = false,
     val exportSuccess: Boolean = false
@@ -32,9 +41,10 @@ class AnalysisViewModel @Inject constructor(
     private val environmentLogDao: EnvironmentLogDao,
     private val correlationEngine: CorrelationEngine,
     private val aiSummaryService: AiSummaryService,
-    private val onboardingDataStore: com.allergytrack.app.data.local.datastore.OnboardingDataStore,
-    private val medicalReportExporter: com.allergytrack.app.domain.export.MedicalReportExporter,
-    private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper
+    private val onboardingDataStore: OnboardingDataStore,
+    private val medicalReportExporter: MedicalReportExporter,
+    private val premiumHelper: PremiumHelper,
+    private val debugPreferences: DebugPreferences
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AnalysisUiState())
@@ -44,10 +54,6 @@ class AnalysisViewModel @Inject constructor(
         premiumHelper.observeVisible(com.allergytrack.app.domain.model.PremiumFeature.AI_CORRELATION_ANALYSIS)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val canUseAnalysis: StateFlow<Boolean> =
-        premiumHelper.observeAccess(com.allergytrack.app.domain.model.PremiumFeature.AI_CORRELATION_ANALYSIS)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
-
     val showAnalysisUpsell: StateFlow<Boolean> =
         premiumHelper.observeShowUpsell(com.allergytrack.app.domain.model.PremiumFeature.AI_CORRELATION_ANALYSIS)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
@@ -55,10 +61,6 @@ class AnalysisViewModel @Inject constructor(
     val isExportVisible: StateFlow<Boolean> =
         premiumHelper.observeVisible(com.allergytrack.app.domain.model.PremiumFeature.PDF_EXPORT)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
-
-    val canExportPdf: StateFlow<Boolean> =
-        premiumHelper.observeAccess(com.allergytrack.app.domain.model.PremiumFeature.PDF_EXPORT)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
 
     val showExportUpsell: StateFlow<Boolean> =
         premiumHelper.observeShowUpsell(com.allergytrack.app.domain.model.PremiumFeature.PDF_EXPORT)
@@ -68,47 +70,90 @@ class AnalysisViewModel @Inject constructor(
         loadAnalysis()
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun loadAnalysis() {
         viewModelScope.launch {
             combine(
-                symptomLogDao.getAllLogs(),
-                foodLogDao.getAllLogs(),
-                environmentLogDao.getAllLogs(),
-                onboardingDataStore.selectedAllergyTypes,
-                onboardingDataStore.selectedSymptomTypes
-            ) { symptoms, foods, env, allergies, userSymptoms ->
+                listOf(
+                    symptomLogDao.getAllLogs(),
+                    foodLogDao.getAllLogs(),
+                    environmentLogDao.getAllLogs(),
+                    onboardingDataStore.selectedAllergyTypes,
+                    onboardingDataStore.selectedSymptomTypes,
+                    debugPreferences.symptomCountOverride
+                )
+            ) { array ->
+                val symptoms = array[0] as List<SymptomLogEntity>
+                val foods = array[1] as List<FoodLogEntity>
+                val env = array[2] as List<EnvironmentLogEntity>
+                val allergies = array[3] as String
+                val userSymptoms = array[4] as String
+                val countOverride = array[5] as Int
+
                 val allergySet = allergies.split(",").filter { it.isNotEmpty() }.toSet()
                 val symptomSet = userSymptoms.split(",").filter { it.isNotEmpty() }.toSet()
-                
-                val hasEnough = correlationEngine.hasEnoughData(symptoms)
-                val daysLeft = correlationEngine.daysUntilAnalysis(symptoms)
 
-                if (hasEnough) {
-                    val correlations = correlationEngine.analyze(
-                        foodLogs = foods, 
-                        symptomLogs = symptoms, 
-                        environmentLogs = env,
-                        knownAllergies = allergySet,
-                        knownSymptoms = symptomSet
-                    )
-                    val summary = aiSummaryService.generateSummary(correlations)
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            hasEnoughData = true,
-                            symptomCount = symptoms.size,
-                            correlations = correlations,
-                            aiSummary = summary
-                        )
-                    }
+                val effectiveSymptomCount = if (BuildConfig.DEBUG && countOverride >= 0) {
+                    countOverride
                 } else {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            hasEnoughData = false,
-                            symptomCount = symptoms.size,
-                            daysUntilAnalysis = daysLeft
+                    symptoms.size
+                }
+
+                val readiness = correlationEngine.evaluateReadiness(
+                    symptomCount = effectiveSymptomCount,
+                    environmentLogCount = env.size
+                )
+
+                when (readiness) {
+                    is AnalysisReadiness.Locked -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                readiness = readiness,
+                                correlations = emptyList(),
+                                aiSummary = "",
+                                showDisclaimer = false
+                            )
+                        }
+                    }
+                    is AnalysisReadiness.Partial -> {
+                        val correlations = correlationEngine.analyze(
+                            foodLogs = foods,
+                            symptomLogs = symptoms,
+                            environmentLogs = env,
+                            knownAllergies = allergySet,
+                            knownSymptoms = symptomSet
                         )
+                        val summary = aiSummaryService.generateSummary(correlations)
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                readiness = readiness,
+                                correlations = correlations,
+                                aiSummary = summary,
+                                showDisclaimer = true,
+                                disclaimer = readiness.disclaimer
+                            )
+                        }
+                    }
+                    is AnalysisReadiness.Full -> {
+                        val correlations = correlationEngine.analyze(
+                            foodLogs = foods,
+                            symptomLogs = symptoms,
+                            environmentLogs = env,
+                            knownAllergies = allergySet,
+                            knownSymptoms = symptomSet
+                        )
+                        val summary = aiSummaryService.generateSummary(correlations)
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                readiness = readiness,
+                                correlations = correlations,
+                                aiSummary = summary,
+                                showDisclaimer = false
+                            )
+                        }
                     }
                 }
             }.collect()

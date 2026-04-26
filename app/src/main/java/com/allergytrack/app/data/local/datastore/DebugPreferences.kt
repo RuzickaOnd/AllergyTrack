@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,6 +29,19 @@ class DebugPreferences @Inject constructor(
 ) {
     companion object {
         private val KEY_PREMIUM_OVERRIDE = stringPreferencesKey("debug_premium_override")
+        private val KEY_SYMPTOM_COUNT_OVERRIDE = intPreferencesKey("debug_symptom_count_override")
+    }
+
+    /** -1 = použít skutečná data, jinak override */
+    val symptomCountOverride: Flow<Int> =
+        context.debugDataStore.data.map { prefs ->
+            prefs[KEY_SYMPTOM_COUNT_OVERRIDE] ?: -1
+        }
+
+    suspend fun setSymptomCountOverride(count: Int) {
+        context.debugDataStore.edit { prefs ->
+            prefs[KEY_SYMPTOM_COUNT_OVERRIDE] = count
+        }
     }
 
     /** Aktuální debug override stav prémiového předplatného */
