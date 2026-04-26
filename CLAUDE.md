@@ -290,6 +290,7 @@ Pyl sloupce (`pollenGrassIndex` atd.) jsou nullable — SQLite to zvládne zpět
 ✅ Premium check pouze přes PremiumHelper — nikde jinde
 ✅ API klíče pouze v local.properties + BuildConfig
 ✅ Debug kód vždy obaleno if (BuildConfig.DEBUG)
+✅ Všechny hlavní obrazovky mají horizontální padding 16.dp
 ✅ Veškerý text UI v češtině
 
 ❌ runBlocking v produkčním kódu (výjimka: MainActivity onCreate)

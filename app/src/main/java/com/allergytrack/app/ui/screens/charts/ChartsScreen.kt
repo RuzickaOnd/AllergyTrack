@@ -56,7 +56,7 @@ fun ChartsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             item { Spacer(Modifier.height(8.dp)) }

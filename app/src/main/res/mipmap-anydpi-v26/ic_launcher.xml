@@ -11,7 +11,7 @@
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Zelené pozadí — Forest500 -->
-    <background android:drawable="@drawable/ic_launcher_background" />
+    <background android:drawable="@color/ic_launcher_background" />
 
     <!-- Barevná ikona — foreground vrstva -->
     <foreground android:drawable="@drawable/ic_launcher_foreground" />

@@ -7,7 +7,7 @@
     <!-- Common buttons -->
     <string name="btn_back">BACK</string>
     <string name="btn_continue">CONTINUE</string>
-    <string name="btn_continue_arrow">CONTINUE →</string>
+    <string name="btn_continue_arrow">CONTINUE</string>
     <string name="btn_skip">SKIP</string>
     <string name="btn_close">CLOSE</string>
     <string name="btn_save_record">SAVE RECORD</string>
@@ -231,7 +231,7 @@
     <string name="onboarding_skip">SKIP</string>
     <string name="onboarding_title">Find your\ntriggers</string>
     <string name="onboarding_description">AllergyTrack automatically links your food, environment and symptoms to help you discover what\'s behind your allergies.</string>
-    <string name="onboarding_cta">START →</string>
+    <string name="onboarding_cta">START</string>
     <string name="onboarding_no_registration">No registration required</string>
     <string name="onboarding_profile_title">Allergy profile</string>
     <string name="onboarding_profile_subtitle">This information will help us tailor the analysis and focus on what matters most to you.</string>
@@ -246,7 +246,7 @@
     <string name="permission_notifications_title">Notifications</string>
     <string name="permission_notifications_desc">Evening reminders and alerts for high pollen levels.</string>
     <string name="permission_privacy_note">Your data stays on your device only. We never share it with third parties.</string>
-    <string name="btn_continue_no_location">CONTINUE WITHOUT LOCATION →</string>
+    <string name="btn_continue_no_location">CONTINUE WITHOUT LOCATION</string>
     <string name="onboarding_ready_title">All set!</string>
     <string name="onboarding_ready_subtitle">Within 14 days of logging, AI will reveal your first patterns and potential allergy triggers.</string>
     <string name="ready_settings_title">YOUR SETUP</string>
@@ -261,7 +261,7 @@
     <string name="ready_tip_breakfast">Take a photo or write down your breakfast</string>
     <string name="ready_tip_feeling">Record how you feel</string>
     <string name="ready_tip_environment">Environment is tracked automatically</string>
-    <string name="btn_go_to_dashboard">GO TO OVERVIEW →</string>
+    <string name="btn_go_to_dashboard">GO TO OVERVIEW</string>
 
     <!-- Permission denied screen -->
     <string name="permission_denied_title">Permission denied</string>

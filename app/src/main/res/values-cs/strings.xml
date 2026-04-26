@@ -7,7 +7,7 @@
     <!-- Společná tlačítka -->
     <string name="btn_back">ZPĚT</string>
     <string name="btn_continue">POKRAČOVAT</string>
-    <string name="btn_continue_arrow">POKRAČOVAT →</string>
+    <string name="btn_continue_arrow">POKRAČOVAT</string>
     <string name="btn_skip">PŘESKOČIT</string>
     <string name="btn_close">ZAVŘÍT</string>
     <string name="btn_save_record">ULOŽIT ZÁZNAM</string>
@@ -231,7 +231,7 @@
     <string name="onboarding_skip">PŘESKOČIT</string>
     <string name="onboarding_title">Najdi své\nspouštěče</string>
     <string name="onboarding_description">AllergyTrack automaticky propojuje tvé jídlo, prostředí a symptomy, aby ti pomohl odhalit, co stojí za tvými alergiemi.</string>
-    <string name="onboarding_cta">ZAČÍT →</string>
+    <string name="onboarding_cta">ZAČÍT</string>
     <string name="onboarding_no_registration">Není vyžadována žádná registrace</string>
     <string name="onboarding_profile_title">Alergický profil</string>
     <string name="onboarding_profile_subtitle">Tyto informace nám pomohou přizpůsobit analýzu a zaměřit se na to, co je pro tebe nejdůležitější.</string>
@@ -246,7 +246,7 @@
     <string name="permission_notifications_title">Oznámení</string>
     <string name="permission_notifications_desc">Večerní připomínky a upozornění na vysoké hladiny pylu.</string>
     <string name="permission_privacy_note">Tvá data zůstávají pouze v zařízení. Nikdy je nesdílíme s třetími stranami.</string>
-    <string name="btn_continue_no_location">POKRAČOVAT BEZ POLOHY →</string>
+    <string name="btn_continue_no_location">POKRAČOVAT BEZ POLOHY</string>
     <string name="onboarding_ready_title">Vše je připraveno!</string>
     <string name="onboarding_ready_subtitle">Během 14 dnů logování AI odhalí tvé první vzorce a potenciální spouštěče alergií.</string>
     <string name="ready_settings_title">TVÉ NASTAVENÍ</string>
@@ -261,7 +261,7 @@
     <string name="ready_tip_breakfast">Vyfoť nebo zapiš svou snídani</string>
     <string name="ready_tip_feeling">Zaznamenej, jak se cítíš</string>
     <string name="ready_tip_environment">Prostředí se sleduje automaticky</string>
-    <string name="btn_go_to_dashboard">PŘEJÍT NA PŘEHLED →</string>
+    <string name="btn_go_to_dashboard">PŘEJÍT NA PŘEHLED</string>
 
     <!-- Obrazovka zamítnutého oprávnění -->
     <string name="permission_denied_title">Oprávnění zamítnuto</string>

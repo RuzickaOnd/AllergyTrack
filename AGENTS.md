@@ -138,6 +138,9 @@ fun XyzPreview() { AllergyTrackTheme { Xyz(...) } }
 
 // Modifier jako první nepovinný parametr
 @Composable fun MyComponent(modifier: Modifier = Modifier, ...)
+
+// Padding a spacing
+- ✅ Všechny hlavní obrazovky (Screens) mají horizontální padding nastavený na 16.dp
 ```
 
 ### Zakázané UI praktiky

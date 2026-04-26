@@ -13,6 +13,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.OnboardingStep
+import com.allergytrack.app.ui.components.PrimaryButton
 import com.allergytrack.app.ui.theme.SerifFontFamily
 
 /**
@@ -125,10 +126,10 @@ fun OnboardingFlow(
                     else -> viewModel::navigateToNext
                 }
 
-                com.allergytrack.app.ui.components.PrimaryButton(
+                PrimaryButton(
                     text = buttonText.uppercase(),
                     onClick = onButtonClick,
-                    modifier = Modifier.padding(horizontal = 24.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
         }
