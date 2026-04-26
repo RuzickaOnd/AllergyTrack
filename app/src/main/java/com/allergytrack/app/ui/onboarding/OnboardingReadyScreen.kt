@@ -1,12 +1,18 @@
 package com.allergytrack.app.ui.onboarding
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,11 +45,12 @@ fun OnboardingReadyContent(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Large Success Icon
-        Text(
-            text = "✨",
-            fontSize = 80.sp,
-            modifier = Modifier.padding(vertical = 16.dp)
+        // Success Icon
+        Icon(
+            imageVector = Icons.Rounded.CheckCircleOutline,
+            contentDescription = null,
+            modifier = Modifier.size(80.dp),
+            tint = MaterialTheme.colorScheme.primary
         )
 
         // Settings Summary
