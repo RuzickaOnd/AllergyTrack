@@ -29,6 +29,12 @@ class PermissionsHelper @Inject constructor(
             context, Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
 
+    /** Je uděleno oprávnění k mikrofonu? */
+    fun hasMicrophonePermission(): Boolean =
+        ContextCompat.checkSelfPermission(
+            context, Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
+
     /** Je uděleno oprávnění k notifikacím? (Android 13+) */
     fun hasNotificationPermission(): Boolean =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

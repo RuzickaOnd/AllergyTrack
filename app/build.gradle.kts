@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.vico.compose)
     implementation(libs.vico.m3)
     implementation(libs.mlkit.image.labeling)
+    implementation(libs.mlkit.barcode.scanning)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.testing.ui.manifest)
     testImplementation(libs.testing.junit)

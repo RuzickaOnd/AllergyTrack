@@ -13,7 +13,11 @@ sealed class Screen(val route: String) {
     object DebugMenu : Screen("debug_menu")
 
     // Food sub-flow
-    object Camera : Screen("camera")
+    object Camera : Screen("camera/{mode}") {
+        const val ARG_MODE = "mode"
+        fun photo() = "camera/photo"
+        fun barcode() = "camera/barcode"
+    }
     object FoodConfirm : Screen("food_confirm/{foodName}/{allergens}") {
         fun createRoute(foodName: String, allergens: String) =
             "food_confirm/${foodName}/${allergens}"

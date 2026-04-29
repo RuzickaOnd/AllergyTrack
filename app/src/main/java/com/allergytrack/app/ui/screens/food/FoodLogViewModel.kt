@@ -17,6 +17,11 @@ import javax.inject.Inject
 
 // ---- UI State ----
 
+sealed interface VoiceInputState {
+    object Idle : VoiceInputState
+    object Listening : VoiceInputState
+}
+
 sealed interface FoodLogUiState {
     object Idle : FoodLogUiState
     object CameraReady : FoodLogUiState
@@ -64,6 +69,29 @@ class FoodLogViewModel @Inject constructor(
     val showPhotoBadge: StateFlow<Boolean> =
         premiumHelper.observeShowBadge(com.allergytrack.app.domain.model.PremiumFeature.FOOD_PHOTO_RECOGNITION)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val recentFoodLogs: StateFlow<List<FoodLog>> =
+        foodRepository.getAllLogs()
+            .map { it.take(10) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    private val _voiceState = MutableStateFlow<VoiceInputState>(VoiceInputState.Idle)
+    val voiceState: StateFlow<VoiceInputState> = _voiceState.asStateFlow()
+
+    private val _navigateToSearch = MutableStateFlow(false)
+    val navigateToSearch: StateFlow<Boolean> = _navigateToSearch.asStateFlow()
+
+    fun startVoiceInput() { _voiceState.value = VoiceInputState.Listening }
+
+    fun onVoiceResult(text: String) {
+        _voiceState.value = VoiceInputState.Idle
+        onSearchQueryChange(text)
+        _navigateToSearch.value = true
+    }
+
+    fun dismissVoiceInput() { _voiceState.value = VoiceInputState.Idle }
+
+    fun onSearchNavigated() { _navigateToSearch.value = false }
 
     // Debounced search
     @OptIn(FlowPreview::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -114,6 +142,7 @@ class FoodLogViewModel @Inject constructor(
     }
 
     fun onBarcodeScanned(barcode: String) {
+        if (_uiState.value !is FoodLogUiState.Idle) return
         viewModelScope.launch {
             _uiState.value = FoodLogUiState.Processing
             try {

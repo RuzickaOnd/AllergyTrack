@@ -72,6 +72,7 @@
     <string name="btn_voice_input">VOICE</string>
     <string name="search_food_hint">Search food manually…</string>
     <string name="section_recently_logged">RECENTLY LOGGED</string>
+    <string name="food_recently_empty">No records yet. Start logging your food.</string>
 
     <!-- Food Search -->
     <string name="search_food_query_hint">Search food…</string>
@@ -91,6 +92,14 @@
     <!-- Camera -->
     <string name="camera_title">Take photo of food</string>
     <string name="camera_recognizing">Recognizing food…</string>
+    <string name="voice_listening_title">Listening…</string>
+    <string name="voice_listening_hint">Say the name of the food</string>
+    <string name="voice_not_available">Speech recognition is not available</string>
+    <string name="voice_permission_denied">Microphone permission is required for voice input</string>
+    <string name="screen_barcode_scanner">Scan barcode</string>
+    <string name="barcode_scanning">Scanning barcode…</string>
+    <string name="barcode_scan_hint">Point the camera at a barcode</string>
+    <string name="barcode_not_found">Product with this barcode was not found</string>
 
     <!-- Symptom Log -->
     <string name="section_symptom_type">SYMPTOM TYPE</string>

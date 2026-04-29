@@ -40,12 +40,16 @@ fun AllergyNavGraph(
         composable(Screen.FoodLog.route) {
             FoodLogScreen(navController = navController)
         }
-        composable(Screen.Camera.route) {
+        composable(
+            route = Screen.Camera.route,
+            arguments = listOf(navArgument(Screen.Camera.ARG_MODE) { type = NavType.StringType })
+        ) { backStackEntry ->
+            val mode = backStackEntry.arguments?.getString(Screen.Camera.ARG_MODE) ?: "photo"
             RequestCameraPermission(
-                onGranted = { CameraScreen(navController = navController) },
+                onGranted = { CameraScreen(navController = navController, mode = mode) },
                 onDenied = {
                     PermissionDeniedScreen(
-                        message = "Kamera je potřeba pro focení jídla",
+                        message = "Kamera je potřeba pro skenování",
                         onBack = { navController.popBackStack() }
                     )
                 }

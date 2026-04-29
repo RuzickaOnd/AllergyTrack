@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.food
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.camera.core.*
@@ -21,16 +22,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.R
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.MonoFontFamily
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.common.InputImage
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -39,12 +42,12 @@ import java.util.concurrent.Executor
 @Composable
 fun CameraScreen(
     navController: NavController,
+    mode: String = "photo",
     viewModel: FoodLogViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
 
     LaunchedEffect(uiState) {
@@ -69,8 +72,14 @@ fun CameraScreen(
         AndroidView(
             factory = { ctx ->
                 val previewView = PreviewView(ctx)
-                setupCamera(ctx, lifecycleOwner, previewView) { capture ->
-                    imageCapture = capture
+                if (mode == "barcode") {
+                    setupCameraForBarcode(ctx, lifecycleOwner, previewView) { barcode ->
+                        viewModel.onBarcodeScanned(barcode)
+                    }
+                } else {
+                    setupCameraForPhoto(ctx, lifecycleOwner, previewView) { capture ->
+                        imageCapture = capture
+                    }
                 }
                 previewView
             },
@@ -87,7 +96,12 @@ fun CameraScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     CircularProgressIndicator(color = Color.White)
                     Spacer(Modifier.height(16.dp))
-                    Text(stringResource(R.string.camera_recognizing), color = Color.White, fontFamily = MonoFontFamily)
+                    Text(
+                        text = if (mode == "barcode") stringResource(R.string.barcode_scanning)
+                               else stringResource(R.string.camera_recognizing),
+                        color = Color.White,
+                        fontFamily = MonoFontFamily
+                    )
                 }
             }
         }
@@ -107,11 +121,16 @@ fun CameraScreen(
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.5f))
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back), tint = Color.White)
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    stringResource(R.string.nav_back),
+                    tint = Color.White
+                )
             }
             Spacer(Modifier.weight(1f))
             Text(
-                stringResource(R.string.camera_title),
+                text = if (mode == "barcode") stringResource(R.string.screen_barcode_scanner)
+                       else stringResource(R.string.camera_title),
                 color = Color.White,
                 style = MaterialTheme.typography.titleMedium
             )
@@ -128,25 +147,36 @@ fun CameraScreen(
                 .padding(32.dp),
             contentAlignment = Alignment.Center
         ) {
-            IconButton(
-                onClick = {
-                    imageCapture?.let { capture ->
-                        takePhoto(context, capture, ContextCompat.getMainExecutor(context)) { uri ->
-                            viewModel.onImageCaptured(uri)
+            if (mode == "photo") {
+                IconButton(
+                    onClick = {
+                        imageCapture?.let { capture ->
+                            takePhoto(
+                                context,
+                                capture,
+                                ContextCompat.getMainExecutor(context)
+                            ) { uri -> viewModel.onImageCaptured(uri) }
                         }
-                    }
-                },
-                modifier = Modifier
-                    .size(72.dp)
-                    .clip(CircleShape)
-                    .background(Color.White)
-                    .border(3.dp, Color.White.copy(alpha = 0.5f), CircleShape)
-            ) {
-                Icon(
-                    Icons.Default.Camera,
-                    contentDescription = stringResource(R.string.cd_take_photo),
-                    tint = Color.Black,
-                    modifier = Modifier.size(36.dp)
+                    },
+                    modifier = Modifier
+                        .size(72.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .border(3.dp, Color.White.copy(alpha = 0.5f), CircleShape)
+                ) {
+                    Icon(
+                        Icons.Default.Camera,
+                        contentDescription = stringResource(R.string.cd_take_photo),
+                        tint = Color.Black,
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+            } else {
+                Text(
+                    text = stringResource(R.string.barcode_scan_hint),
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontFamily = MonoFontFamily
                 )
             }
         }
@@ -176,7 +206,7 @@ fun CameraViewfinder() {
     }
 }
 
-private fun setupCamera(
+private fun setupCameraForPhoto(
     context: Context,
     lifecycleOwner: androidx.lifecycle.LifecycleOwner,
     previewView: PreviewView,
@@ -193,8 +223,62 @@ private fun setupCamera(
             .build()
         try {
             cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageCapture)
+            cameraProvider.bindToLifecycle(
+                lifecycleOwner,
+                CameraSelector.DEFAULT_BACK_CAMERA,
+                preview,
+                imageCapture
+            )
             onImageCaptureReady(imageCapture)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }, ContextCompat.getMainExecutor(context))
+}
+
+@SuppressLint("UnsafeOptInUsageError")
+private fun setupCameraForBarcode(
+    context: Context,
+    lifecycleOwner: androidx.lifecycle.LifecycleOwner,
+    previewView: PreviewView,
+    onBarcodeDetected: (String) -> Unit
+) {
+    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+    cameraProviderFuture.addListener({
+        val cameraProvider = cameraProviderFuture.get()
+        val preview = Preview.Builder().build().also {
+            it.setSurfaceProvider(previewView.surfaceProvider)
+        }
+        val scanner = BarcodeScanning.getClient()
+        val imageAnalysis = ImageAnalysis.Builder()
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+            .also { analysis ->
+                analysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
+                    val mediaImage = imageProxy.image
+                    if (mediaImage != null) {
+                        val image = InputImage.fromMediaImage(
+                            mediaImage,
+                            imageProxy.imageInfo.rotationDegrees
+                        )
+                        scanner.process(image)
+                            .addOnSuccessListener { barcodes ->
+                                barcodes.firstOrNull()?.rawValue?.let { onBarcodeDetected(it) }
+                            }
+                            .addOnCompleteListener { imageProxy.close() }
+                    } else {
+                        imageProxy.close()
+                    }
+                }
+            }
+        try {
+            cameraProvider.unbindAll()
+            cameraProvider.bindToLifecycle(
+                lifecycleOwner,
+                CameraSelector.DEFAULT_BACK_CAMERA,
+                preview,
+                imageAnalysis
+            )
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -209,7 +293,8 @@ private fun takePhoto(
 ) {
     val photoFile = File(
         context.cacheDir,
-        SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(System.currentTimeMillis()) + ".jpg"
+        SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+            .format(System.currentTimeMillis()) + ".jpg"
     )
     val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
     imageCapture.takePicture(

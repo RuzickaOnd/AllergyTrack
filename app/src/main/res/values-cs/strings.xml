@@ -72,6 +72,7 @@
     <string name="btn_voice_input">HLASEM</string>
     <string name="search_food_hint">Hledat jídlo ručně…</string>
     <string name="section_recently_logged">NEDÁVNO ZALOGOVÁNO</string>
+    <string name="food_recently_empty">Zatím žádné záznamy. Začni logovat jídlo.</string>
 
     <!-- Vyhledávání jídla -->
     <string name="search_food_query_hint">Hledat potravinu…</string>
@@ -91,6 +92,14 @@
     <!-- Kamera -->
     <string name="camera_title">Vyfoť jídlo</string>
     <string name="camera_recognizing">Rozpoznávám jídlo…</string>
+    <string name="voice_listening_title">Poslouchám…</string>
+    <string name="voice_listening_hint">Řekni název jídla</string>
+    <string name="voice_not_available">Hlasové rozpoznávání není k dispozici</string>
+    <string name="voice_permission_denied">Pro hlasové zadávání je potřeba oprávnění k mikrofonu</string>
+    <string name="screen_barcode_scanner">Skenovat čárový kód</string>
+    <string name="barcode_scanning">Hledám čárový kód…</string>
+    <string name="barcode_scan_hint">Namiruj fotoaparát na čárový kód</string>
+    <string name="barcode_not_found">Produkt s tímto kódem nebyl nalezen</string>
 
     <!-- Logování příznaků -->
     <string name="section_symptom_type">TYP PŘÍZNAKU</string>
