@@ -254,15 +254,17 @@
     <string name="ready_settings_title">TVÉ NASTAVENÍ</string>
     <string name="ready_allergies_label">Typy alergií</string>
     <string name="ready_allergies_not_set">Nenastaveno</string>
+    <string name="ready_symptoms_label">Symptomy</string>
+    <string name="ready_symptoms_not_set">Nenastaveno</string>
     <string name="ready_location_label">Poloha</string>
     <string name="ready_camera_label">Fotoaparát</string>
     <string name="ready_notifications_label">Oznámení</string>
     <string name="ready_status_granted">✓ Povoleno</string>
     <string name="ready_status_denied">✗ Zakázáno</string>
-    <string name="ready_first_day_title">TVŮJ PRVNÍ DEN</string>
-    <string name="ready_tip_breakfast">Vyfoť nebo zapiš svou snídani</string>
-    <string name="ready_tip_feeling">Zaznamenej, jak se cítíš</string>
-    <string name="ready_tip_environment">Prostředí se sleduje automaticky</string>
+    <string name="ready_first_day_title">JAK TO FUNGUJE</string>
+    <string name="ready_tip_breakfast">Loguj jídlo a nápoje, které konzumuješ</string>
+    <string name="ready_tip_feeling">Zaznamenej příznaky a jejich intenzitu</string>
+    <string name="ready_tip_environment">Analýza automaticky odhalí tvé spouštěče</string>
     <string name="btn_go_to_dashboard">PŘEJÍT NA PŘEHLED</string>
 
     <!-- Obrazovka zamítnutého oprávnění -->

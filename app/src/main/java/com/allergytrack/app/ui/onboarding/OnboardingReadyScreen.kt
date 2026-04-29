@@ -1,26 +1,24 @@
 package com.allergytrack.app.ui.onboarding
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Healing
+import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.allergytrack.app.R
 import com.allergytrack.app.ui.components.*
-import com.allergytrack.app.ui.theme.*
 
 @Composable
 fun OnboardingReadyContent(
@@ -41,16 +39,7 @@ fun OnboardingReadyContent(
             text = stringResource(R.string.onboarding_ready_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
-        )
-
-        // Success Icon
-        Icon(
-            imageVector = Icons.Rounded.CheckCircleOutline,
-            contentDescription = null,
-            modifier = Modifier.size(80.dp),
-            tint = MaterialTheme.colorScheme.primary
         )
 
         // Settings Summary
@@ -64,6 +53,14 @@ fun OnboardingReadyContent(
                         stringResource(R.string.ready_allergies_not_set)
                     else
                         uiState.selectedAllergyTypes.joinToString(" ") { it.emoji }
+                )
+
+                ReadySummaryItem(
+                    label = stringResource(R.string.ready_symptoms_label),
+                    value = if (uiState.selectedSymptomTypes.isEmpty())
+                        stringResource(R.string.ready_symptoms_not_set)
+                    else
+                        uiState.selectedSymptomTypes.joinToString(" ") { it.emoji }
                 )
 
                 ReadySummaryItem(
@@ -83,14 +80,14 @@ fun OnboardingReadyContent(
             }
         }
 
-        // First Day Recommendations
+        // Workflow tips
         AppCard(borderColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 CardTitle(stringResource(R.string.ready_first_day_title))
 
-                FirstDayItem("📸", stringResource(R.string.ready_tip_breakfast))
-                FirstDayItem("😊", stringResource(R.string.ready_tip_feeling))
-                FirstDayItem("📊", stringResource(R.string.ready_tip_environment))
+                WorkflowTipItem(Icons.Outlined.Restaurant, stringResource(R.string.ready_tip_breakfast))
+                WorkflowTipItem(Icons.Outlined.Healing, stringResource(R.string.ready_tip_feeling))
+                WorkflowTipItem(Icons.Outlined.BarChart, stringResource(R.string.ready_tip_environment))
             }
         }
 
@@ -120,13 +117,18 @@ private fun ReadySummaryItem(label: String, value: String) {
 }
 
 @Composable
-private fun FirstDayItem(emoji: String, text: String) {
+private fun WorkflowTipItem(icon: ImageVector, text: String) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(emoji, fontSize = 20.sp)
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(22.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,

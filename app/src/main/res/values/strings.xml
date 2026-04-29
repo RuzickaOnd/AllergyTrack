@@ -254,15 +254,17 @@
     <string name="ready_settings_title">YOUR SETUP</string>
     <string name="ready_allergies_label">Allergy types</string>
     <string name="ready_allergies_not_set">Not set</string>
+    <string name="ready_symptoms_label">Symptoms</string>
+    <string name="ready_symptoms_not_set">Not set</string>
     <string name="ready_location_label">Location</string>
     <string name="ready_camera_label">Camera</string>
     <string name="ready_notifications_label">Notifications</string>
     <string name="ready_status_granted">✓ Allowed</string>
     <string name="ready_status_denied">✗ Denied</string>
-    <string name="ready_first_day_title">YOUR FIRST DAY</string>
-    <string name="ready_tip_breakfast">Take a photo or write down your breakfast</string>
-    <string name="ready_tip_feeling">Record how you feel</string>
-    <string name="ready_tip_environment">Environment is tracked automatically</string>
+    <string name="ready_first_day_title">HOW IT WORKS</string>
+    <string name="ready_tip_breakfast">Log the food and drinks you consume</string>
+    <string name="ready_tip_feeling">Record your symptoms and their intensity</string>
+    <string name="ready_tip_environment">Analysis reveals your triggers automatically</string>
     <string name="btn_go_to_dashboard">GO TO OVERVIEW</string>
 
     <!-- Permission denied screen -->
