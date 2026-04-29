@@ -2,24 +2,56 @@ package com.allergytrack.app.data.repository
 
 import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
+import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.local.recognition.FoodImageRecognizer
 import com.allergytrack.app.data.remote.food.OpenFoodFactsApiService
+import com.allergytrack.app.data.remote.food.OpenFoodProduct
 import com.allergytrack.app.data.remote.food.RecognizedFood
 import com.allergytrack.app.domain.model.FoodLog
 import com.allergytrack.app.domain.repository.FoodRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 class FoodRepositoryImpl @Inject constructor(
     private val foodLogDao: FoodLogDao,
     private val openFoodFactsApi: OpenFoodFactsApiService,
     private val json: Json,
-    private val foodImageRecognizer: FoodImageRecognizer
+    private val foodImageRecognizer: FoodImageRecognizer,
+    private val userPreferencesDataStore: UserPreferencesDataStore
 ) : FoodRepository {
+
+    companion object {
+        private val LANGUAGE_TO_COUNTRY = mapOf(
+            "cs" to "cz", "sk" to "sk", "pl" to "pl", "de" to "de",
+            "fr" to "fr", "es" to "es", "it" to "it", "hu" to "hu",
+            "nl" to "nl", "pt" to "pt", "ro" to "ro", "en" to "gb"
+        )
+    }
+
+    private suspend fun resolvedLocale(): Pair<String, String> {
+        val saved = userPreferencesDataStore.foodSearchLanguage.first()
+        return if (saved.isEmpty()) {
+            val locale = Locale.getDefault()
+            Pair(locale.language.lowercase(), locale.country.lowercase())
+        } else {
+            Pair(saved, LANGUAGE_TO_COUNTRY.getOrDefault(saved, saved))
+        }
+    }
+
+    private fun OpenFoodProduct.localizedName(lc: String, fallback: String): String =
+        if (lc == "cs") productNameCs ?: productName ?: fallback
+        else productName ?: fallback
+
+    private fun OpenFoodProduct.localizedIngredients(lc: String): List<String> {
+        val text = if (lc == "cs") ingredientsTextCs ?: ingredientsText else ingredientsText
+        return text?.split(",")?.map { it.trim() } ?: emptyList()
+    }
 
     private val startOfDay: Long
         get() {
@@ -51,17 +83,15 @@ class FoodRepositoryImpl @Inject constructor(
 
     override suspend fun searchFoodByName(query: String): List<RecognizedFood> {
         return try {
-            val response = openFoodFactsApi.searchProducts(query)
+            val (lc, cc) = resolvedLocale()
+            val response = openFoodFactsApi.searchProducts(query, lc, cc)
             response.products.take(10).map { product ->
                 RecognizedFood(
-                    name = product.productNameCs ?: product.productName ?: query,
+                    name = product.localizedName(lc, query),
                     allergens = product.allergensTags.map { tag ->
                         tag.removePrefix("en:").replaceFirstChar { it.uppercase() }
                     },
-                    ingredients = product.ingredientsTextCs
-                        ?.split(",")
-                        ?.map { it.trim() }
-                        ?: emptyList()
+                    ingredients = product.localizedIngredients(lc)
                 )
             }
         } catch (e: Exception) {
@@ -71,18 +101,16 @@ class FoodRepositoryImpl @Inject constructor(
 
     override suspend fun getFoodByBarcode(barcode: String): RecognizedFood? {
         return try {
-            val response = openFoodFactsApi.getProductByBarcode(barcode)
+            val (lc, cc) = resolvedLocale()
+            val response = openFoodFactsApi.getProductByBarcode(barcode, lc, cc)
             if (response.status == 1 && response.product != null) {
                 val product = response.product
                 RecognizedFood(
-                    name = product.productNameCs ?: product.productName ?: "Neznámý produkt",
+                    name = product.localizedName(lc, "Neznámý produkt"),
                     allergens = product.allergensTags.map { tag ->
                         tag.removePrefix("en:").replaceFirstChar { it.uppercase() }
                     },
-                    ingredients = product.ingredientsTextCs
-                        ?.split(",")
-                        ?.map { it.trim() }
-                        ?: emptyList(),
+                    ingredients = product.localizedIngredients(lc),
                     imageUrl = product.imageUrl,
                     barcode = barcode
                 )

@@ -10,6 +10,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,6 +36,7 @@ import com.allergytrack.app.R
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*
+import java.util.Locale
 
 @Composable
 fun SettingsScreen(
@@ -43,6 +46,8 @@ fun SettingsScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val permissions by viewModel.permissionsState.collectAsStateWithLifecycle()
+    val foodLanguage by viewModel.foodSearchLanguage.collectAsStateWithLifecycle()
+    var showLanguageDialog by remember { mutableStateOf(false) }
 
     // Refresh permissions when returning to this screen
     DisposableEffect(lifecycleOwner) {
@@ -105,6 +110,33 @@ fun SettingsScreen(
                 label = stringResource(R.string.settings_push_notifications),
                 checked = true,
                 onCheckedChange = { /* TODO */ }
+            )
+        }
+
+        SettingsHeader(title = stringResource(R.string.settings_section_food_search))
+
+        AppCard {
+            val autoLabel = stringResource(
+                R.string.settings_food_language_auto,
+                Locale.getDefault().language.uppercase()
+            )
+            val currentLabel = if (foodLanguage.isEmpty()) autoLabel
+                else FOOD_LANGUAGE_OPTIONS.find { it.code == foodLanguage }?.nativeName ?: autoLabel
+            SettingsActionItem(
+                label = stringResource(R.string.settings_food_language),
+                sublabel = currentLabel,
+                onClick = { showLanguageDialog = true }
+            )
+        }
+
+        if (showLanguageDialog) {
+            FoodLanguageDialog(
+                current = foodLanguage,
+                onSelect = { code ->
+                    viewModel.setFoodSearchLanguage(code)
+                    showLanguageDialog = false
+                },
+                onDismiss = { showLanguageDialog = false }
             )
         }
 
@@ -276,24 +308,71 @@ fun SettingsSwitchItem(
 fun SettingsActionItem(
     label: String,
     icon: ImageVector? = null,
+    sublabel: String? = null,
     onClick: () -> Unit
 ) {
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 16.dp)
+            .padding(vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            if (icon != null) {
-                Icon(icon, null, tint = MaterialTheme.colorScheme.secondary)
-            }
-            Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
-            Spacer(Modifier.weight(1f))
-            Text("›", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (icon != null) {
+            Icon(icon, null, tint = MaterialTheme.colorScheme.secondary)
         }
+        Column(Modifier.weight(1f)) {
+            Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+            if (sublabel != null) {
+                Text(
+                    sublabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        Text("›", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+@Composable
+fun FoodLanguageDialog(
+    current: String,
+    onSelect: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_food_language_dialog_title)) },
+        text = {
+            LazyColumn {
+                items(FOOD_LANGUAGE_OPTIONS) { option ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(option.code) }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = option.code == current,
+                            onClick = { onSelect(option.code) }
+                        )
+                        Text(
+                            text = option.nativeName,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.btn_close))
+            }
+        }
+    )
 }

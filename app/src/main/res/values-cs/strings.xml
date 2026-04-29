@@ -208,6 +208,10 @@
     <string name="settings_section_general">OBECNÉ</string>
     <string name="settings_dark_mode">Tmavý režim (vynucený)</string>
     <string name="settings_push_notifications">Push notifikace</string>
+    <string name="settings_section_food_search">VYHLEDÁVÁNÍ JÍDLA</string>
+    <string name="settings_food_language">Jazyk vyhledávání jídla</string>
+    <string name="settings_food_language_auto">Automaticky (%s)</string>
+    <string name="settings_food_language_dialog_title">Vyberte jazyk</string>
     <string name="settings_section_data_privacy">DATA A SOUKROMÍ</string>
     <string name="settings_section_permissions">OPRÁVNĚNÍ</string>
     <string name="settings_export_data">Exportovat moje data</string>

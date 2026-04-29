@@ -7,16 +7,18 @@ import kotlinx.serialization.Serializable
 
 interface OpenFoodFactsApiService {
 
-    // Vyhledání produktu podle čárového kódu
-    @GET("api/v0/product/{barcode}.json")
+    @GET("api/v0/product/{barcode}.json?fields=product_name,product_name_cs,allergens_tags,ingredients_text,ingredients_text_cs,image_url")
     suspend fun getProductByBarcode(
-        @Path("barcode") barcode: String
+        @Path("barcode") barcode: String,
+        @Query("lc") languageCode: String,
+        @Query("cc") countryCode: String
     ): OpenFoodFactsResponse
 
-    // Vyhledání produktu podle názvu
-    @GET("cgi/search.pl?search_simple=1&action=process&json=1&fields=product_name,allergens_tags,ingredients_text,image_url")
+    @GET("cgi/search.pl?search_simple=1&action=process&json=1&sort_by=unique_scans_n&fields=product_name,product_name_cs,allergens_tags,ingredients_text,ingredients_text_cs,image_url")
     suspend fun searchProducts(
-        @Query("search_terms") query: String
+        @Query("search_terms") query: String,
+        @Query("lc") languageCode: String,
+        @Query("cc") countryCode: String
     ): OpenFoodSearchResponse
 }
 
