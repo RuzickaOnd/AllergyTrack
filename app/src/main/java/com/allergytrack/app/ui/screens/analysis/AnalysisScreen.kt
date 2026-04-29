@@ -10,6 +10,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Insights
+import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -96,7 +98,7 @@ fun AnalysisScreen(
         } else {
             item { AiBadge(text = uiState.aiSummary) }
 
-            item { CardTitle(text = stringResource(R.string.analysis_top_triggers)) }
+            item { CardTitle(text = stringResource(R.string.analysis_top_triggers), icon = Icons.Outlined.Insights) }
 
             if (uiState.correlations.isEmpty()) {
                 item {
@@ -281,7 +283,7 @@ fun CorrelationDetailSheet(
         }
 
         item {
-            CardTitle(text = stringResource(R.string.correlation_insight_title))
+            CardTitle(text = stringResource(R.string.correlation_insight_title), icon = Icons.Outlined.Lightbulb)
             AiBadge(text = generateInterpretation(correlation))
         }
 

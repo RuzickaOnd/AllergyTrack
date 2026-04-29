@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -93,7 +94,7 @@ fun FoodConfirmScreen(
         }
 
         item {
-            CardTitle(text = stringResource(R.string.section_detected_allergens))
+            CardTitle(text = stringResource(R.string.section_detected_allergens), icon = Icons.Outlined.Warning)
             if (parsedAllergens.isNotEmpty()) {
                 AppCard(
                     borderColor = MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.3f),

@@ -4,6 +4,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -110,7 +112,7 @@ fun FoodLogScreen(
 
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                CardTitle(stringResource(R.string.section_recently_logged))
+                CardTitle(stringResource(R.string.section_recently_logged), icon = Icons.Outlined.History)
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

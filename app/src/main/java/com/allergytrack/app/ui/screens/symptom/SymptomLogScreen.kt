@@ -4,6 +4,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Equalizer
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Sick
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -116,7 +120,7 @@ fun SymptomTypeSection(
     onTypeSelected: (SymptomType) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        CardTitle(stringResource(R.string.section_symptom_type))
+        CardTitle(stringResource(R.string.section_symptom_type), icon = Icons.Outlined.Sick)
 
         val types = SymptomType.entries
         for (row in types.chunked(2)) {
@@ -199,7 +203,7 @@ fun IntensitySection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
-            CardTitle(stringResource(R.string.section_intensity))
+            CardTitle(stringResource(R.string.section_intensity), icon = Icons.Outlined.Equalizer)
             Text(
                 stringResource(R.string.intensity_format, intensityLabels[intensity - 1], intensity).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
@@ -250,7 +254,7 @@ fun BodyPartSection(
     onPartToggled: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        CardTitle(stringResource(R.string.section_body_area))
+        CardTitle(stringResource(R.string.section_body_area), icon = Icons.Outlined.Person)
 
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),

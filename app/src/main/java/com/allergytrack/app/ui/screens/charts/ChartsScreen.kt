@@ -6,6 +6,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.outlined.Air
+import androidx.compose.material.icons.outlined.FilterVintage
+import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -83,7 +87,7 @@ fun ChartsScreen(
 
             uiState.chartData?.let { data ->
                 item {
-                    ChartCard(title = stringResource(R.string.chart_symptom_intensity)) {
+                    ChartCard(title = stringResource(R.string.chart_symptom_intensity), icon = Icons.Outlined.ShowChart) {
                         SymptomIntensityChart(data = data)
                     }
                 }
@@ -93,13 +97,13 @@ fun ChartsScreen(
                         showUpsell = showPollenUpsell,
                         feature = PremiumFeature.POLLEN_DATA
                     ) {
-                        ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms)) {
+                        ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
                             PollenVsSymptomChart(data = data)
                         }
                     }
                 }
                 item {
-                    ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms)) {
+                    ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
                         AqiVsSymptomChart(data = data)
                     }
                 }
@@ -212,9 +216,9 @@ fun SymptomFilterRow(selected: SymptomType?, onSelected: (SymptomType?) -> Unit)
 }
 
 @Composable
-fun ChartCard(title: String, content: @Composable () -> Unit) {
+fun ChartCard(title: String, icon: ImageVector? = null, content: @Composable () -> Unit) {
     AppCard {
-        CardTitle(text = title)
+        CardTitle(text = title, icon = icon)
         Spacer(Modifier.height(8.dp))
         content()
     }

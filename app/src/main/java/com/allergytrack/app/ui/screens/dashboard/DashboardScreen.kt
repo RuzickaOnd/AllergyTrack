@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Air
+import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,6 +33,7 @@ import com.allergytrack.app.ui.theme.*
 import com.allergytrack.app.ui.util.labelRes
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun DashboardScreen(
@@ -82,7 +86,7 @@ fun DashboardScreen(
             }
 
             item {
-                CardTitle(text = stringResource(R.string.section_today_records))
+                CardTitle(text = stringResource(R.string.section_today_records), icon = Icons.Outlined.CalendarToday)
             }
 
             val allItems = buildList {
@@ -102,10 +106,11 @@ fun DashboardScreen(
                 item {
                     AppCard {
                         allItems.forEachIndexed { index, (type, item) ->
-                            when {
-                                type == "food" && item is FoodLogEntity ->
+                            when (type) {
+                                "food" if item is FoodLogEntity ->
                                     TimelineFoodItem(item)
-                                type == "symptom" && item is SymptomLogEntity ->
+
+                                "symptom" if item is SymptomLogEntity ->
                                     TimelineSymptomItem(item)
                             }
                             if (index < allItems.lastIndex) {
@@ -156,7 +161,7 @@ fun EnvironmentCard(env: EnvironmentLog) {
     }
 
     AppCard(borderColor = borderColor) {
-        CardTitle(stringResource(R.string.env_section_title))
+        CardTitle(stringResource(R.string.env_section_title), icon = Icons.Outlined.Air)
         Spacer(Modifier.height(12.dp))
         if (env.pollenAvailable) {
             Row(
@@ -227,7 +232,7 @@ fun EnvironmentStat(label: String, value: String, color: androidx.compose.ui.gra
 
 @Composable
 fun TimelineFoodItem(log: FoodLogEntity) {
-    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val timeFormat = SimpleDateFormat("HH:mm", LocalLocale.current.platformLocale)
     val hasAllergens = log.allergens.length > 2  // more than "[]"
 
     Row(
@@ -271,7 +276,7 @@ fun TimelineFoodItem(log: FoodLogEntity) {
 
 @Composable
 fun TimelineSymptomItem(log: SymptomLogEntity) {
-    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val timeFormat = SimpleDateFormat("HH:mm", LocalLocale.current.platformLocale)
     val symptomType = try { SymptomType.valueOf(log.type) } catch (_: IllegalArgumentException) { null }
     val typeLabel = symptomType?.let { stringResource(it.labelRes()) } ?: log.type
     val emoji = symptomType?.emoji ?: "⚡"

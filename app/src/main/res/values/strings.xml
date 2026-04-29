@@ -55,8 +55,8 @@
     <!-- Dashboard -->
     <string name="btn_add_food">+ FOOD</string>
     <string name="btn_add_symptom">+ SYMPTOM</string>
-    <string name="section_today_records">📋 TODAY\'S RECORDS</string>
-    <string name="env_section_title">🌿 ENVIRONMENT TODAY</string>
+    <string name="section_today_records">Today\'s records</string>
+    <string name="env_section_title">Environment today</string>
     <string name="env_label_pollen_grass">Grass pollen</string>
     <string name="env_label_aqi">AQI</string>
     <string name="env_label_pollen_tree">Tree pollen</string>

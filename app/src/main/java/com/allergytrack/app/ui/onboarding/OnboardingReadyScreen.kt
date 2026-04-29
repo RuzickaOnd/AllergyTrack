@@ -6,7 +6,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Healing
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -45,7 +47,7 @@ fun OnboardingReadyContent(
         // Settings Summary
         AppCard(borderColor = MaterialTheme.colorScheme.outline) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                CardTitle(stringResource(R.string.ready_settings_title))
+                CardTitle(stringResource(R.string.ready_settings_title), icon = Icons.Outlined.Tune)
 
                 ReadySummaryItem(
                     label = stringResource(R.string.ready_allergies_label),
@@ -83,7 +85,7 @@ fun OnboardingReadyContent(
         // Workflow tips
         AppCard(borderColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                CardTitle(stringResource(R.string.ready_first_day_title))
+                CardTitle(stringResource(R.string.ready_first_day_title), icon = Icons.Outlined.PlayArrow)
 
                 WorkflowTipItem(Icons.Outlined.Restaurant, stringResource(R.string.ready_tip_breakfast))
                 WorkflowTipItem(Icons.Outlined.Healing, stringResource(R.string.ready_tip_feeling))

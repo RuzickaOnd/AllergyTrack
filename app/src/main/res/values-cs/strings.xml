@@ -55,8 +55,8 @@
     <!-- Přehled (Dashboard) -->
     <string name="btn_add_food">+ JÍDLO</string>
     <string name="btn_add_symptom">+ PŘÍZNAK</string>
-    <string name="section_today_records">📋 DNEŠNÍ ZÁZNAMY</string>
-    <string name="env_section_title">🌿 PROSTŘEDÍ DNES</string>
+    <string name="section_today_records">Dnešní záznamy</string>
+    <string name="env_section_title">Prostředí dnes</string>
     <string name="env_label_pollen_grass">Pyl trav</string>
     <string name="env_label_aqi">AQI</string>
     <string name="env_label_pollen_tree">Pyl stromů</string>
