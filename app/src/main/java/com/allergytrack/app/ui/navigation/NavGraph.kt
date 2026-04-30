@@ -17,6 +17,7 @@ import com.allergytrack.app.ui.screens.dashboard.DashboardScreen
 import com.allergytrack.app.ui.screens.food.CameraScreen
 import com.allergytrack.app.ui.screens.food.FoodConfirmScreen
 import com.allergytrack.app.ui.screens.food.FoodLogScreen
+import com.allergytrack.app.ui.screens.food.FoodManualEntryScreen
 import com.allergytrack.app.ui.screens.food.FoodManualSearchScreen
 import com.allergytrack.app.ui.screens.profile.AboutScreen
 import com.allergytrack.app.ui.screens.profile.ProfileScreen
@@ -70,6 +71,15 @@ fun AllergyNavGraph(
         }
         composable(Screen.FoodManualSearch.route) {
             FoodManualSearchScreen(navController = navController)
+        }
+        composable(
+            route = Screen.FoodManualEntry.route,
+            arguments = listOf(navArgument("foodName") { type = NavType.StringType })
+        ) { backStackEntry ->
+            FoodManualEntryScreen(
+                navController = navController,
+                initialName = backStackEntry.arguments?.getString("foodName") ?: ""
+            )
         }
         composable(Screen.SymptomLog.route) {
             SymptomLogScreen(navController = navController)

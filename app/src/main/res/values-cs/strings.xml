@@ -78,8 +78,36 @@
     <string name="search_food_query_hint">Hledat potravinu…</string>
     <string name="search_min_chars">Zadej alespoň 2 znaky pro vyhledání</string>
     <string name="search_no_results_title">Nic nebylo nalezeno</string>
-    <string name="search_no_results_subtitle">Zkus jiný název nebo přidej ručně</string>
+    <string name="search_no_results_subtitle">Zkus jiný název nebo přidej ručně níže</string>
+    <string name="search_service_unavailable_title">Služba je dočasně nedostupná</string>
+    <string name="search_service_unavailable_desc">Open Food Facts je momentálně přetížen (HTTP 503). Dochází k tomu při překročení limitu požadavků na sdílené infrastruktuře. Zkus to za chvíli znovu, nebo zadej jídlo ručně.</string>
     <string name="search_add_manually">Přidat \"%s\" ručně</string>
+    <string name="btn_add_food_manually">Zadat jídlo ručně</string>
+    <string name="search_info_banner">Vyhledává balené potravinářské produkty z databáze Open Food Facts. Pro čerstvé potraviny, zeleninu nebo jídla z restaurace použij ruční zadání.</string>
+
+    <!-- Ruční zadání jídla -->
+    <string name="screen_manual_food_entry">Ruční zadání</string>
+    <string name="manual_entry_name_label">Název jídla</string>
+    <string name="manual_entry_allergen_heading">ALERGENY</string>
+    <string name="manual_entry_suggest_btn">Navrhnout alergeny</string>
+    <string name="manual_entry_suggesting">Vyhledávám…</string>
+    <string name="manual_entry_suggest_hint">Klepni na tlačítko pro automatický návrh alergenů dle názvu jídla.</string>
+
+    <!-- EU 14 alergenů -->
+    <string name="allergen_gluten">Lepek (obiloviny)</string>
+    <string name="allergen_milk">Mléko</string>
+    <string name="allergen_eggs">Vejce</string>
+    <string name="allergen_fish">Ryby</string>
+    <string name="allergen_crustaceans">Korýši</string>
+    <string name="allergen_peanuts">Arašídy</string>
+    <string name="allergen_soybeans">Sója</string>
+    <string name="allergen_nuts">Ořechy</string>
+    <string name="allergen_celery">Celer</string>
+    <string name="allergen_mustard">Hořčice</string>
+    <string name="allergen_sesame">Sezam</string>
+    <string name="allergen_sulphites">Siřičitany</string>
+    <string name="allergen_lupin">Vlčí bob</string>
+    <string name="allergen_molluscs">Měkkýši</string>
 
     <!-- Potvrzení jídla -->
     <string name="food_ai_identified">IDENTIFIKOVÁNO POMOCÍ AI</string>

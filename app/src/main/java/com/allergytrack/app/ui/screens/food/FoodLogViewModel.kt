@@ -3,8 +3,10 @@ package com.allergytrack.app.ui.screens.food
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.allergytrack.app.data.remote.food.FoodAllergenHelper
 import com.allergytrack.app.data.remote.food.RecognizedFood
 import com.allergytrack.app.domain.model.FoodLog
+import retrofit2.HttpException
 import com.allergytrack.app.domain.repository.FoodRepository
 import com.allergytrack.app.domain.usecase.RecognizeFoodFromImageUseCase
 import com.allergytrack.app.domain.usecase.SaveFoodLogUseCase
@@ -35,7 +37,8 @@ sealed interface FoodLogUiState {
 data class FoodSearchState(
     val query: String = "",
     val results: List<RecognizedFood> = emptyList(),
-    val isSearching: Boolean = false
+    val isSearching: Boolean = false,
+    val isServiceUnavailable: Boolean = false
 )
 
 // ---- ViewModel ----
@@ -93,6 +96,37 @@ class FoodLogViewModel @Inject constructor(
 
     fun onSearchNavigated() { _navigateToSearch.value = false }
 
+    // ---- Allergen suggestion (manual entry) ----
+
+    private val _suggestedAllergens = MutableStateFlow<Set<String>>(emptySet())
+    val suggestedAllergens: StateFlow<Set<String>> = _suggestedAllergens.asStateFlow()
+
+    private val _isSuggesting = MutableStateFlow(false)
+    val isSuggesting: StateFlow<Boolean> = _isSuggesting.asStateFlow()
+
+    fun suggestAllergens(foodName: String) {
+        if (foodName.isBlank()) return
+        viewModelScope.launch {
+            _isSuggesting.value = true
+            // A: lokální heuristika (okamžitá)
+            val local = FoodAllergenHelper.suggestFromName(foodName)
+            _suggestedAllergens.value = local
+            // B: Open Food Facts (síťové dohledání)
+            try {
+                val results = searchFoodUseCase(foodName)
+                if (results.isNotEmpty()) {
+                    _suggestedAllergens.value = local + results.first().allergens.toSet()
+                }
+            } catch (_: Exception) { /* ponechat lokální */ }
+            _isSuggesting.value = false
+        }
+    }
+
+    fun clearAllergenSuggestions() {
+        _suggestedAllergens.value = emptySet()
+        _isSuggesting.value = false
+    }
+
     // Debounced search
     @OptIn(FlowPreview::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val searchResults = _searchState
@@ -102,16 +136,23 @@ class FoodLogViewModel @Inject constructor(
         .distinctUntilChanged()
         .flatMapLatest { query ->
             flow {
-                _searchState.update { it.copy(isSearching = true) }
-                val results = searchFoodUseCase(query)
-                emit(results)
-                _searchState.update { it.copy(isSearching = false, results = results) }
+                _searchState.update { it.copy(isSearching = true, isServiceUnavailable = false) }
+                try {
+                    val results = searchFoodUseCase(query)
+                    emit(results)
+                    _searchState.update { it.copy(isSearching = false, results = results) }
+                } catch (e: HttpException) {
+                    _searchState.update {
+                        it.copy(isSearching = false, isServiceUnavailable = e.code() == 503)
+                    }
+                    emit(emptyList())
+                }
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     fun onSearchQueryChange(query: String) {
-        _searchState.update { it.copy(query = query) }
+        _searchState.update { it.copy(query = query, isServiceUnavailable = false) }
     }
 
     fun onImageCaptured(uri: Uri) {

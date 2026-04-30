@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import retrofit2.HttpException
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
@@ -94,8 +95,10 @@ class FoodRepositoryImpl @Inject constructor(
                     ingredients = product.localizedIngredients(lc)
                 )
             }
+        } catch (e: HttpException) {
+            throw e  // HTTP chyby (včetně 503) propagujeme do ViewModelu
         } catch (e: Exception) {
-            emptyList()
+            emptyList()  // síťové/IO chyby vracejí prázdný seznam
         }
     }
 

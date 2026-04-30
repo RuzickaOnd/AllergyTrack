@@ -78,8 +78,36 @@
     <string name="search_food_query_hint">Search food…</string>
     <string name="search_min_chars">Enter at least 2 characters to search</string>
     <string name="search_no_results_title">Nothing found</string>
-    <string name="search_no_results_subtitle">Try a different name or add manually</string>
+    <string name="search_no_results_subtitle">Try a different name or add manually below</string>
+    <string name="search_service_unavailable_title">Service temporarily unavailable</string>
+    <string name="search_service_unavailable_desc">Open Food Facts is currently overloaded (HTTP 503). This is caused by too many requests on the shared infrastructure. Please try again in a moment, or add the food manually.</string>
     <string name="search_add_manually">Add \"%s\" manually</string>
+    <string name="btn_add_food_manually">Add food manually</string>
+    <string name="search_info_banner">Searches packaged food products from Open Food Facts. For fresh food, vegetables, or restaurant meals, use manual entry.</string>
+
+    <!-- Manual food entry -->
+    <string name="screen_manual_food_entry">Manual entry</string>
+    <string name="manual_entry_name_label">Food name</string>
+    <string name="manual_entry_allergen_heading">ALLERGENS</string>
+    <string name="manual_entry_suggest_btn">Suggest allergens</string>
+    <string name="manual_entry_suggesting">Searching…</string>
+    <string name="manual_entry_suggest_hint">Tap the button to automatically suggest allergens based on the food name.</string>
+
+    <!-- EU 14 allergens -->
+    <string name="allergen_gluten">Gluten (cereals)</string>
+    <string name="allergen_milk">Milk</string>
+    <string name="allergen_eggs">Eggs</string>
+    <string name="allergen_fish">Fish</string>
+    <string name="allergen_crustaceans">Crustaceans</string>
+    <string name="allergen_peanuts">Peanuts</string>
+    <string name="allergen_soybeans">Soybeans</string>
+    <string name="allergen_nuts">Tree nuts</string>
+    <string name="allergen_celery">Celery</string>
+    <string name="allergen_mustard">Mustard</string>
+    <string name="allergen_sesame">Sesame</string>
+    <string name="allergen_sulphites">Sulphites</string>
+    <string name="allergen_lupin">Lupin</string>
+    <string name="allergen_molluscs">Molluscs</string>
 
     <!-- Food Confirm -->
     <string name="food_ai_identified">IDENTIFIED BY AI</string>
