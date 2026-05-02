@@ -17,10 +17,15 @@ on:
         options:
           - "false"
           - "true"
-
-# Opt-in do Node.js 24 — odstraní deprecation varování
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      region:
+        description: "Filtr zemí (core=střední EU, eu=celá EU, all=svět)"
+        required: false
+        default: "core"
+        type: choice
+        options:
+          - "core"
+          - "eu"
+          - "all"
 
 jobs:
   import:
@@ -54,6 +59,8 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        # Denní cron vždy používá výchozí region (core)
+        # Pro změnu výchozího regionu uprav DEFAULT_REGION v import_off.py
         run: python scripts/import_off.py
         timeout-minutes: 30
 
@@ -64,8 +71,9 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
-          echo "Spouštím plný import — očekávej 45–90 minut"
-          python scripts/import_off.py --full
+          REGION="${{ inputs.region || 'core' }}"
+          echo "Spouštím plný import — region=${REGION}, očekávej 45–90 minut"
+          python scripts/import_off.py --full --region="${REGION}"
         timeout-minutes: 120
 
       # ── 6. Notifikace při selhání ─────────────────────────────────

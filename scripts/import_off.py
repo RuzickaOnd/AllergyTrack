@@ -4,12 +4,16 @@ AllergyTrack — Open Food Facts → Supabase Import
 =================================================
 Stáhne denní delta export z Open Food Facts a uloží filtrovaná data do Supabase.
 
-Při prvním spuštění použij --full pro import celé databáze (filtrované na EU).
-Každý další den spouštěj bez argumentů pro delta update.
-
 Použití:
-    python import_off.py           # denní delta
-    python import_off.py --full    # první inicializační import
+    python import_off.py                    # denní delta, výchozí filtr zemí (CORE)
+    python import_off.py --full             # plný import, výchozí filtr zemí (CORE)
+    python import_off.py --full --region=eu # plný import, všechny EU země
+    python import_off.py --full --region=all # plný import, celý svět (velká DB!)
+
+Regiony (--region):
+    core  — výchozí: CZ, SK, DE, AT, PL, HU (nejmenší DB, doporučeno pro free tier)
+    eu    — všechny EU+EEA země (střední DB, ~2x větší než core)
+    all   — celý svět (největší DB, nutný Supabase Pro nebo jiný hosting)
 
 Proměnné prostředí (GitHub Actions Secrets):
     SUPABASE_URL          — URL tvého Supabase projektu
@@ -35,8 +39,10 @@ SUPABASE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
 
 # Open Food Facts vyžaduje identifikaci aplikace v User-Agent hlavičce.
 # Bez ní server vrátí 403 Forbidden.
-# Formát: AppName/verze (kontakt)
-OFF_USER_AGENT = "AllergyTrack/1.0 (github.com/RuzickaOnd/AllergyTrack)"
+# POZOR: HTTP hlavičky musí být čisté ASCII — žádná diakritika!
+# Formát: AppName/verze (odkaz-na-projekt)
+# Uprav pouze github.com/... část — použij své GitHub uživatelské jmeno BEZ diakritiky.
+OFF_USER_AGENT = "AllergyTrack/1.0 (github.com/YOUR-GITHUB-USERNAME/AllergyTrack)"
 
 # Open Food Facts URL — plný JSONL export (komprimovaný gzip, ~7 GB)
 OFF_FULL_EXPORT_URL = (
@@ -46,14 +52,48 @@ OFF_FULL_EXPORT_URL = (
 # Delta soubory: produkty změněné za posledních ~24 hodin
 OFF_DELTA_BASE_URL = "https://static.openfoodfacts.org/data/delta/"
 
-# Filtr zemí — pouze EU produkty (snižuje objem dat ~60 %)
-EU_COUNTRY_TAGS = {
-    "en:czech-republic", "en:slovakia", "en:germany", "en:austria",
-    "en:france", "en:italy", "en:spain", "en:poland", "en:hungary",
+# ── Filtry zemí ────────────────────────────────────────────────────────────────
+#
+# CORE — střední Evropa (výchozí, nejmenší DB — doporučeno pro Supabase free tier)
+# Přibližná velikost: 80–150 MB
+COUNTRIES_CORE = {
+    "en:czech-republic",
+    "en:slovakia",
+    "en:germany",
+    "en:austria",
+    "en:poland",
+    "en:hungary",
+}
+
+# EU — celá Evropská unie + Švýcarsko a Velká Británie
+# Přibližná velikost: 250–400 MB (stále v limitu Supabase free 500 MB)
+COUNTRIES_EU = COUNTRIES_CORE | {
+    "en:france", "en:italy", "en:spain",
     "en:netherlands", "en:belgium", "en:sweden", "en:denmark",
     "en:finland", "en:portugal", "en:romania", "en:greece",
-    "en:switzerland", "en:united-kingdom",
+    "en:switzerland", "en:united-kingdom", "en:ireland",
+    "en:croatia", "en:slovenia", "en:bulgaria", "en:estonia",
+    "en:latvia", "en:lithuania", "en:luxembourg", "en:malta",
+    "en:cyprus", "en:norway", "en:iceland",
 }
+
+# ALL — celý svět (nutný Supabase Pro nebo jiný hosting s >500 MB)
+# Přibližná velikost: 500 MB+ (překročí free tier)
+COUNTRIES_ALL = None  # None = žádný filtr, importuje vše
+
+# Mapování název regionu → sada zemí (pro --region argument)
+REGION_MAP: dict[str, set | None] = {
+    "core": COUNTRIES_CORE,
+    "eu":   COUNTRIES_EU,
+    "all":  COUNTRIES_ALL,
+}
+
+# Výchozí region — změň zde pokud chceš jiný default bez parametru
+DEFAULT_REGION = "core"
+
+# Aktivní filtr — nastavuje se při startu z --region argumentu
+# Neměň přímo, používej argument příkazové řádky nebo workflow_dispatch input
+ACTIVE_COUNTRY_FILTER: set | None = COUNTRIES_CORE
 
 # Pole která importujeme z OFF JSONL exportu.
 # Přidání nového pole = přidat sem + do extract_fields() + ALTER TABLE v Supabase.
@@ -87,10 +127,14 @@ log = logging.getLogger(__name__)
 
 # ── HTTP sessions ──────────────────────────────────────────────────────────────
 
-# Session pro Open Food Facts — s povinným User-Agent
+# Session pro Open Food Facts — s povinným User-Agentem
+# HTTP hlavičky musí být čisté ASCII — encode/decode odstraní případnou diakritiku
+def _to_ascii(s: str) -> str:
+    return s.encode("ascii", errors="ignore").decode("ascii")
+
 off_session = requests.Session()
 off_session.headers.update({
-    "User-Agent": OFF_USER_AGENT,
+    "User-Agent": _to_ascii(OFF_USER_AGENT),
     # Doporučuje se také uvést e-mail pro případný kontakt ze strany OFF
     "From": "allergytrack-import@example.com",
 })
@@ -154,9 +198,14 @@ def log_import_finish(log_id: Optional[int], stats: dict):
 
 # ── Zpracování produktů ────────────────────────────────────────────────────────
 
-def is_eu_product(product: dict) -> bool:
-    """True pokud produkt pochází alespoň z jedné EU země."""
-    return bool(set(product.get("countries_tags", [])) & EU_COUNTRY_TAGS)
+def matches_country_filter(product: dict) -> bool:
+    """
+    True pokud produkt prochází aktivním filtrem zemí.
+    ACTIVE_COUNTRY_FILTER = None znamená žádný filtr (region=all).
+    """
+    if ACTIVE_COUNTRY_FILTER is None:
+        return True  # region=all — importuj vše
+    return bool(set(product.get("countries_tags", [])) & ACTIVE_COUNTRY_FILTER)
 
 
 def extract_fields(product: dict) -> Optional[dict]:
@@ -226,8 +275,7 @@ def process_stream(url: str, label: str) -> tuple[int, int, int]:
 
                 processed += 1
 
-                # Filtr 1: pouze EU produkty
-                if not is_eu_product(product):
+                if not matches_country_filter(product):
                     skipped += 1
                     continue
 
@@ -361,11 +409,30 @@ def run_delta_import():
 # ── Entry point ────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="AllergyTrack — OFF import")
+    parser = argparse.ArgumentParser(
+        description="AllergyTrack — OFF import",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Příklady:
+  python import_off.py                       # delta, region=core
+  python import_off.py --full                # plný import, region=core
+  python import_off.py --full --region=eu    # plný import, všechny EU země
+  python import_off.py --full --region=all   # plný import, celý svět
+        """
+    )
     parser.add_argument(
         "--full",
         action="store_true",
         help="Plný import celé databáze (pouze při první inicializaci)",
+    )
+    parser.add_argument(
+        "--region",
+        choices=["core", "eu", "all"],
+        default=DEFAULT_REGION,
+        help=(
+            "Filtr zemí: core=střední Evropa (výchozí, free tier), "
+            "eu=celá EU, all=celý svět (nutný Pro hosting)"
+        ),
     )
     args = parser.parse_args()
 
@@ -373,6 +440,18 @@ if __name__ == "__main__":
     if not SUPABASE_URL or not SUPABASE_KEY:
         log.error("Chybí SUPABASE_URL nebo SUPABASE_SERVICE_KEY")
         sys.exit(1)
+
+    # Nastav aktivní filtr podle zvoleného regionu
+    import importlib, builtins
+    ACTIVE_COUNTRY_FILTER = REGION_MAP[args.region]
+    # Přepíše globální proměnnou pro celý běh skriptu
+    import sys as _sys
+    _this = _sys.modules[__name__]
+    _this.ACTIVE_COUNTRY_FILTER = ACTIVE_COUNTRY_FILTER
+
+    region_label = args.region.upper()
+    country_count = len(ACTIVE_COUNTRY_FILTER) if ACTIVE_COUNTRY_FILTER else "vše"
+    log.info(f"Region: {region_label} ({country_count} zemí)")
 
     if args.full:
         run_full_import()
