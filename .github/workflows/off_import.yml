@@ -1,0 +1,86 @@
+name: Open Food Facts — Denní import
+
+on:
+  # Automatický denní spouštěč ve 3:00 UTC (4:00 nebo 5:00 ČAS)
+  schedule:
+    - cron: "0 3 * * *"
+
+  # Manuální spuštění z GitHub UI (Actions → Run workflow)
+  # Zde lze také spustit plný import přepnutím full_import na true
+  workflow_dispatch:
+    inputs:
+      full_import:
+        description: "Spustit plný import celé databáze? (jen při inicializaci)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+jobs:
+  import:
+    name: Import Open Food Facts dat
+    runs-on: ubuntu-latest
+
+    # GitHub Actions free tier: 2 000 minut/měsíc pro private repo
+    # Delta import ~5 min/den = 150 min/měsíc → well within limits
+    # Plný import ~90 min → jednorázové
+
+    steps:
+      # ── 1. Checkout kódu ──────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 2. Python setup ───────────────────────────────────────────
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      # ── 3. Instalace závislostí ───────────────────────────────────
+      - name: Instalace závislostí
+        run: |
+          pip install requests
+
+      # ── 4. Delta import (denní) ───────────────────────────────────
+      - name: Delta import
+        if: github.event_name == 'schedule' || inputs.full_import == 'false'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python scripts/import_off.py
+        timeout-minutes: 30
+
+      # ── 5. Plný import (manuální, jen při inicializaci) ───────────
+      - name: Plný import (inicializace)
+        if: inputs.full_import == 'true'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          echo "Spouštím plný import — očekávej 45–90 minut"
+          python scripts/import_off.py --full
+        timeout-minutes: 120
+
+      # ── 6. Notifikace při selhání ─────────────────────────────────
+      - name: Notifikace při selhání
+        if: failure()
+        run: |
+          echo "Import selhal! Zkontroluj logy výše."
+          echo "Chyby jsou také zaznamenány v Supabase tabulce import_log."
+
+# ── Jak nastavit Secrets ──────────────────────────────────────────
+# GitHub repo → Settings → Secrets and variables → Actions → New secret
+#
+# SUPABASE_URL:
+#   Hodnota: https://tvujprojekt.supabase.co
+#   Kde najít: Supabase → Project Settings → API → Project URL
+#
+# SUPABASE_SERVICE_KEY:
+#   Hodnota: eyJ... (dlouhý JWT token)
+#   Kde najít: Supabase → Project Settings → API → service_role key
+#   DŮLEŽITÉ: Nikdy nepoužívej anon key pro import! Service role má write přístup.
+#   DŮLEŽITÉ: Tento klíč drž v tajnosti — má plný přístup k databázi.
