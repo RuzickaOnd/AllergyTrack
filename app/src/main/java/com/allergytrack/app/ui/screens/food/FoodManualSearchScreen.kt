@@ -52,6 +52,7 @@ import com.allergytrack.app.ui.theme.MonoFontFamily
 @Composable
 fun FoodManualSearchScreen(
     navController: NavController,
+    initialQuery: String = "",
     viewModel: FoodLogViewModel = hiltViewModel()
 ) {
     val searchState by viewModel.searchState.collectAsStateWithLifecycle()
@@ -59,6 +60,9 @@ fun FoodManualSearchScreen(
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
+        if (initialQuery.isNotEmpty()) {
+            viewModel.onSearchQueryChange(initialQuery)
+        }
         focusRequester.requestFocus()
     }
 

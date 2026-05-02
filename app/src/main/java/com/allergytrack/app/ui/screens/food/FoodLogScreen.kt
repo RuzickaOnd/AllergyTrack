@@ -99,8 +99,9 @@ fun FoodLogScreen(
     // Navigace do vyhledávání po rozpoznání hlasu
     LaunchedEffect(navigateToSearch) {
         if (navigateToSearch) {
+            val encodedQuery = Uri.encode(viewModel.searchState.value.query)
             viewModel.onSearchNavigated()
-            navController.navigate(Screen.FoodManualSearch.route)
+            navController.navigate(Screen.FoodManualSearch.route(encodedQuery))
         }
     }
 
@@ -236,7 +237,7 @@ fun FoodLogScreen(
         item {
             AppCard(
                 borderColor = MaterialTheme.colorScheme.outline,
-                onClick = { navController.navigate(Screen.FoodManualSearch.route) }
+                onClick = { navController.navigate(Screen.FoodManualSearch.route()) }
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

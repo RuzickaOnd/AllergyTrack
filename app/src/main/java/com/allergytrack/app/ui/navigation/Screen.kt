@@ -22,7 +22,11 @@ sealed class Screen(val route: String) {
         fun createRoute(foodName: String, allergens: String) =
             "food_confirm/${foodName}/${allergens}"
     }
-    object FoodManualSearch : Screen("food_manual_search")
+    object FoodManualSearch : Screen("food_manual_search?query={query}") {
+        const val ARG_QUERY = "query"
+        fun route(query: String = "") =
+            if (query.isNotEmpty()) "food_manual_search?query=$query" else "food_manual_search"
+    }
     object FoodManualEntry : Screen("food_manual_entry/{foodName}") {
         fun createRoute(foodName: String) = "food_manual_entry/$foodName"
     }

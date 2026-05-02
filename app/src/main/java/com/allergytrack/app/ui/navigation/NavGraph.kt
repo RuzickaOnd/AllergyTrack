@@ -69,8 +69,17 @@ fun AllergyNavGraph(
                 allergens = backStackEntry.arguments?.getString("allergens") ?: ""
             )
         }
-        composable(Screen.FoodManualSearch.route) {
-            FoodManualSearchScreen(navController = navController)
+        composable(
+            route = Screen.FoodManualSearch.route,
+            arguments = listOf(navArgument(Screen.FoodManualSearch.ARG_QUERY) {
+                type = NavType.StringType
+                defaultValue = ""
+            })
+        ) { backStackEntry ->
+            FoodManualSearchScreen(
+                navController = navController,
+                initialQuery = backStackEntry.arguments?.getString(Screen.FoodManualSearch.ARG_QUERY) ?: ""
+            )
         }
         composable(
             route = Screen.FoodManualEntry.route,
