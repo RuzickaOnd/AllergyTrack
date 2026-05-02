@@ -48,7 +48,7 @@ com.allergytrack.app/
 ├── di/
 │   ├── AppModule.kt           ← Hilt bindings (Repository interfaces)
 │   ├── DatabaseModule.kt      ← Room DAOs
-│   └── NetworkModule.kt       ← Retrofit instances (openmeteo, openfoodfacts)
+│   └── NetworkModule.kt       ← Retrofit instances (openmeteo, supabase)
 ├── ui/
 │   ├── theme/                 ← Color, Theme, Type
 │   ├── navigation/
@@ -80,7 +80,7 @@ com.allergytrack.app/
 │       │   ├── FoodLogViewModel.kt       ← Sdílený VM pro celý food sub-flow
 │       │   ├── CameraScreen.kt           ← mode="photo" nebo mode="barcode" (ML Kit)
 │       │   ├── FoodConfirmScreen.kt      ← Potvrzení + uložení záznamu
-│       │   ├── FoodManualSearchScreen.kt ← Vyhledávání v OFF, info banner, 503 handling
+│       │   ├── FoodManualSearchScreen.kt ← Vyhledávání v Supabase, info banner
 │       │   └── FoodManualEntryScreen.kt  ← Ruční zadání názvu + výběr alergenů ze 14 EU
 │       ├── symptom/
 │       │   ├── SymptomLogScreen.kt
@@ -148,11 +148,11 @@ com.allergytrack.app/
 │   │   │   ├── AirQualityApiService.kt ← Open-Meteo, zdarma, bez klíče
 │   │   │   └── AirQualityDto.kt
 │   │   └── food/
-│   │       ├── OpenFoodFactsApiService.kt  ← @Query("lc"), @Query("cc") jako parametry
-│   │       ├── FoodDto.kt                  ← RecognizedFood, OpenFoodProduct (cs fallback)
+│   │       ├── SupabaseFoodApiService.kt   ← REST + RPC (search_products)
+│   │       ├── FoodDto.kt                  ← SupabaseFoodProduct, SupabaseSearchResult, RecognizedFood
 │   │       └── FoodAllergenHelper.kt       ← EU_14 definice + suggestFromName() heuristika
 │   ├── repository/
-│   │   ├── FoodRepositoryImpl.kt      ← resolvedLocale(), lokalizované názvy, 503 propagace
+│   │   ├── FoodRepositoryImpl.kt      ← Supabase integration, mapper funkce
 │   │   ├── SymptomRepositoryImpl.kt
 │   │   ├── EnvironmentRepositoryImpl.kt
 │   │   └── PremiumRepositoryImpl.kt   ← MVP: vždy FREE
@@ -193,8 +193,8 @@ Parametry `foodName` a `allergens` jsou **vždy URL-enkódované** pomocí `Uri.
 **C) Hlas**
 `FoodLogScreen` → `SpeechRecognizer` dialog → rozpoznaný text → `onSearchQueryChange()` → navigace na `FoodManualSearchScreen` s předvyplněným dotazem
 
-**D) Vyhledávání (Open Food Facts)**
-`FoodLogScreen` (tap na search card) → `FoodManualSearchScreen` → debounced search (400ms, min 2 znaky) → `SearchFoodUseCase` → OFF API → výsledky → `FoodConfirmScreen`
+**D) Vyhledávání (Supabase)**
+`FoodLogScreen` (tap na search card) → `FoodManualSearchScreen` → debounced search (400ms, min 2 znaky) → `SearchFoodUseCase` → Supabase RPC → výsledky → `FoodConfirmScreen`
 
 **E) Ruční zadání (nová obrazovka)**
 `FoodManualSearchScreen` (tlačítko "Přidat ručně") → `FoodManualEntryScreen` → název + výběr alergenů → `FoodConfirmScreen`
@@ -205,17 +205,16 @@ Parametry `foodName` a `allergens` jsou **vždy URL-enkódované** pomocí `Uri.
 - Klikatelné → navigace přímo na `FoodConfirmScreen` s předvyplněnými daty
 
 #### FoodManualSearchScreen — důležité detaily:
-- Info banner vysvětluje zdroj: "Open Food Facts = balené produkty s čárovým kódem"
+- Info banner vysvětluje zdroj: "Databáze produktů s čárovým kódem"
 - Tlačítko "Zadat ručně" je **vždy viditelné** (ne jen při prázdných výsledcích)
 - Styl tlačítka: **Primary** = žádné výsledky nebo prázdné pole; **Secondary (Outlined)** = výsledky nalezeny
-- **HTTP 503 handling**: `FoodSearchState.isServiceUnavailable = true` → zobrazí specifickou zprávu o přetížení OFF serveru místo "Nic nebylo nalezeno"
 
 #### FoodManualEntryScreen — detaily:
 - Editovatelné textové pole pro název jídla (předvyplněno z `foodName` argumentu)
 - `FlowRow` s `FilterChip` pro všech 14 EU povinných alergenů (multi-select)
 - Tlačítko "Navrhnout alergeny" → spustí `viewModel.suggestAllergens(name)`
   - **Krok A (okamžitý)**: `FoodAllergenHelper.suggestFromName()` — lokální heuristika přes ~80 CZ/EN klíčových slov
-  - **Krok B (síť)**: `SearchFoodUseCase(name)` → alergeny z prvního výsledku OFF sloučeny s lokálními
+  - **Krok B (síť)**: `SearchFoodUseCase(name)` → alergeny z prvního výsledku Supabase sloučeny s lokálními
 - Navržené alergeny se automaticky předvyberou v chipech; uživatel může cokoliv doladit
 - Potvrzení → `FoodConfirmScreen` s vybraným seznamem alergenů
 
@@ -229,41 +228,30 @@ Klíče alergenů jsou shodné s hodnotami vracenými OFF API po `removePrefix("
 `"Nuts"`, `"Celery"`, `"Mustard"`, `"Sesame-seeds"`, `"Sulphur-dioxide-and-sulphites"`,
 `"Lupin"`, `"Molluscs"`
 
-### 2. Open Food Facts API — detaily implementace
+### 2. Supabase Food API — detaily implementace
 
-**Base URL:** `https://world.openfoodfacts.org/`
+Aplikace používá vlastní Supabase backend, který zrcadlí data z Open Food Facts.
 
-**Search endpoint:**
+**Base URL:** `BuildConfig.SUPABASE_URL`
+
+**Search endpoint (RPC):**
 ```
-GET cgi/search.pl
-  ?search_simple=1&action=process&json=1
-  &sort_by=unique_scans_n
-  &fields=product_name,product_name_cs,allergens_tags,ingredients_text,ingredients_text_cs,image_url
-  &search_terms={query}
-  &lc={languageCode}    ← dynamické, z UserPreferencesDataStore nebo Locale.getDefault()
-  &cc={countryCode}     ← odvozeno z lc (cs→cz, de→de, en→gb, ...)
+GET rest/v1/rpc/search_products?query={query}&result_limit=20
 ```
 
-**Barcode endpoint:**
+**Barcode endpoint (REST):**
 ```
-GET api/v0/product/{barcode}.json
-  ?fields=product_name,product_name_cs,allergens_tags,ingredients_text,ingredients_text_cs,image_url
-  &lc={languageCode}
-  &cc={countryCode}
+GET rest/v1/food_products?code=eq.{barcode}&select={PRODUCT_SELECT}&limit=1
 ```
 
-**Rate limits (důležité!):**
-- Search: 10 req/min/IP → překročení vrátí **HTTP 503**
-- Read product: 15 req/min/IP
-- 503 se propaguje jako `retrofit2.HttpException` z repository do ViewModelu
+**Autentizace:**
+- Hlavičky `apikey` a `Authorization: Bearer ...` obsahující anon klíč.
+- Nastaveno v `NetworkModule` přes OkHttp interceptor.
 
 **Lokalizace výsledků:**
-- `lc` parametr řídí jazyk `product_name` v odpovědi (pokud překlad existuje)
-- Pro češtinu: záloha `product_name_cs` pokud `product_name` není v češtině
-- Nastavení v Settings: uživatel může přepsat auto-detekci ze `UserPreferencesDataStore`
-- Auto-režim: `Locale.getDefault().language` + `.country`
-
-**Databáze OFF:** Obsahuje primárně **balené produkty s čárovým kódem**. Čerstvé potraviny, zelenina, restaurační jídla v databázi typicky nejsou → proto existuje `FoodManualEntryScreen`.
+- Databáze obsahuje `product_name` a `product_name_cs`.
+- Mapper v `FoodDto.kt` preferuje českou variantu.
+- Alergeny jsou mapovány z `allergens_tags` (očištěny od prefixu "en:").
 
 ### 3. Premium systém
 
@@ -285,9 +273,9 @@ val showXxxBadge: StateFlow<Boolean>
 `PremiumGate` composable:
 ```kotlin
 when {
-    !isVisible -> { /* nezobrazit nic */ }
-    showUpsell -> PremiumUpsellCard(...)
-    else       -> content()
+  !isVisible -> { /* nezobrazit nic */ }
+  showUpsell -> PremiumUpsellCard(...)
+  else       -> content()
 }
 ```
 
@@ -343,7 +331,7 @@ Každá změna schématu = zvýšení verze + Migration objekt.
 
 | Klíč | Typ | Výchozí | Popis |
 |------|-----|---------|-------|
-| `food_search_language` | String | `""` | Kód jazyka pro OFF API; prázdný = auto z `Locale.getDefault()` |
+| `food_search_language` | String | `""` | Kód jazyka vyhledávání; prázdný = auto z `Locale.getDefault()` |
 
 ---
 
@@ -352,9 +340,101 @@ Každá změna schématu = zvýšení verze + Migration objekt.
 | API | URL | Klíč | Cena | Účel |
 |-----|-----|------|------|------|
 | Open-Meteo AQI | air-quality-api.open-meteo.com | ❌ | Zdarma (nekomerční) | AQI + pyl |
-| Open Food Facts | world.openfoodfacts.org | ❌ | Zdarma (ODbL) | Jídlo + alergeny (balené produkty) |
+| Supabase Food REST | `{SUPABASE_URL}/rest/v1/food_products` | ✅ anon | Zdarma (Free Tier 500 MB) | Barcode lookup |
+| Supabase Food RPC | `{SUPABASE_URL}/rest/v1/rpc/search_products` | ✅ anon | Zdarma (Free Tier) | Full-text vyhledávání |
 
-**Žádný API klíč není potřeba pro MVP.**
+**Klíče pro Supabase:**
+- `SUPABASE_URL` a `SUPABASE_ANON_KEY` → `local.properties` + `BuildConfig`
+- Anon klíč je bezpečné zahrnout do APK — přístup omezuje RLS v PostgreSQL
+- Service role klíč (pro import) NIKDY do Android projektu
+
+---
+
+## FOOD BACKEND — SUPABASE ARCHITEKTURA
+
+Produktová databáze běží na vlastním Supabase (PostgreSQL) backendu,
+který denně importuje data z Open Food Facts.
+
+```
+Open Food Facts (openfoodfacts.org)
+        ↓  denní JSONL.gz export (~7 GB)
+GitHub Actions (cron 3:00 UTC)
+        ↓  scripts/import_off.py
+        ↓  filtr: EU země (CORE nebo EU region) + 10 sloupců
+Supabase PostgreSQL (free tier 500 MB)
+        ↓  autogenerované REST API
+Android — Retrofit → SupabaseFoodApiService
+```
+
+### Tabulka `food_products`
+
+| Sloupec | Typ | Popis |
+|---------|-----|-------|
+| `code` | TEXT PK | EAN čárový kód |
+| `product_name` | TEXT | Název (defaultní/EN) |
+| `product_name_cs` | TEXT | Název v češtině |
+| `allergens_tags` | TEXT[] | Alergeny, formát `"en:milk"` |
+| `ingredients_text` | TEXT | Ingredience (defaultní) |
+| `ingredients_text_cs` | TEXT | Ingredience česky |
+| `brands` | TEXT | Výrobce/značka |
+| `categories_tags` | TEXT[] | Kategorie produktu |
+| `countries_tags` | TEXT[] | Země prodeje |
+| `nutriscore_grade` | TEXT | Nutri-Score (a–e) |
+| `nova_group` | INTEGER | NOVA skupina (1–4) |
+| `image_url` | TEXT | URL thumbnailového obrázku |
+| `last_modified_t` | BIGINT | Unix timestamp z OFF |
+| `updated_at` | TIMESTAMPTZ | Čas posledního upsert |
+
+### Filtr zemí (import skript)
+
+Konfigurovatelné přes `--region` parametr v `scripts/import_off.py`:
+
+| Region | Země | Velikost DB | Použití |
+|--------|------|-------------|---------|
+| `core` | CZ, SK, DE, AT, PL, HU | 80–150 MB | **Výchozí — free tier** |
+| `eu` | celá EU + CH, UK | 250–400 MB | Free tier (těsně) |
+| `all` | celý svět | 500 MB+ | Supabase Pro nutný |
+
+Aktivní region se mění manuálně v GitHub Actions UI nebo změnou `DEFAULT_REGION` v skriptu.
+
+### Android integrace
+
+**`SupabaseFoodApiService`** — Retrofit interface:
+- `getProductByBarcode(barcodeFilter = "eq.$barcode")` → barcode lookup
+- `searchProducts(query, limit)` → volá PostgreSQL RPC `search_products()`
+
+**Lokalizace v `FoodRepositoryImpl`:**
+- `resolvedLocale()` čte `foodSearchLanguage` z `UserPreferencesDataStore`
+- Jazyk se aplikuje v mapper funkcích (`localizedName()`, `localizedIngredients()`)
+  výběrem správného sloupce (`product_name_cs` vs `product_name`)
+- Supabase vždy vrátí oba jazykové sloupce — výběr probíhá na straně klienta
+
+**Přidání nového sloupce z OFF:**
+```
+1. Supabase SQL Editor: ALTER TABLE food_products ADD COLUMN xxx TYPE;
+2. scripts/import_off.py: přidej do FIELDS_TO_IMPORT a extract_fields()
+3. FoodDto.kt: přidej pole do SupabaseFoodProduct
+4. SupabaseFoodApiService.kt: přidej do PRODUCT_SELECT konstanty
+→ Žádný redeploy, žádný downtime
+```
+
+### GitHub Actions workflow
+
+Soubor: `.github/workflows/off_import.yml`
+- Denní cron: `0 3 * * *` (3:00 UTC)
+- Manuální spuštění: `workflow_dispatch` s volbou `full_import` a `region`
+- Secrets: `SUPABASE_URL` + `SUPABASE_SERVICE_KEY` (service role — pouze pro import)
+- Python skript: `scripts/import_off.py` + `scripts/requirements.txt`
+
+**Monitoring:**
+```sql
+-- Stav posledních importů (Supabase SQL Editor):
+SELECT import_type, started_at, products_upserted, status
+FROM import_log ORDER BY started_at DESC LIMIT 5;
+
+-- Aktuální velikost DB:
+SELECT pg_size_pretty(pg_database_size(current_database()));
+```
 
 ---
 
@@ -421,6 +501,7 @@ Každá změna schématu = zvýšení verze + Migration objekt.
 | 10c | OFF API lokalizace: dynamické lc/cc, UserPreferencesDataStore, nastavení jazyka | ✅ |
 | 10d | FoodManualEntryScreen: ruční zadání + EU 14 alergenů + návrh alergenů (A+B) | ✅ |
 | 10e | FoodManualSearchScreen: info banner, always-visible "Přidat ručně", 503 handling | ✅ |
+| 11 | Supabase backend: vlastní PostgreSQL, denní OFF import, Android integrace | ✅ |
 
 ---
 

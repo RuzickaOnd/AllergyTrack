@@ -25,6 +25,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String", "SUPABASE_URL",
+            "\"${localProperties["SUPABASE_URL"] ?: ""}\""
+        )
+        buildConfigField(
+            "String", "SUPABASE_KEY",
+            "\"${localProperties["SUPABASE_KEY"] ?: ""}\""
+        )
     }
 
     buildTypes {

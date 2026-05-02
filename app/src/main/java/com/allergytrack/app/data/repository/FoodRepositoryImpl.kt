@@ -4,9 +4,9 @@ import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
 import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.local.recognition.FoodImageRecognizer
-import com.allergytrack.app.data.remote.food.OpenFoodFactsApiService
-import com.allergytrack.app.data.remote.food.OpenFoodProduct
+import com.allergytrack.app.data.remote.food.SupabaseFoodApiService
 import com.allergytrack.app.data.remote.food.RecognizedFood
+import com.allergytrack.app.data.remote.food.toRecognizedFood
 import com.allergytrack.app.domain.model.FoodLog
 import com.allergytrack.app.domain.repository.FoodRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,20 +14,21 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import retrofit2.HttpException
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 import javax.inject.Inject
 
 class FoodRepositoryImpl @Inject constructor(
     private val foodLogDao: FoodLogDao,
-    private val openFoodFactsApi: OpenFoodFactsApiService,
+    private val supabaseFoodApi: SupabaseFoodApiService,   // ← Supabase místo OFF
     private val json: Json,
     private val foodImageRecognizer: FoodImageRecognizer,
     private val userPreferencesDataStore: UserPreferencesDataStore
 ) : FoodRepository {
 
     companion object {
+        // Mapování ISO 639-1 jazyka → kód země (zachováno pro budoucí použití)
         private val LANGUAGE_TO_COUNTRY = mapOf(
             "cs" to "cz", "sk" to "sk", "pl" to "pl", "de" to "de",
             "fr" to "fr", "es" to "es", "it" to "it", "hu" to "hu",
@@ -35,6 +36,13 @@ class FoodRepositoryImpl @Inject constructor(
         )
     }
 
+    /**
+     * Načte jazyk z UserPreferences nebo použije systémový default.
+     * Vrací Pair(languageCode, countryCode) — stejné jako původní implementace.
+     *
+     * Poznámka: countryCode se u Supabase nepoužívá (databáze filtr nemá),
+     * ale zachováváme ho pro konzistenci a případné budoucí použití.
+     */
     private suspend fun resolvedLocale(): Pair<String, String> {
         val saved = userPreferencesDataStore.foodSearchLanguage.first()
         return if (saved.isEmpty()) {
@@ -43,15 +51,6 @@ class FoodRepositoryImpl @Inject constructor(
         } else {
             Pair(saved, LANGUAGE_TO_COUNTRY.getOrDefault(saved, saved))
         }
-    }
-
-    private fun OpenFoodProduct.localizedName(lc: String, fallback: String): String =
-        if (lc == "cs") productNameCs ?: productName ?: fallback
-        else productName ?: fallback
-
-    private fun OpenFoodProduct.localizedIngredients(lc: String): List<String> {
-        val text = if (lc == "cs") ingredientsTextCs ?: ingredientsText else ingredientsText
-        return text?.split(",")?.map { it.trim() } ?: emptyList()
     }
 
     private val startOfDay: Long
@@ -63,6 +62,8 @@ class FoodRepositoryImpl @Inject constructor(
             cal.set(Calendar.MILLISECOND, 0)
             return cal.timeInMillis
         }
+
+    // ── DAO operace (beze změny) ───────────────────────────────────────────────
 
     override fun getAllLogs(): Flow<List<FoodLog>> =
         foodLogDao.getAllLogs().map { entities ->
@@ -82,46 +83,40 @@ class FoodRepositoryImpl @Inject constructor(
         foodLogDao.deleteById(id)
     }
 
+    // ── Supabase vyhledávání s lokalizací ─────────────────────────────────────
+
     override suspend fun searchFoodByName(query: String): List<RecognizedFood> {
+        if (query.length < 2) return emptyList()
+
         return try {
-            val (lc, cc) = resolvedLocale()
-            val response = openFoodFactsApi.searchProducts(query, lc, cc)
-            response.products.take(10).map { product ->
-                RecognizedFood(
-                    name = product.localizedName(lc, query),
-                    allergens = product.allergensTags.map { tag ->
-                        tag.removePrefix("en:").replaceFirstChar { it.uppercase() }
-                    },
-                    ingredients = product.localizedIngredients(lc)
-                )
-            }
-        } catch (e: HttpException) {
-            throw e  // HTTP chyby (včetně 503) propagujeme do ViewModelu
+            val (lc, _) = resolvedLocale()
+            supabaseFoodApi
+                .searchProducts(query = query, limit = 20)
+                .map { result ->
+                    // Lokalizace probíhá v mapper funkci — výběr správného sloupce
+                    result.toRecognizedFood(
+                        languageCode = lc,
+                        originalQuery = query
+                    )
+                }
         } catch (e: Exception) {
-            emptyList()  // síťové/IO chyby vracejí prázdný seznam
+            emptyList()
         }
     }
 
     override suspend fun getFoodByBarcode(barcode: String): RecognizedFood? {
         return try {
-            val (lc, cc) = resolvedLocale()
-            val response = openFoodFactsApi.getProductByBarcode(barcode, lc, cc)
-            if (response.status == 1 && response.product != null) {
-                val product = response.product
-                RecognizedFood(
-                    name = product.localizedName(lc, "Neznámý produkt"),
-                    allergens = product.allergensTags.map { tag ->
-                        tag.removePrefix("en:").replaceFirstChar { it.uppercase() }
-                    },
-                    ingredients = product.localizedIngredients(lc),
-                    imageUrl = product.imageUrl,
-                    barcode = barcode
-                )
-            } else null
+            val (lc, _) = resolvedLocale()
+            supabaseFoodApi
+                .getProductByBarcode(barcodeFilter = "eq.$barcode")
+                .firstOrNull()
+                ?.toRecognizedFood(languageCode = lc)
         } catch (e: Exception) {
             null
         }
     }
+
+    // ── Rozpoznávání z fotky (beze změny — interně volá searchFoodByName) ─────
 
     override suspend fun recognizeFoodFromImage(imageBytes: ByteArray): List<RecognizedFood> {
         val labels = foodImageRecognizer.recognize(imageBytes)
@@ -137,9 +132,10 @@ class FoodRepositoryImpl @Inject constructor(
         }
     }
 
-    // Mapper extension functions
+    // ── Mapper extension funkce (beze změny) ──────────────────────────────────
+
     private fun FoodLogEntity.toDomain(json: Json): FoodLog = FoodLog(
-        id = java.util.UUID.fromString(this.id),
+        id = UUID.fromString(this.id),
         timestamp = this.timestamp,
         foodName = this.foodName,
         allergens = if (this.allergens.isNotEmpty())

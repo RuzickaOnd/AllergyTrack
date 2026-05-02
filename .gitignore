@@ -48,7 +48,9 @@ app/build/
 .idea/.gitignore
 .idea/navEditor.xml
 .idea/usage.statistics.xml
-.idea/firebender
+.idea/firebender/
+*.db-shm
+*.db-wal
 *.iml
 *.ipr
 *.iws

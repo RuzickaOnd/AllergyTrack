@@ -112,8 +112,8 @@ com.allergytrack.app/
 - **Debug Overrides**: V `DEBUG` buildu lze vynutit stavy přes `DebugMenu` (DataStore `DebugPreferences`). To umožňuje QA testování paywallů i bez reálných nákupů.
 - **ViewModel State**: Vždy rozlišovat `canUseFeature` (pro logiku) a `showUpsell/Badge` (pro UI).
 - **Komponenty**:
-    - `PremiumGate(showUpsell = ...)` — obaluje celou funkci, při `true` zobrazí `PremiumUpsellCard`.
-    - `PremiumBadge()` — malá hvězdička pro inline označení prémiové funkce.
+  - `PremiumGate(showUpsell = ...)` — obaluje celou funkci, při `true` zobrazí `PremiumUpsellCard`.
+  - `PremiumBadge()` — malá hvězdička pro inline označení prémiové funkce.
 - Všechny prémiové funkce MUSÍ být definovány v `PremiumFeature` enum.
 - Veškerý billing kód patří POUZE do `PremiumRepositoryImpl`.
 
@@ -157,14 +157,89 @@ fun XyzPreview() { AllergyTrackTheme { Xyz(...) } }
 | API | URL | Cena | API klíč |
 |-----|-----|------|----------|
 | Open-Meteo Air Quality + Pollen | air-quality-api.open-meteo.com | Zdarma | ❌ |
-| Open Food Facts | world.openfoodfacts.org | Zdarma | ❌ |
+| Supabase Food REST/RPC | `{SUPABASE_URL}/rest/v1/...` | Zdarma (Free Tier) | ✅ anon |
 
-> Projekt nevyžaduje žádný API klíč pro základní funkce MVP.
-> local.properties je prázdný nebo obsahuje pouze dev poznámky.
+### Supabase klíče
+
+| Klíč | Umístění | Použití |
+|------|----------|---------|
+| `SUPABASE_URL` | `local.properties` + `BuildConfig` | Base URL pro Retrofit |
+| `SUPABASE_ANON_KEY` | `local.properties` + `BuildConfig` | Android — pouze čtení (RLS) |
+| `SUPABASE_SERVICE_KEY` | GitHub Actions Secrets **POUZE** | Import skript — plný přístup |
+
+**Pravidla:**
+- `SUPABASE_ANON_KEY` smí být v APK — Row Level Security omezuje přístup pouze na čtení `food_products`
+- `SUPABASE_SERVICE_KEY` **NIKDY** do Android projektu, **NIKDY** do gitu
+- Oba klíče v `local.properties` (je v `.gitignore`)
 
 ---
 
-## 6. DATABÁZE — PRAVIDLA
+## 6. FOOD BACKEND — ZÁVAZNÁ PRAVIDLA PRO AGENTA
+
+### Architektura
+
+```
+Open Food Facts (denní JSONL.gz export)
+         ↓
+GitHub Actions — scripts/import_off.py
+(filtr zemí, 10 sloupců, upsert po 500)
+         ↓
+Supabase PostgreSQL — tabulka food_products
+         ↓  REST API + RPC search_products()
+Android — SupabaseFoodApiService (Retrofit)
+         ↓
+FoodRepositoryImpl → RecognizedFood
+```
+
+### Soubory food backendu (NEMĚNIT bez pokynu)
+
+| Soubor | Role |
+|--------|------|
+| `data/remote/food/SupabaseFoodApiService.kt` | Retrofit interface — barcode + search |
+| `data/remote/food/FoodDto.kt` | DTO: `SupabaseFoodProduct`, `SupabaseSearchResult`, `RecognizedFood` + mapper funkce |
+| `data/remote/food/FoodAllergenHelper.kt` | EU 14 alergenů + heuristika návrhu |
+| `data/repository/FoodRepositoryImpl.kt` | Integrace Supabase + lokalizace |
+| `di/NetworkModule.kt` | `@Named("supabase")` Retrofit instance |
+| `scripts/import_off.py` | Python import skript (mimo Android projekt) |
+| `.github/workflows/off_import.yml` | GitHub Actions cron |
+
+### Lokalizace produktů — jak funguje
+
+Supabase databáze vrátí vždy **oba jazykové sloupce** (`product_name` + `product_name_cs`).
+Výběr správného sloupce probíhá v mapper funkcích v `FoodDto.kt`:
+
+```kotlin
+// Priorita pro cs: product_name_cs → product_name → fallback
+// Priorita pro ostatní: product_name → product_name_cs → fallback
+fun SupabaseFoodProduct.localizedName(languageCode: String, fallback: String): String
+fun SupabaseFoodProduct.localizedIngredients(languageCode: String): List<String>
+```
+
+Jazyk se čte z `UserPreferencesDataStore.foodSearchLanguage` v `resolvedLocale()`.
+**Nikdy neposílat jazyk jako HTTP parametr** — Supabase REST API ho neakceptuje.
+
+### Přidání nového pole z Open Food Facts
+
+```
+1. Supabase SQL Editor:
+   ALTER TABLE food_products ADD COLUMN novy_sloupec TEXT;
+
+2. scripts/import_off.py:
+   - Přidej do FIELDS_TO_IMPORT: "novy_sloupec"
+   - Přidej do extract_fields(): "novy_sloupec": product.get("novy_sloupec") or None
+
+3. data/remote/food/FoodDto.kt:
+   - Přidej do SupabaseFoodProduct: @SerialName("novy_sloupec") val novySloupec: Type? = null
+
+4. data/remote/food/SupabaseFoodApiService.kt:
+   - Přidej do PRODUCT_SELECT: "...novy_sloupec"
+```
+
+Žádný redeploy backendu, žádná Room migrace, žádný downtime.
+
+---
+
+## 7. DATABÁZE — PRAVIDLA
 
 - Verze DB začíná na `1`, každá změna schématu = `Migration` objekt
 - `exportSchema = false` pouze v MVP — v produkci změnit na `true`
@@ -184,7 +259,7 @@ fun getLogs(): List<FoodLogEntity>
 
 ---
 
-## 7. CHOVÁNÍ AGENTA PŘI ZMĚNÁCH
+## 8. CHOVÁNÍ AGENTA PŘI ZMĚNÁCH
 
 ### Před každou změnou agent musí:
 1. Identifikovat, které vrstvy jsou dotčeny (UI / Domain / Data)
@@ -206,7 +281,7 @@ fun getLogs(): List<FoodLogEntity>
 
 ---
 
-## 8. KÓDOVÝ STYL
+## 9. KÓDOVÝ STYL
 
 ```kotlin
 // Kotlin idiomy — preferovat
@@ -225,7 +300,7 @@ fun getLogs(): List<FoodLogEntity>
 
 ---
 
-## 9. TESTOVÁNÍ (připravit na budoucí testy)
+## 10. TESTOVÁNÍ (připravit na budoucí testy)
 
 Produkční kód musí být testovatelný:
 - ViewModely přijímají závislosti přes konstruktor (ne singleton přístup)
@@ -244,7 +319,7 @@ coroutines-test = "1.9.0"
 
 ---
 
-## 10. GIT KONVENCE (pro budoucí verzování)
+## 11. GIT KONVENCE (pro budoucí verzování)
 
 ```
 Formát commit message:
@@ -261,7 +336,7 @@ fix/xxx       ← oprava bugu
 
 ---
 
-## 11. PRIORITA PRAVIDEL
+## 12. PRIORITA PRAVIDEL
 
 Při konfliktu platí tato priorita (nejvyšší → nejnižší):
 
@@ -272,7 +347,7 @@ Při konfliktu platí tato priorita (nejvyšší → nejnižší):
 
 ---
 
-## 12. QUICK REFERENCE — ČASTÉ DOTAZY
+## 13. QUICK REFERENCE — ČASTÉ DOTAZY
 
 **Q: Jak přidat novou obrazovku?**
 1. Vytvoř `ui/screens/xxx/XxxScreen.kt` + `XxxViewModel.kt`
@@ -286,6 +361,26 @@ Při konfliktu platí tato priorita (nejvyšší → nejnižší):
 3. Přidej Retrofit instanci do `NetworkModule.kt`
 4. API klíč do `local.properties` + `BuildConfig`
 5. Implementuj v `RepositoryImpl`
+
+**Q: Jak přidat nové pole produktu z Open Food Facts?**
+1. `ALTER TABLE food_products ADD COLUMN ...` v Supabase SQL Editoru
+2. Přidej do `FIELDS_TO_IMPORT` a `extract_fields()` v `scripts/import_off.py`
+3. Přidej do `SupabaseFoodProduct` v `FoodDto.kt`
+4. Přidej do `PRODUCT_SELECT` v `SupabaseFoodApiService.kt`
+   → Žádný redeploy, žádná Room migrace
+
+**Q: Jak změnit region importu produktů (více/méně zemí)?**
+- Manuálně: GitHub Actions → Run workflow → `region = core/eu/all`
+- Trvale: změň `DEFAULT_REGION` v `scripts/import_off.py`
+- Před rozšířením na větší region: ověř místo v Supabase (free tier = 500 MB)
+- Při přechodu na menší region: nejprve `DROP TABLE food_products CASCADE`
+  v Supabase SQL Editoru, pak znovu spusť plný import
+
+**Q: Databáze produktů je přeplněná (Supabase read-only)?**
+1. Supabase SQL Editor: `DROP TABLE IF EXISTS food_products CASCADE;`
+2. Znovu spusť `supabase_schema.sql`
+3. GitHub Actions → plný import s `region = core`
+   (viz soubor `DB_RESET_GUIDE.md` v repozitáři)
 
 **Q: Jak přidat novou Room entitu?**
 1. Vytvoř `XxxEntity.kt` v `data/local/database/entity/`
@@ -325,7 +420,7 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 
 ---
 
-## 13. ENVIRONMENTÁLNÍ DATA (Open-Meteo)
+## 14. ENVIRONMENTÁLNÍ DATA (Open-Meteo)
 
 ### Pravidla dostupnosti
 - **AQI (Air Quality Index):** Globálně dostupný po celý rok.
