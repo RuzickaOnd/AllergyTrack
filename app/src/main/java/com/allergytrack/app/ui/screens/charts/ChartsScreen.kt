@@ -86,9 +86,10 @@ fun ChartsScreen(
             }
 
             uiState.chartData?.let { data ->
+                val days = uiState.selectedRange.days
                 item {
                     ChartCard(title = stringResource(R.string.chart_symptom_intensity), icon = Icons.Outlined.ShowChart) {
-                        SymptomIntensityChart(data = data)
+                        SymptomIntensityChart(data = data, days = days)
                     }
                 }
                 item {
@@ -98,13 +99,13 @@ fun ChartsScreen(
                         feature = PremiumFeature.POLLEN_DATA
                     ) {
                         ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
-                            PollenVsSymptomChart(data = data)
+                            PollenVsSymptomChart(data = data, days = days)
                         }
                     }
                 }
                 item {
                     ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
-                        AqiVsSymptomChart(data = data)
+                        AqiVsSymptomChart(data = data, days = days)
                     }
                 }
             } ?: run {
@@ -225,41 +226,102 @@ fun ChartCard(title: String, icon: ImageVector? = null, content: @Composable () 
 }
 
 @Composable
-fun SymptomIntensityChart(data: ChartDataSet) {
-    if (data.symptomPoints.isEmpty() || data.symptomPoints.all { it.avgIntensity == 0f }) {
-        EmptyChartPlaceholder(stringResource(R.string.chart_empty_period))
-        return
+private fun rememberXAxisFormatter(dateLabels: List<String>): CartesianValueFormatter {
+    return remember(dateLabels) {
+        CartesianValueFormatter { _, value, _ ->
+            dateLabels.getOrElse(value.toInt()) { "" }.ifBlank { "—" }
+        }
     }
+}
 
+@Composable
+private fun rememberXAxisItemPlacer(days: Int): HorizontalAxis.ItemPlacer {
+    val step = when {
+        days <= 7 -> 1
+        days <= 14 -> 2
+        else -> 5
+    }
+    return remember(step) {
+        HorizontalAxis.ItemPlacer.aligned(spacing = { step })
+    }
+}
+
+@Composable
+fun SymptomIntensityChart(data: ChartDataSet, days: Int) {
     val symptomColor = MaterialTheme.colorScheme.symptomColor
     val modelProducer = remember { CartesianChartModelProducer() }
+    val xFormatter = rememberXAxisFormatter(data.dateLabels)
+    val xItemPlacer = rememberXAxisItemPlacer(days)
+    val hasData = data.symptomPoints.isNotEmpty() && data.symptomPoints.any { it.avgIntensity > 0f }
 
     LaunchedEffect(data) {
-        modelProducer.runTransaction {
-            columnSeries {
-                series(x = data.symptomPoints.map { it.dayIndex }, y = data.symptomPoints.map { it.avgIntensity })
+        if (hasData) {
+            modelProducer.runTransaction {
+                columnSeries {
+                    series(x = data.symptomPoints.map { it.dayIndex }, y = data.symptomPoints.map { it.avgIntensity })
+                }
             }
         }
     }
 
-    CartesianChartHost(
-        chart = rememberCartesianChart(
-            rememberColumnCartesianLayer(
-                columnProvider = ColumnProvider.series(rememberLineComponent(fill = Fill(symptomColor), thickness = 12.dp))
+    if (hasData) {
+        CartesianChartHost(
+            chart = rememberCartesianChart(
+                rememberColumnCartesianLayer(
+                    columnProvider = ColumnProvider.series(rememberLineComponent(fill = Fill(symptomColor), thickness = 12.dp))
+                ),
+                startAxis = VerticalAxis.rememberStart(valueFormatter = CartesianValueFormatter { _, value, _ -> "%.0f".format(value) }),
+                bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = xFormatter, itemPlacer = xItemPlacer)
             ),
-            startAxis = VerticalAxis.rememberStart(valueFormatter = CartesianValueFormatter { _, value, _ -> "%.0f".format(value) }),
-            bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = CartesianValueFormatter { _, value, _ -> data.dateLabels.getOrElse(value.toInt()) { "" } })
-        ),
-        modelProducer = modelProducer,
-        modifier = Modifier.fillMaxWidth().height(180.dp)
-    )
+            modelProducer = modelProducer,
+            modifier = Modifier.fillMaxWidth().height(180.dp)
+        )
+    } else {
+        EmptyChartPlaceholder(stringResource(R.string.chart_empty_period))
+    }
 }
 
 @Composable
-fun PollenVsSymptomChart(data: ChartDataSet) {
-    val hasAnyPollenData = data.environmentPoints.any { it.pollenAvailable }
+fun PollenVsSymptomChart(data: ChartDataSet, days: Int) {
+    val pollenColor = MaterialTheme.colorScheme.secondary
+    val symptomColor = MaterialTheme.colorScheme.symptomColor
+    val modelProducer = remember { CartesianChartModelProducer() }
+    val xFormatter = rememberXAxisFormatter(data.dateLabels)
+    val xItemPlacer = rememberXAxisItemPlacer(days)
+    val hasPollenData = data.environmentPoints.any { it.pollenAvailable }
+    val pollenPoints = data.environmentPoints.filter { it.pollenAvailable }
 
-    if (!hasAnyPollenData) {
+    LaunchedEffect(data) {
+        if (hasPollenData) {
+            modelProducer.runTransaction {
+                lineSeries {
+                    series(x = pollenPoints.map { it.dayIndex }, y = pollenPoints.map { it.pollenGrass })
+                    series(x = data.symptomPoints.map { it.dayIndex }, y = data.symptomPoints.map { it.avgIntensity })
+                }
+            }
+        }
+    }
+
+    if (hasPollenData) {
+        CartesianChartHost(
+            chart = rememberCartesianChart(
+                rememberLineCartesianLayer(
+                    lineProvider = LineCartesianLayer.LineProvider.series(
+                        LineCartesianLayer.Line(fill = LineFill.single(Fill(pollenColor))),
+                        LineCartesianLayer.Line(fill = LineFill.single(Fill(symptomColor)))
+                    )
+                ),
+                startAxis = VerticalAxis.rememberStart(),
+                bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = xFormatter, itemPlacer = xItemPlacer)
+            ),
+            modelProducer = modelProducer,
+            modifier = Modifier.fillMaxWidth().height(180.dp)
+        )
+        Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            LegendItem(color = pollenColor, label = stringResource(R.string.legend_pollen_grass))
+            LegendItem(color = symptomColor, label = stringResource(R.string.legend_symptoms))
+        }
+    } else {
         AppCard(borderColor = MaterialTheme.colorScheme.outline) {
             Row(
                 modifier = Modifier.padding(8.dp),
@@ -273,76 +335,50 @@ fun PollenVsSymptomChart(data: ChartDataSet) {
                 }
             }
         }
-        return
-    }
-
-    val pollenColor = MaterialTheme.colorScheme.secondary
-    val symptomColor = MaterialTheme.colorScheme.symptomColor
-    val modelProducer = remember { CartesianChartModelProducer() }
-
-    LaunchedEffect(data) {
-        modelProducer.runTransaction {
-            lineSeries {
-                series(x = data.environmentPoints.filter { it.pollenAvailable }.map { it.dayIndex }, y = data.environmentPoints.filter { it.pollenAvailable }.map { it.pollenGrass })
-                series(x = data.symptomPoints.map { it.dayIndex }, y = data.symptomPoints.map { it.avgIntensity })
-            }
-        }
-    }
-
-    CartesianChartHost(
-        chart = rememberCartesianChart(
-            rememberLineCartesianLayer(
-                lineProvider = LineCartesianLayer.LineProvider.series(
-                    LineCartesianLayer.Line(fill = LineFill.single(Fill(pollenColor))),
-                    LineCartesianLayer.Line(fill = LineFill.single(Fill(symptomColor)))
-                )
-            ),
-            startAxis = VerticalAxis.rememberStart(),
-            bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = CartesianValueFormatter { _, value, _ -> data.dateLabels.getOrElse(value.toInt()) { "" } })
-        ),
-        modelProducer = modelProducer,
-        modifier = Modifier.fillMaxWidth().height(180.dp)
-    )
-
-    Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        LegendItem(color = pollenColor, label = stringResource(R.string.legend_pollen_grass))
-        LegendItem(color = symptomColor, label = stringResource(R.string.legend_symptoms))
     }
 }
 
 @Composable
-fun AqiVsSymptomChart(data: ChartDataSet) {
+fun AqiVsSymptomChart(data: ChartDataSet, days: Int) {
     val aqiColor = MaterialTheme.colorScheme.okColor
     val symptomColor = MaterialTheme.colorScheme.symptomColor
     val modelProducer = remember { CartesianChartModelProducer() }
+    val xFormatter = rememberXAxisFormatter(data.dateLabels)
+    val xItemPlacer = rememberXAxisItemPlacer(days)
+    val hasData = data.environmentPoints.any { it.aqi > 0f } || data.symptomPoints.any { it.avgIntensity > 0f }
 
     LaunchedEffect(data) {
-        modelProducer.runTransaction {
-            lineSeries {
-                series(x = data.environmentPoints.map { it.dayIndex }, y = data.environmentPoints.map { it.aqi })
-                series(x = data.symptomPoints.map { it.dayIndex }, y = data.symptomPoints.map { it.avgIntensity })
+        if (hasData) {
+            modelProducer.runTransaction {
+                lineSeries {
+                    series(x = data.environmentPoints.map { it.dayIndex }, y = data.environmentPoints.map { it.aqi })
+                    series(x = data.symptomPoints.map { it.dayIndex }, y = data.symptomPoints.map { it.avgIntensity })
+                }
             }
         }
     }
 
-    CartesianChartHost(
-        chart = rememberCartesianChart(
-            rememberLineCartesianLayer(
-                lineProvider = LineCartesianLayer.LineProvider.series(
-                    LineCartesianLayer.Line(fill = LineFill.single(Fill(aqiColor))),
-                    LineCartesianLayer.Line(fill = LineFill.single(Fill(symptomColor)))
-                )
+    if (hasData) {
+        CartesianChartHost(
+            chart = rememberCartesianChart(
+                rememberLineCartesianLayer(
+                    lineProvider = LineCartesianLayer.LineProvider.series(
+                        LineCartesianLayer.Line(fill = LineFill.single(Fill(aqiColor))),
+                        LineCartesianLayer.Line(fill = LineFill.single(Fill(symptomColor)))
+                    )
+                ),
+                startAxis = VerticalAxis.rememberStart(),
+                bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = xFormatter, itemPlacer = xItemPlacer)
             ),
-            startAxis = VerticalAxis.rememberStart(),
-            bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = CartesianValueFormatter { _, value, _ -> data.dateLabels.getOrElse(value.toInt()) { "" } })
-        ),
-        modelProducer = modelProducer,
-        modifier = Modifier.fillMaxWidth().height(180.dp)
-    )
-
-    Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        LegendItem(color = aqiColor, label = stringResource(R.string.legend_aqi))
-        LegendItem(color = symptomColor, label = stringResource(R.string.legend_symptoms))
+            modelProducer = modelProducer,
+            modifier = Modifier.fillMaxWidth().height(180.dp)
+        )
+        Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            LegendItem(color = aqiColor, label = stringResource(R.string.legend_aqi))
+            LegendItem(color = symptomColor, label = stringResource(R.string.legend_symptoms))
+        }
+    } else {
+        EmptyChartPlaceholder(stringResource(R.string.chart_empty_period))
     }
 }
 

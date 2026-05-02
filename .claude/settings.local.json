@@ -6,7 +6,9 @@
       "Bash(xargs ls *)",
       "Bash(./gradlew :app:compileDebugKotlin)",
       "Bash(grep *)",
-      "WebFetch(domain:openfoodfacts.github.io)"
+      "WebFetch(domain:openfoodfacts.github.io)",
+      "Bash(echo \"foodLogDao výsledky: $?\")",
+      "Bash(echo \"maxValue výsledky: $?\")"
     ]
   }
 }

@@ -160,6 +160,7 @@
     <string name="symptom_urticaria">Kopřivka</string>
     <string name="symptom_asthma">Astma</string>
     <string name="symptom_itching">Svědění</string>
+    <string name="symptom_digestive">Zažívání</string>
     <string name="symptom_other">Jiné</string>
     <string name="symptom_sneezing">Kýchání</string>
 

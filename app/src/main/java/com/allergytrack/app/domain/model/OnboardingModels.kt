@@ -18,6 +18,7 @@ enum class SymptomTypeOnboarding(val label: String, val emoji: String) {
     URTICARIA("Kopřivka", "🔵"),
     ASTHMA("Astma", "🌬"),
     ITCHING("Svědění kůže", "⚡"),
+    DIGESTIVE("Zažívací potíže", "🤢"),
     SNEEZING("Kýchání", "🤧")
 }
 

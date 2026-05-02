@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
-import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
 import com.allergytrack.app.domain.model.SymptomType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +32,6 @@ data class ChartsUiState(
 class ChartsViewModel @Inject constructor(
     private val symptomLogDao: SymptomLogDao,
     private val environmentLogDao: EnvironmentLogDao,
-    private val foodLogDao: FoodLogDao,
     private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper
 ) : ViewModel() {
 
@@ -75,6 +73,11 @@ class ChartsViewModel @Inject constructor(
         val filteredSymptoms = symptomLogs.filter { it.timestamp >= from }
         val filteredEnv = envLogs.filter { it.timestamp >= from }
 
+        // Statistiky respektují aktivní filtr typu příznaku (stejně jako grafy)
+        val displaySymptoms = if (filter != null)
+            filteredSymptoms.filter { it.type == filter.name }
+        else filteredSymptoms
+
         val chartData = ChartDataMapper.mapToChartData(
             symptomLogs = filteredSymptoms,
             environmentLogs = filteredEnv,
@@ -82,20 +85,20 @@ class ChartsViewModel @Inject constructor(
             days = range.days
         )
 
-        val mostFrequent = filteredSymptoms
+        val mostFrequent = displaySymptoms
             .groupBy { it.type }
             .maxByOrNull { it.value.size }
             ?.let { try { SymptomType.valueOf(it.key) } catch (_: IllegalArgumentException) { null } }
 
-        val avgIntensity = if (filteredSymptoms.isEmpty()) 0f
-        else filteredSymptoms.map { it.intensity }.average().toFloat()
+        val avgIntensity = if (displaySymptoms.isEmpty()) 0f
+        else displaySymptoms.map { it.intensity }.average().toFloat()
 
         ChartsUiState(
             isLoading = false,
             selectedRange = range,
             selectedSymptomFilter = filter,
             chartData = chartData,
-            totalSymptomEvents = filteredSymptoms.size,
+            totalSymptomEvents = displaySymptoms.size,
             mostFrequentSymptomType = mostFrequent,
             avgDailyIntensity = avgIntensity
         )

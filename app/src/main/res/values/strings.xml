@@ -160,6 +160,7 @@
     <string name="symptom_urticaria">Urticaria</string>
     <string name="symptom_asthma">Asthma</string>
     <string name="symptom_itching">Itching</string>
+    <string name="symptom_digestive">Digestive</string>
     <string name="symptom_other">Other</string>
     <string name="symptom_sneezing">Sneezing</string>
 

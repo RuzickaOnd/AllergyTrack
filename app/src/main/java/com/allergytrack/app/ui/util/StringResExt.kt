@@ -15,6 +15,7 @@ fun SymptomType.labelRes(): Int = when (this) {
     SymptomType.URTICARIA    -> R.string.symptom_urticaria
     SymptomType.ASTHMA       -> R.string.symptom_asthma
     SymptomType.ITCHING      -> R.string.symptom_itching
+    SymptomType.DIGESTIVE    -> R.string.symptom_digestive
     SymptomType.OTHER        -> R.string.symptom_other
 }
 
@@ -26,6 +27,7 @@ fun SymptomTypeOnboarding.labelRes(): Int = when (this) {
     SymptomTypeOnboarding.URTICARIA   -> R.string.symptom_urticaria
     SymptomTypeOnboarding.ASTHMA      -> R.string.symptom_asthma
     SymptomTypeOnboarding.ITCHING     -> R.string.symptom_itching
+    SymptomTypeOnboarding.DIGESTIVE   -> R.string.symptom_digestive
     SymptomTypeOnboarding.SNEEZING    -> R.string.symptom_sneezing
 }
 

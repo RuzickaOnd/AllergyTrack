@@ -7,5 +7,6 @@ enum class SymptomType(val label: String, val emoji: String) {
     URTICARIA("Urticaria", "🔵"),
     ASTHMA("Asthma", "🌬"),
     ITCHING("Itching", "⚡"),
+    DIGESTIVE("Digestive", "🤢"),
     OTHER("Other", "❓")
 }
