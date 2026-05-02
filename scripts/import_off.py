@@ -36,7 +36,7 @@ SUPABASE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
 # Open Food Facts vyžaduje identifikaci aplikace v User-Agent hlavičce.
 # Bez ní server vrátí 403 Forbidden.
 # Formát: AppName/verze (kontakt)
-OFF_USER_AGENT = "AllergyTrack/1.0 (github.com/tvé-uživatelské-jméno/AllergyTrack)"
+OFF_USER_AGENT = "AllergyTrack/1.0 (github.com/RuzickaOnd/AllergyTrack)"
 
 # Open Food Facts URL — plný JSONL export (komprimovaný gzip, ~7 GB)
 OFF_FULL_EXPORT_URL = (
