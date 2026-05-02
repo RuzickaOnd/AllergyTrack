@@ -32,13 +32,13 @@ jobs:
     # Plný import ~90 min → jednorázové
 
     steps:
-      # ── 1. Checkout kódu ──────────────────────────────────────────
+      # checkout@v5 a setup-python@v6 běží nativně na Node.js 24
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # ── 2. Python setup ───────────────────────────────────────────
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: "pip"
@@ -46,8 +46,7 @@ jobs:
 
       # ── 3. Instalace závislostí ───────────────────────────────────
       - name: Instalace závislostí
-        run: |
-          pip install -r scripts/requirements.txt
+        run: pip install -r scripts/requirements.txt
 
       # ── 4. Delta import (denní) ───────────────────────────────────
       - name: Delta import
@@ -55,8 +54,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-        run: |
-          python scripts/import_off.py
+        run: python scripts/import_off.py
         timeout-minutes: 30
 
       # ── 5. Plný import (manuální, jen při inicializaci) ───────────
@@ -73,5 +71,4 @@ jobs:
       # ── 6. Notifikace při selhání ─────────────────────────────────
       - name: Notifikace při selhání
         if: failure()
-        run: |
-          echo "Import selhal! Zkontroluj logy výše."
+        run: echo "Import selhal — zkontroluj logy výše a tabulku import_log v Supabase."

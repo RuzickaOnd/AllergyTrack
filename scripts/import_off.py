@@ -33,15 +33,20 @@ import requests
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
 
-# Open Food Facts URL — JSONL export (komprimovaný gzip)
-OFF_FULL_EXPORT_URL = "https://static.openfoodfacts.org/data/openfoodfacts-products.jsonl.gz"
+# Open Food Facts vyžaduje identifikaci aplikace v User-Agent hlavičce.
+# Bez ní server vrátí 403 Forbidden.
+# Formát: AppName/verze (kontakt)
+OFF_USER_AGENT = "AllergyTrack/1.0 (github.com/tvé-uživatelské-jméno/AllergyTrack)"
 
-# Delta soubory: https://static.openfoodfacts.org/data/delta/
-# Formát názvu: products_{unix_od}_{unix_do}.json.gz
+# Open Food Facts URL — plný JSONL export (komprimovaný gzip, ~7 GB)
+OFF_FULL_EXPORT_URL = (
+    "https://static.openfoodfacts.org/data/openfoodfacts-products.jsonl.gz"
+)
+
+# Delta soubory: produkty změněné za posledních ~24 hodin
 OFF_DELTA_BASE_URL = "https://static.openfoodfacts.org/data/delta/"
 
-# Filtr zemí — pouze EU produkty (snižuje databázi ~60 %)
-# Přidej/odeber podle potřeby
+# Filtr zemí — pouze EU produkty (snižuje objem dat ~60 %)
 EU_COUNTRY_TAGS = {
     "en:czech-republic", "en:slovakia", "en:germany", "en:austria",
     "en:france", "en:italy", "en:spain", "en:poland", "en:hungary",
@@ -50,8 +55,8 @@ EU_COUNTRY_TAGS = {
     "en:switzerland", "en:united-kingdom",
 }
 
-# Pole která importujeme — přidej sem jakékoliv nové pole
-# Klíče jsou názvy polí v Open Food Facts JSONL exportu
+# Pole která importujeme z OFF JSONL exportu.
+# Přidání nového pole = přidat sem + do extract_fields() + ALTER TABLE v Supabase.
 FIELDS_TO_IMPORT = [
     "code",
     "product_name",
@@ -68,7 +73,7 @@ FIELDS_TO_IMPORT = [
     "last_modified_t",
 ]
 
-# Kolik produktů upsertovat najednou (Supabase limit je 1000)
+# Kolik produktů upsertovat najednou (Supabase max ~1000, bezpečný limit 500)
 BATCH_SIZE = 500
 
 # ── Logging ────────────────────────────────────────────────────────────────────
@@ -80,45 +85,50 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# ── Supabase client (bez SDK — čisté requests) ─────────────────────────────────
+# ── HTTP sessions ──────────────────────────────────────────────────────────────
 
-HEADERS = {
+# Session pro Open Food Facts — s povinným User-Agent
+off_session = requests.Session()
+off_session.headers.update({
+    "User-Agent": OFF_USER_AGENT,
+    # Doporučuje se také uvést e-mail pro případný kontakt ze strany OFF
+    "From": "allergytrack-import@example.com",
+})
+
+# Session pro Supabase — s autentizačními hlavičkami
+supabase_session = requests.Session()
+supabase_session.headers.update({
     "apikey": SUPABASE_KEY,
     "Authorization": f"Bearer {SUPABASE_KEY}",
     "Content-Type": "application/json",
-    "Prefer": "resolution=merge-duplicates",  # upsert chování
-}
+})
 
+# ── Supabase operace ───────────────────────────────────────────────────────────
 
 def supabase_upsert(records: list[dict]) -> tuple[int, int]:
-    """
-    Vloží nebo aktualizuje záznamy v Supabase.
-    Vrací (upserted_count, error_count).
-    """
+    """Vloží nebo aktualizuje záznamy. Vrací (upserted, errors)."""
     if not records:
         return 0, 0
 
-    url = f"{SUPABASE_URL}/rest/v1/food_products"
-    response = requests.post(
-        url,
-        headers={**HEADERS, "Prefer": "return=minimal,resolution=merge-duplicates"},
+    response = supabase_session.post(
+        f"{SUPABASE_URL}/rest/v1/food_products",
+        headers={"Prefer": "return=minimal,resolution=merge-duplicates"},
         json=records,
         timeout=60,
     )
 
     if response.status_code in (200, 201):
         return len(records), 0
-    else:
-        log.error(f"Supabase upsert failed: {response.status_code} — {response.text[:200]}")
-        return 0, len(records)
+
+    log.error(f"Supabase upsert error {response.status_code}: {response.text[:300]}")
+    return 0, len(records)
 
 
 def log_import_start(import_type: str) -> Optional[int]:
-    """Zapíše zahájení importu do import_log tabulky. Vrací ID záznamu."""
-    url = f"{SUPABASE_URL}/rest/v1/import_log"
-    response = requests.post(
-        url,
-        headers={**HEADERS, "Prefer": "return=representation"},
+    """Zapíše zahájení importu. Vrací ID řádku pro pozdější aktualizaci."""
+    response = supabase_session.post(
+        f"{SUPABASE_URL}/rest/v1/import_log",
+        headers={"Prefer": "return=representation"},
         json={
             "import_type": import_type,
             "started_at": datetime.now(timezone.utc).isoformat(),
@@ -133,83 +143,72 @@ def log_import_start(import_type: str) -> Optional[int]:
 
 
 def log_import_finish(log_id: Optional[int], stats: dict):
-    """Aktualizuje záznam v import_log po dokončení."""
+    """Finalizuje záznam v import_log."""
     if log_id is None:
         return
-    url = f"{SUPABASE_URL}/rest/v1/import_log?id=eq.{log_id}"
-    requests.patch(
-        url,
-        headers=HEADERS,
-        json={
-            "finished_at": datetime.now(timezone.utc).isoformat(),
-            **stats,
-        },
+    supabase_session.patch(
+        f"{SUPABASE_URL}/rest/v1/import_log?id=eq.{log_id}",
+        json={"finished_at": datetime.now(timezone.utc).isoformat(), **stats},
         timeout=30,
     )
 
-
-# ── Zpracování produktu ────────────────────────────────────────────────────────
+# ── Zpracování produktů ────────────────────────────────────────────────────────
 
 def is_eu_product(product: dict) -> bool:
-    """Vrací True pokud produkt pochází alespoň z jedné EU země."""
-    countries = set(product.get("countries_tags", []))
-    return bool(countries & EU_COUNTRY_TAGS)
+    """True pokud produkt pochází alespoň z jedné EU země."""
+    return bool(set(product.get("countries_tags", [])) & EU_COUNTRY_TAGS)
 
 
 def extract_fields(product: dict) -> Optional[dict]:
     """
-    Extrahuje pouze potřebná pole z produktového záznamu.
-    Vrací None pokud produkt nemá ani jeden z názvů.
+    Extrahuje potřebná pole. Vrátí None pro produkty bez názvu nebo kódu.
+    Pro přidání nového pole: přidej sem řádek a do FIELDS_TO_IMPORT.
     """
-    code = product.get("code", "").strip()
+    code = (product.get("code") or "").strip()
     if not code:
         return None
 
-    product_name = product.get("product_name", "") or None
-    product_name_cs = product.get("product_name_cs", "") or None
+    product_name    = product.get("product_name")    or None
+    product_name_cs = product.get("product_name_cs") or None
 
     # Přeskoč produkty bez jakéhokoliv názvu
     if not product_name and not product_name_cs:
         return None
 
     return {
-        "code": code,
-        "product_name": product_name,
-        "product_name_cs": product_name_cs,
-        "allergens_tags": product.get("allergens_tags", []) or [],
-        "ingredients_text": product.get("ingredients_text", "") or None,
-        "ingredients_text_cs": product.get("ingredients_text_cs", "") or None,
-        "brands": product.get("brands", "") or None,
-        "categories_tags": product.get("categories_tags", []) or [],
-        "countries_tags": product.get("countries_tags", []) or [],
-        "nutriscore_grade": product.get("nutriscore_grade", "") or None,
-        "nova_group": product.get("nova_group") or None,
-        "image_url": product.get("image_url", "") or None,
-        "last_modified_t": product.get("last_modified_t") or None,
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "code":                code,
+        "product_name":        product_name,
+        "product_name_cs":     product_name_cs,
+        "allergens_tags":      product.get("allergens_tags")  or [],
+        "ingredients_text":    product.get("ingredients_text") or None,
+        "ingredients_text_cs": product.get("ingredients_text_cs") or None,
+        "brands":              product.get("brands")          or None,
+        "categories_tags":     product.get("categories_tags") or [],
+        "countries_tags":      product.get("countries_tags")  or [],
+        "nutriscore_grade":    product.get("nutriscore_grade") or None,
+        "nova_group":          product.get("nova_group")      or None,
+        "image_url":           product.get("image_url")       or None,
+        "last_modified_t":     product.get("last_modified_t") or None,
+        "updated_at":          datetime.now(timezone.utc).isoformat(),
     }
 
-
-# ── Stažení a stream zpracování ────────────────────────────────────────────────
+# ── Stream zpracování ──────────────────────────────────────────────────────────
 
 def process_stream(url: str, label: str) -> tuple[int, int, int]:
     """
     Streamově stáhne a zpracuje JSONL.gz soubor.
+    Nikdy nestahuje celý soubor do RAM — vhodné pro 7GB plný export.
     Vrací (processed, upserted, skipped).
-
-    Stream zpracování = nikdy nestahuje celý soubor do RAM.
-    Ideální pro 7GB soubory v GitHub Actions s 7GB RAM limitem.
     """
     log.info(f"Stahuji: {label}")
     log.info(f"URL: {url}")
 
-    processed = 0
-    upserted = 0
-    skipped = 0
-    batch = []
-    start_time = time.time()
+    processed = upserted = skipped = 0
+    batch: list[dict] = []
+    start = time.time()
 
-    with requests.get(url, stream=True, timeout=300) as response:
+    # Použij off_session — obsahuje správný User-Agent
+    with off_session.get(url, stream=True, timeout=300) as response:
         response.raise_for_status()
 
         # Streamový gzip decoder
@@ -248,12 +247,11 @@ def process_stream(url: str, label: str) -> tuple[int, int, int]:
 
                     # Progress log každých 10 000 produktů
                     if processed % 10_000 == 0:
-                        elapsed = time.time() - start_time
-                        rate = processed / elapsed
+                        rate = processed / (time.time() - start)
                         log.info(
-                            f"Progress: {processed:,} zpracováno, "
-                            f"{upserted:,} upsertováno, "
-                            f"{rate:.0f} produktů/s"
+                            f"  {processed:>8,} zpracováno | "
+                            f"{upserted:>7,} upsertováno | "
+                            f"{rate:>5.0f} prod/s"
                         )
 
         # Zbývající batch
@@ -261,106 +259,79 @@ def process_stream(url: str, label: str) -> tuple[int, int, int]:
             u, _ = supabase_upsert(batch)
             upserted += u
 
-    elapsed = time.time() - start_time
+    elapsed = time.time() - start
     log.info(
         f"Hotovo: {processed:,} zpracováno, "
         f"{upserted:,} upsertováno, "
         f"{skipped:,} přeskočeno, "
         f"čas: {elapsed:.0f}s"
     )
-
     return processed, upserted, skipped
 
-
-# ── Delta export ────────────────────────────────────────────────────────────────
+# ── Delta soubory ──────────────────────────────────────────────────────────────
 
 def get_delta_urls() -> list[str]:
-    """
-    Stáhne seznam delta souborů za posledních 24 hodin.
-    Delta soubory mají formát: products_{unix_od}_{unix_do}.json.gz
-    """
-    # Stáhni index delta souborů
-    response = requests.get(OFF_DELTA_BASE_URL, timeout=30)
+    """Vrátí URL delta souborů z posledních 24 hodin."""
+    response = off_session.get(OFF_DELTA_BASE_URL, timeout=30)
     response.raise_for_status()
 
-    # Parsuj HTML index (jednoduchý přístup)
-    cutoff_time = int(time.time()) - 86400  # 24 hodin zpět
+    cutoff = int(time.time()) - 86400
     urls = []
 
     for line in response.text.split("\n"):
-        if "products_" in line and ".json.gz" in line:
-            # Extrahuj název souboru z HTML
-            start = line.find("products_")
-            end = line.find(".json.gz", start) + len(".json.gz")
-            if start != -1 and end != -1:
-                filename = line[start:end]
-                # Extrahuj unix timestamp konce souboru (druhé číslo v názvu)
-                parts = filename.replace("products_", "").replace(".json.gz", "").split("_")
-                if len(parts) == 2:
-                    try:
-                        file_end_time = int(parts[1])
-                        if file_end_time >= cutoff_time:
-                            urls.append(OFF_DELTA_BASE_URL + filename)
-                    except ValueError:
-                        pass
+        if "products_" not in line or ".json.gz" not in line:
+            continue
 
-    log.info(f"Nalezeno {len(urls)} delta souborů za posledních 24h")
+        start = line.find("products_")
+        end   = line.find(".json.gz", start) + len(".json.gz")
+        if start == -1 or end == -1:
+            continue
+
+        filename = line[start:end]
+        parts = filename.replace("products_", "").replace(".json.gz", "").split("_")
+        if len(parts) != 2:
+            continue
+
+        try:
+            if int(parts[1]) >= cutoff:
+                urls.append(OFF_DELTA_BASE_URL + filename)
+        except ValueError:
+            continue
+
+    log.info(f"Nalezeno {len(urls)} delta souborů za posledních 24 h")
     return urls
 
-
-# ── Hlavní logika ──────────────────────────────────────────────────────────────
+# ── Hlavní funkce ──────────────────────────────────────────────────────────────
 
 def run_full_import():
-    """
-    Import celé databáze (filtrované na EU).
-    Spouštěj jednou při inicializaci.
-    Očekávaný čas: 45–90 minut (7GB soubor).
-    """
-    log.info("=== SPOUŠTÍM PLNÝ IMPORT ===")
-    log.info("Toto může trvat 45–90 minut.")
-
+    """Plný import — spouštěj jednou při inicializaci (60–90 min)."""
+    log.info("=== PLNÝ IMPORT — může trvat 60–90 minut ===")
     log_id = log_import_start("full")
-
     try:
-        processed, upserted, skipped = process_stream(
-            OFF_FULL_EXPORT_URL,
-            "Open Food Facts — plný export"
-        )
-
+        p, u, s = process_stream(OFF_FULL_EXPORT_URL, "OFF plný export")
         log_import_finish(log_id, {
-            "products_processed": processed,
-            "products_upserted": upserted,
-            "products_skipped": skipped,
+            "products_processed": p,
+            "products_upserted": u,
+            "products_skipped": s,
             "status": "success",
         })
-
     except Exception as e:
         log.error(f"Plný import selhal: {e}")
-        log_import_finish(log_id, {
-            "status": "failed",
-            "error_message": str(e),
-        })
+        log_import_finish(log_id, {"status": "failed", "error_message": str(e)})
         raise
 
 
 def run_delta_import():
-    """
-    Import denního delta exportu.
-    Spouštěj každý den (GitHub Actions cron).
-    Očekávaný čas: 2–10 minut.
-    """
-    log.info("=== SPOUŠTÍM DELTA IMPORT ===")
-
+    """Denní delta import — spouštěj každý den přes cron (2–10 min)."""
+    log.info("=== DELTA IMPORT ===")
     log_id = log_import_start("delta")
-    total_processed = 0
-    total_upserted = 0
-    total_skipped = 0
+    total_p = total_u = total_s = 0
 
     try:
-        delta_urls = get_delta_urls()
+        urls = get_delta_urls()
 
-        if not delta_urls:
-            log.warning("Žádné delta soubory k importu — možná ještě nejsou k dispozici")
+        if not urls:
+            log.warning("Žádné delta soubory — možná ještě nejsou k dispozici, zkus znovu za hodinu")
             log_import_finish(log_id, {
                 "status": "success",
                 "products_processed": 0,
@@ -369,37 +340,32 @@ def run_delta_import():
             })
             return
 
-        for url in delta_urls:
-            filename = url.split("/")[-1]
-            processed, upserted, skipped = process_stream(url, filename)
-            total_processed += processed
-            total_upserted += upserted
-            total_skipped += skipped
+        for url in urls:
+            p, u, s = process_stream(url, url.split("/")[-1])
+            total_p += p
+            total_u += u
+            total_s += s
 
         log_import_finish(log_id, {
-            "products_processed": total_processed,
-            "products_upserted": total_upserted,
-            "products_skipped": total_skipped,
+            "products_processed": total_p,
+            "products_upserted": total_u,
+            "products_skipped": total_s,
             "status": "success",
         })
 
     except Exception as e:
         log.error(f"Delta import selhal: {e}")
-        log_import_finish(log_id, {
-            "status": "failed",
-            "error_message": str(e),
-        })
+        log_import_finish(log_id, {"status": "failed", "error_message": str(e)})
         raise
-
 
 # ── Entry point ────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="AllergyTrack — OFF import skript")
+    parser = argparse.ArgumentParser(description="AllergyTrack — OFF import")
     parser.add_argument(
         "--full",
         action="store_true",
-        help="Spustí plný import celé databáze (první inicializace)",
+        help="Plný import celé databáze (pouze při první inicializaci)",
     )
     args = parser.parse_args()
 
