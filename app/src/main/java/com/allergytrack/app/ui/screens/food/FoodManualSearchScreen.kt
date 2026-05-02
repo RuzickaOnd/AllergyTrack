@@ -1,15 +1,40 @@
 package com.allergytrack.app.ui.screens.food
 
 import android.net.Uri
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -56,7 +81,9 @@ fun FoodManualSearchScreen(
                 Icon(
                     imageVector = Icons.Outlined.Info,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp).padding(top = 2.dp),
+                    modifier = Modifier
+                        .size(16.dp)
+                        .padding(top = 2.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
@@ -86,7 +113,9 @@ fun FoodManualSearchScreen(
             )
 
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(top = 16.dp, bottom = 100.dp)
             ) {
@@ -168,46 +197,45 @@ fun FoodManualSearchScreen(
                     }
                 }
             }
-        }
 
-        // Tlačítko "Zadat ručně" — vždy viditelné; Primary když nejsou výsledky, Secondary když jsou
-        val hasResults = searchResults.isNotEmpty()
-        val buttonLabel = if (searchState.query.length >= 2)
-            stringResource(R.string.search_add_manually, searchState.query)
-        else
-            stringResource(R.string.btn_add_food_manually)
-        val buttonModifier = Modifier
-            .align(Alignment.BottomCenter)
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 16.dp)
+            // Tlačítko "Zadat ručně" — vždy viditelné; Primary když nejsou výsledky, Secondary když jsou
+            val hasResults = searchResults.isNotEmpty()
+            val buttonLabel = if (searchState.query.length >= 2)
+                stringResource(R.string.search_add_manually, searchState.query)
+            else
+                stringResource(R.string.btn_add_food_manually)
+            val buttonModifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp)
 
-        if (hasResults) {
-            OutlinedButton(
-                onClick = {
-                    navController.navigate(
-                        Screen.FoodManualEntry.createRoute(Uri.encode(searchState.query))
+            if (hasResults) {
+                OutlinedButton(
+                    onClick = {
+                        navController.navigate(
+                            Screen.FoodManualEntry.createRoute(Uri.encode(searchState.query))
+                        )
+                    },
+                    modifier = buttonModifier,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(buttonLabel)
+                }
+            } else {
+                Button(
+                    onClick = {
+                        navController.navigate(
+                            Screen.FoodManualEntry.createRoute(Uri.encode(searchState.query))
+                        )
+                    },
+                    modifier = buttonModifier,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
-                },
-                modifier = buttonModifier,
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(buttonLabel)
-            }
-        } else {
-            Button(
-                onClick = {
-                    navController.navigate(
-                        Screen.FoodManualEntry.createRoute(Uri.encode(searchState.query))
-                    )
-                },
-                modifier = buttonModifier,
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            ) {
-                Text(buttonLabel, fontFamily = MonoFontFamily)
+                ) {
+                    Text(buttonLabel, fontFamily = MonoFontFamily)
+                }
             }
         }
     }
