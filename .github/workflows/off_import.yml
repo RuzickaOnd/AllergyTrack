@@ -18,6 +18,10 @@ on:
           - "false"
           - "true"
 
+# Opt-in do Node.js 24 — odstraní deprecation varování
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   import:
     name: Import Open Food Facts dat
@@ -38,11 +42,12 @@ jobs:
         with:
           python-version: "3.12"
           cache: "pip"
+          cache-dependency-path: "scripts/requirements.txt"
 
       # ── 3. Instalace závislostí ───────────────────────────────────
       - name: Instalace závislostí
         run: |
-          pip install requests
+          pip install -r scripts/requirements.txt
 
       # ── 4. Delta import (denní) ───────────────────────────────────
       - name: Delta import
@@ -70,17 +75,3 @@ jobs:
         if: failure()
         run: |
           echo "Import selhal! Zkontroluj logy výše."
-          echo "Chyby jsou také zaznamenány v Supabase tabulce import_log."
-
-# ── Jak nastavit Secrets ──────────────────────────────────────────
-# GitHub repo → Settings → Secrets and variables → Actions → New secret
-#
-# SUPABASE_URL:
-#   Hodnota: https://tvujprojekt.supabase.co
-#   Kde najít: Supabase → Project Settings → API → Project URL
-#
-# SUPABASE_SERVICE_KEY:
-#   Hodnota: eyJ... (dlouhý JWT token)
-#   Kde najít: Supabase → Project Settings → API → service_role key
-#   DŮLEŽITÉ: Nikdy nepoužívej anon key pro import! Service role má write přístup.
-#   DŮLEŽITÉ: Tento klíč drž v tajnosti — má plný přístup k databázi.
