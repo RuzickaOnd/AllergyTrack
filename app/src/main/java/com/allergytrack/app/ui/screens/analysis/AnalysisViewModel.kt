@@ -21,6 +21,7 @@ import com.allergytrack.app.domain.premium.PremiumHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 data class AnalysisUiState(
@@ -34,7 +35,7 @@ data class AnalysisUiState(
     val showDisclaimer: Boolean = false,
     val disclaimer: String = "",
     val isExporting: Boolean = false,
-    val exportSuccess: Boolean = false
+    val exportedFile: File? = null
 )
 
 @HiltViewModel
@@ -209,13 +210,14 @@ class AnalysisViewModel @Inject constructor(
             val state = _uiState.value
             val file = medicalReportExporter.generatePdfReport(
                 correlations = state.correlations,
+                foodTriggers = state.foodTriggers,
                 aiSummary = state.aiSummary
             )
-            _uiState.update { it.copy(isExporting = false, exportSuccess = file != null) }
+            _uiState.update { it.copy(isExporting = false, exportedFile = file) }
         }
     }
 
-    fun dismissExportSuccess() {
-        _uiState.update { it.copy(exportSuccess = false) }
+    fun dismissExport() {
+        _uiState.update { it.copy(exportedFile = null) }
     }
 }

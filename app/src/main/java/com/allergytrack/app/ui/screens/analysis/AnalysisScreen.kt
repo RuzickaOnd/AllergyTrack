@@ -32,6 +32,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,8 +43,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.content.Intent
+import android.widget.Toast
 import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.AnalysisReadiness
 import com.allergytrack.app.domain.model.Correlation
@@ -72,6 +76,28 @@ fun AnalysisScreen(
     val showAnalysisUpsell by viewModel.showAnalysisUpsell.collectAsStateWithLifecycle()
     val isExportVisible by viewModel.isExportVisible.collectAsStateWithLifecycle()
     val showExportUpsell by viewModel.showExportUpsell.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiState.exportedFile) {
+        uiState.exportedFile?.let { file ->
+            try {
+                val uri = FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.fileprovider",
+                    file
+                )
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "application/pdf"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                context.startActivity(Intent.createChooser(intent, "Sdílet lékařský report"))
+            } catch (e: Exception) {
+                Toast.makeText(context, "Chyba při sdílení PDF", Toast.LENGTH_SHORT).show()
+            } finally {
+                viewModel.dismissExport()
+            }
+        }
+    }
 
     if (!isAnalysisVisible) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -102,11 +128,9 @@ fun AnalysisScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item { Spacer(Modifier.height(8.dp)) }
-
         if (uiState.showDisclaimer) {
             item {
                 AnalysisDisclaimerBanner(disclaimer = uiState.disclaimer)
@@ -228,8 +252,6 @@ fun AnalysisScreen(
                 )
             }
         }
-
-        item { Spacer(Modifier.height(100.dp)) }
     }
 }
 
