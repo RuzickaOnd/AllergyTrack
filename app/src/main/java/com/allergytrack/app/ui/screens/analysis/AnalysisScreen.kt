@@ -3,17 +3,36 @@ package com.allergytrack.app.ui.screens.analysis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Insights
-import androidx.compose.material.icons.outlined.Lightbulb
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.AnalysisReadiness
 import com.allergytrack.app.domain.model.Correlation
@@ -33,8 +51,15 @@ import com.allergytrack.app.domain.model.CorrelationSeverity
 import com.allergytrack.app.domain.model.FoodTrigger
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.domain.model.TriggerType
-import com.allergytrack.app.ui.components.*
-import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.components.AiBadge
+import com.allergytrack.app.ui.components.AppCard
+import com.allergytrack.app.ui.components.CardTitle
+import com.allergytrack.app.ui.components.PremiumGate
+import com.allergytrack.app.ui.components.PremiumUpsellCard
+import com.allergytrack.app.ui.components.SecondaryButton
+import com.allergytrack.app.ui.theme.okColor
+import com.allergytrack.app.ui.theme.symptomColor
+import com.allergytrack.app.ui.theme.warningColor
 import com.allergytrack.app.ui.util.labelRes
 
 @Composable
@@ -68,6 +93,7 @@ fun AnalysisScreen(
             AnalysisLockedScreen(readiness = readiness)
             return
         }
+
         is AnalysisReadiness.Partial, is AnalysisReadiness.Full -> {
             // Pokračovat k zobrazení analýzy
         }
@@ -214,14 +240,14 @@ fun CorrelationItem(
 ) {
     val scorePercent = (correlation.score * 100).toInt()
     val severityColor = when (correlation.severity) {
-        CorrelationSeverity.HIGH   -> MaterialTheme.colorScheme.symptomColor
+        CorrelationSeverity.HIGH -> MaterialTheme.colorScheme.symptomColor
         CorrelationSeverity.MEDIUM -> MaterialTheme.colorScheme.warningColor
-        CorrelationSeverity.LOW    -> MaterialTheme.colorScheme.okColor
+        CorrelationSeverity.LOW -> MaterialTheme.colorScheme.okColor
     }
     val triggerIcon = when (correlation.triggerType) {
-        TriggerType.FOOD        -> "🍽"
+        TriggerType.FOOD -> "🍽"
         TriggerType.ENVIRONMENT -> "🌿"
-        TriggerType.COMBINED    -> "⚡"
+        TriggerType.COMBINED -> "⚡"
     }
     val symptomLabel = stringResource(correlation.symptomType.labelRes())
     val detailsText = stringResource(
@@ -355,14 +381,17 @@ fun AnalysisLockedScreen(readiness: AnalysisReadiness.Locked) {
             Spacer(Modifier.height(8.dp))
             LinearProgressIndicator(
                 progress = { readiness.progress },
-                modifier = Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(CircleShape),
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.outline
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 "Každý symptom se počítá — " +
-                "zaznamenej jak se cítíš kdykoli během dne.",
+                        "zaznamenej jak se cítíš kdykoli během dne.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -406,9 +435,9 @@ fun FoodTriggerCard(
     onClick: () -> Unit
 ) {
     val severityColor = when (trigger.severity) {
-        CorrelationSeverity.HIGH   -> MaterialTheme.colorScheme.symptomColor
+        CorrelationSeverity.HIGH -> MaterialTheme.colorScheme.symptomColor
         CorrelationSeverity.MEDIUM -> MaterialTheme.colorScheme.warningColor
-        CorrelationSeverity.LOW    -> MaterialTheme.colorScheme.okColor
+        CorrelationSeverity.LOW -> MaterialTheme.colorScheme.okColor
     }
 
     Card(
