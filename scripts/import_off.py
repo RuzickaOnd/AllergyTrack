@@ -42,7 +42,7 @@ SUPABASE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
 # POZOR: HTTP hlavičky musí být čisté ASCII — žádná diakritika!
 # Formát: AppName/verze (odkaz-na-projekt)
 # Uprav pouze github.com/... část — použij své GitHub uživatelské jmeno BEZ diakritiky.
-OFF_USER_AGENT = "AllergyTrack/1.0 (github.com/YOUR-GITHUB-USERNAME/AllergyTrack)"
+OFF_USER_AGENT = "AllergyTrack/1.0 (github.com/RuzickaOnd/AllergyTrack)"
 
 # Open Food Facts URL — plný JSONL export (komprimovaný gzip, ~7 GB)
 OFF_FULL_EXPORT_URL = (
