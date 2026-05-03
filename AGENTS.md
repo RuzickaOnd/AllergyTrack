@@ -431,3 +431,20 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 - **Data Log:** Pole pro pyly v `EnvironmentLog` musí být nullable.
 - **UI:** Pokud jsou data nedostupná (`pollenAvailable == false`), UI musí zobrazit informativní banner/badge místo prázdných grafů nebo chyb (platí pro Dashboard i Grafy).
 - **Analýza:** `CorrelationEngine` musí ignorovat záznamy s `pollenAvailable == false` při výpočtu korelací pylů, aby nedocházelo ke zkreslení výsledků nulami tam, kde data jen chyběla.
+
+---
+
+## 15. EXPORT A PDF REPORTY
+
+### Architektura exportu
+- **MedicalReportExporter**: Třída v `domain/export/` zodpovědná za generování PDF pomocí `android.graphics.pdf.PdfDocument`.
+- **Lokální uložení**: Reporty se ukládají do veřejné složky `Documents/AllergyTrack` pomocí `MediaStore` (Scoped Storage kompatibilní pro Android 10+).
+- **Sdílení**: Probíhá přes `FileProvider` (autorita `${applicationId}.fileprovider`). Cesty jsou definovány v `res/xml/file_paths.xml`.
+
+### Pravidla pro UI export
+- Veškerá logika pro odchycení vygenerovaného souboru a spuštění sdílení musí být unifikována v **`AnalysisExportHandler(viewModel)`** (v `ui/util/ExportUtils.kt`).
+- Tento handler se umisťuje do obrazovek (`AnalysisScreen`) nebo scaffoldů (`MainAppScaffold`), které mají možnost export spustit.
+- Pro samotné sdílení souboru z libovolného místa slouží extension funkce `Context.sharePdfFile(file)`.
+
+### Globální Context
+- Pro případy, kdy je vyžadován `Application Context` a není k dispozici DI (např. statické helpery), lze použít **`AllergyTrackApplication.instance`**. V rámci Hilt modulů a ViewModelů však vždy preferuj `@ApplicationContext context: Context`.

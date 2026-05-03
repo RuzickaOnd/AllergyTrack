@@ -55,6 +55,9 @@ com.allergytrack.app/
 │   │   ├── Screen.kt          ← Sealed class všech routes (viz Food sub-flow níže)
 │   │   ├── NavGraph.kt        ← AllergyNavGraph + MainAppScaffold
 │   │   └── MainAppScaffold.kt
+│   ├── util/
+│   │   ├── StringResExt.kt
+│   │   └── ExportUtils.kt     ← AnalysisExportHandler, sharePdfFile()
 │   ├── components/
 │   │   ├── CommonUI.kt        ← AppCard, CardTitle(icon), Pill(onClick), PrimaryButton,
 │   │   │                         SecondaryButton, SectionHeading, AiBadge
@@ -118,6 +121,8 @@ com.allergytrack.app/
 │   │   └── PremiumRepository.kt
 │   ├── premium/
 │   │   └── PremiumHelper.kt           ← Centrální správce přístupu k funkcím
+│   ├── export/
+│   │   └── MedicalReportExporter.kt   ← Generování PDF (A4, Canvas, MediaStore)
 │   ├── analysis/
 │   │   └── CorrelationEngine.kt       ← Pearsonova korelace, time window 2–72h
 │   └── usecase/
@@ -333,6 +338,20 @@ Každá změna schématu = zvýšení verze + Migration objekt.
 |------|-----|---------|-------|
 | `food_search_language` | String | `""` | Kód jazyka vyhledávání; prázdný = auto z `Locale.getDefault()` |
 
+### 9. Export a PDF reporty
+
+Aplikace umožňuje vygenerovat lékařský report ve formátu PDF pro sdílení s lékařem.
+
+#### Architektura:
+- **MedicalReportExporter**: Generuje PDF na A4 Canvas. Obsahuje AI shrnutí, top korelace a podezřelé potraviny.
+- **MediaStore**: Reporty se ukládají do veřejné složky `Documents/AllergyTrack` (Android 10+).
+- **Sdílení**: Probíhá přes `FileProvider` (`${applicationId}.fileprovider`).
+
+#### Implementace v UI:
+- **AnalysisExportHandler**: Sjednocená Composable funkce v `ExportUtils.kt`.
+- **Sjednocení**: Handler je umístěn v `AnalysisScreen` i v `MainAppScaffold`, aby export fungoval konzistentně z obou míst.
+- **Context**: Využívá `AllergyTrackApplication.instance` nebo `applicationContext` pro operace mimo UI (Toast, FileProvider).
+
 ---
 
 ## API PŘEHLED
@@ -502,6 +521,7 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 | 10d | FoodManualEntryScreen: ruční zadání + EU 14 alergenů + návrh alergenů (A+B) | ✅ |
 | 10e | FoodManualSearchScreen: info banner, always-visible "Přidat ručně", 503 handling | ✅ |
 | 11 | Supabase backend: vlastní PostgreSQL, denní OFF import, Android integrace | ✅ |
+| 12 | PDF Export: MedicalReportExporter, MediaStore, AnalysisExportHandler | ✅ |
 
 ---
 
@@ -521,7 +541,6 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 
 **Funkce:**
 - Notifikace — večerní připomínka logování (WorkManager + NotificationManager)
-- Sdílení / PDF export reportu (placeholder → skutečný PDF)
 - Nastavení intervalu WorkManager (30 min default, uživatel může změnit)
 
 **Technický dluh:**
