@@ -41,7 +41,6 @@ SUPABASE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
 # Bez ní server vrátí 403 Forbidden.
 # POZOR: HTTP hlavičky musí být čisté ASCII — žádná diakritika!
 # Formát: AppName/verze (odkaz-na-projekt)
-# Uprav pouze github.com/... část — použij své GitHub uživatelské jmeno BEZ diakritiky.
 OFF_USER_AGENT = "AllergyTrack/1.0 (github.com/RuzickaOnd/AllergyTrack)"
 
 # Open Food Facts URL — plný JSONL export (komprimovaný gzip, ~7 GB)
