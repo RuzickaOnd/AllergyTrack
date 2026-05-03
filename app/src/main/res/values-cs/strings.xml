@@ -181,6 +181,8 @@
     <string name="stat_matches">SHODY</string>
     <string name="stat_latency">LATENCE</string>
     <string name="stat_impact">DOPAD</string>
+    <string name="analysis_correlation_detail">Detail korelace</string>
+    <string name="analysis_food_trigger_detail">Detail spouštěče</string>
     <string name="correlation_insight_title">Klinický vhled</string>
     <string name="correlation_recommendation_title">Doporučení</string>
     <string name="analysis_locked_title">Analýza se připravuje</string>

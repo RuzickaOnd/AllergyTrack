@@ -41,7 +41,7 @@ fun DebugMenuScreen(
 
         DebugPremiumOverride.values().forEach { option ->
             val isSelected = option == premiumOverride
-            
+
             Surface(
                 onClick = { viewModel.setPremiumOverride(option) },
                 shape = MaterialTheme.shapes.medium,
@@ -124,9 +124,9 @@ fun DebugMenuScreen(
         }
 
         Spacer(Modifier.height(16.dp))
-        
+
         HorizontalDivider()
-        
+
         Text(
             stringResource(R.string.debug_other_options),
             style = MaterialTheme.typography.titleMedium,

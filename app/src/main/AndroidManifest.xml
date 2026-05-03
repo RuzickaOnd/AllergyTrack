@@ -35,6 +35,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.screens.analysis.FoodTriggerDetailActivity"
+            android:exported="false"
+            android:label="@string/analysis_food_trigger_detail"
+            android:theme="@style/Theme.AllergyTrack" />
+
+        <activity
+            android:name=".ui.screens.analysis.CorrelationDetailActivity"
+            android:exported="false"
+            android:label="@string/analysis_correlation_detail"
+            android:theme="@style/Theme.AllergyTrack" />
     </application>
 
 </manifest>

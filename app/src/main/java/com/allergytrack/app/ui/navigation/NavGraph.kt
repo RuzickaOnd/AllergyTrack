@@ -3,6 +3,11 @@ package com.allergytrack.app.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -12,6 +17,7 @@ import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.ui.components.PermissionDeniedScreen
 import com.allergytrack.app.ui.components.RequestCameraPermission
 import com.allergytrack.app.ui.screens.analysis.AnalysisScreen
+import com.allergytrack.app.ui.screens.analysis.AnalysisViewModel
 import com.allergytrack.app.ui.screens.charts.ChartsScreen
 import com.allergytrack.app.ui.screens.dashboard.DashboardScreen
 import com.allergytrack.app.ui.screens.food.CameraScreen
@@ -97,7 +103,7 @@ fun AllergyNavGraph(
             ChartsScreen(navController = navController)
         }
         composable(Screen.Analysis.route) {
-            AnalysisScreen(navController = navController)
+            AnalysisScreen()
         }
         composable(Screen.Profile.route) {
             ProfileScreen(navController = navController)

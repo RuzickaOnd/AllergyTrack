@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,6 +30,7 @@ import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.AnalysisReadiness
 import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.CorrelationSeverity
+import com.allergytrack.app.domain.model.FoodTrigger
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.domain.model.TriggerType
 import com.allergytrack.app.ui.components.*
@@ -37,9 +39,9 @@ import com.allergytrack.app.ui.util.labelRes
 
 @Composable
 fun AnalysisScreen(
-    navController: NavController,
     viewModel: AnalysisViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isAnalysisVisible by viewModel.isAnalysisVisible.collectAsStateWithLifecycle()
     val showAnalysisUpsell by viewModel.showAnalysisUpsell.collectAsStateWithLifecycle()
@@ -69,14 +71,6 @@ fun AnalysisScreen(
         is AnalysisReadiness.Partial, is AnalysisReadiness.Full -> {
             // Pokračovat k zobrazení analýzy
         }
-    }
-
-    uiState.selectedCorrelation?.let { corr ->
-        CorrelationDetailSheet(
-            correlation = corr,
-            onDismiss = { viewModel.onCorrelationSelected(null) }
-        )
-        return
     }
 
     LazyColumn(
@@ -114,7 +108,83 @@ fun AnalysisScreen(
                 items(uiState.correlations) { correlation ->
                     CorrelationItem(
                         correlation = correlation,
-                        onClick = { viewModel.onCorrelationSelected(correlation) }
+                        onClick = {
+                            CorrelationDetailActivity.start(
+                                context = context,
+                                trigger = correlation.trigger,
+                                triggerType = correlation.triggerType.name,
+                                symptomType = correlation.symptomType.name
+                            )
+                        }
+                    )
+                }
+            }
+        }
+
+        // ── Sekce: Spouštěče jídla ──────────────────────────────────────
+        if (uiState.foodTriggers.isNotEmpty()) {
+            item {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Spouštěče z jídla",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    "Jídla a alergeny nejčastěji spojené s reakcemi",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(8.dp))
+            }
+
+            items(
+                items = uiState.foodTriggers.take(6),  // max 6 karet
+                key = { it.allergenKey }
+            ) { trigger ->
+                FoodTriggerCard(
+                    trigger = trigger,
+                    onClick = {
+                        FoodTriggerDetailActivity.start(context, trigger.allergenKey)
+                    }
+                )
+                Spacer(Modifier.height(8.dp))
+            }
+
+            // Tlačítko "zobrazit vše" pokud je více než 6
+            if (uiState.foodTriggers.size > 6) {
+                item {
+                    TextButton(
+                        onClick = { /* TODO: rozbalit / zobrazit všechny */ },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Zobrazit všechny spouštěče (${uiState.foodTriggers.size})")
+                    }
+                }
+            }
+
+        } else if (uiState.foodTriggersLoading) {
+            item {
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                }
+            }
+        } else if (!uiState.foodTriggersLoading && uiState.readiness !is AnalysisReadiness.Locked) {
+            item {
+                // Empty state — dostatek dat pro analýzu, ale žádné korelace nenalezeny
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Text(
+                        "Zatím nejsou nalezeny žádné vzorce. " +
+                                "Zaznamenávej jídlo a příznaky pravidelně — analýza se zlepšuje s časem.",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -228,88 +298,6 @@ fun CorrelationItem(
 }
 
 @Composable
-fun CorrelationDetailSheet(
-    correlation: Correlation,
-    onDismiss: () -> Unit
-) {
-    val scorePercent = (correlation.score * 100).toInt()
-    val severityColor = when (correlation.severity) {
-        CorrelationSeverity.HIGH   -> MaterialTheme.colorScheme.symptomColor
-        CorrelationSeverity.MEDIUM -> MaterialTheme.colorScheme.warningColor
-        CorrelationSeverity.LOW    -> MaterialTheme.colorScheme.okColor
-    }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item { Spacer(Modifier.height(8.dp)) }
-
-        item {
-            AppCard(borderColor = severityColor.copy(alpha = 0.4f)) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        "$scorePercent%",
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = severityColor,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        stringResource(R.string.correlation_reliability),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        letterSpacing = 1.sp
-                    )
-                }
-            }
-        }
-
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_matches), value = "${correlation.occurrences}/${correlation.totalEvents}")
-                DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_latency), value = "${correlation.avgDelayHours.toInt()}h")
-                DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_impact), value = correlation.symptomType.emoji)
-            }
-        }
-
-        item {
-            CardTitle(text = stringResource(R.string.correlation_insight_title), icon = Icons.Outlined.Lightbulb)
-            AiBadge(text = generateInterpretation(correlation))
-        }
-
-        item {
-            AppCard {
-                Text(
-                    text = stringResource(R.string.correlation_recommendation_title),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = getRecommendation(correlation),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
-
-        item { SecondaryButton(text = stringResource(R.string.btn_close), onClick = onDismiss) }
-
-        item { Spacer(Modifier.height(100.dp)) }
-    }
-}
-
-@Composable
 fun DetailStatCard(modifier: Modifier = Modifier, label: String, value: String) {
     AppCard(modifier = modifier) {
         Column(
@@ -413,23 +401,95 @@ fun AnalysisDisclaimerBanner(disclaimer: String) {
 }
 
 @Composable
-private fun getRecommendation(correlation: Correlation): String =
-    when (correlation.triggerType) {
-        TriggerType.FOOD        -> stringResource(R.string.recommendation_food, correlation.trigger)
-        TriggerType.ENVIRONMENT -> stringResource(R.string.recommendation_environment, correlation.trigger)
-        TriggerType.COMBINED    -> stringResource(R.string.recommendation_combined)
+fun FoodTriggerCard(
+    trigger: FoodTrigger,
+    onClick: () -> Unit
+) {
+    val severityColor = when (trigger.severity) {
+        CorrelationSeverity.HIGH   -> MaterialTheme.colorScheme.symptomColor
+        CorrelationSeverity.MEDIUM -> MaterialTheme.colorScheme.warningColor
+        CorrelationSeverity.LOW    -> MaterialTheme.colorScheme.okColor
     }
 
-@Composable
-private fun generateInterpretation(correlation: Correlation): String {
-    val scorePercent = (correlation.score * 100).toInt()
-    val symptomLabel = stringResource(correlation.symptomType.labelRes())
-    return when (correlation.triggerType) {
-        TriggerType.FOOD ->
-            stringResource(R.string.interpretation_food, correlation.trigger, symptomLabel, scorePercent, correlation.avgDelayHours.toInt())
-        TriggerType.ENVIRONMENT ->
-            stringResource(R.string.interpretation_environment, correlation.trigger, symptomLabel, scorePercent)
-        TriggerType.COMBINED ->
-            stringResource(R.string.interpretation_combined, correlation.trigger)
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Emoji ikona
+            Surface(
+                modifier = Modifier.size(44.dp),
+                shape = RoundedCornerShape(10.dp),
+                color = severityColor.copy(alpha = 0.1f)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(trigger.triggerEmoji, style = MaterialTheme.typography.titleLarge)
+                }
+            }
+
+            // Název + symptomy
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        trigger.triggerName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    if (trigger.isExpected) {
+                        Surface(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Text(
+                                "SHODA",
+                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+                if (trigger.dominantSymptoms.isNotEmpty()) {
+                    Text(
+                        trigger.dominantSymptoms.joinToString(", "),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
+                }
+                // Progress bar
+                Spacer(Modifier.height(6.dp))
+                LinearProgressIndicator(
+                    progress = { trigger.correlationScore },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = severityColor,
+                    trackColor = severityColor.copy(alpha = 0.12f)
+                )
+            }
+
+            // Skóre
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    "${(trigger.correlationScore * 100).toInt()} %",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = severityColor
+                )
+                Text(
+                    "${trigger.reactionCount}/${trigger.totalCount}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
     }
 }

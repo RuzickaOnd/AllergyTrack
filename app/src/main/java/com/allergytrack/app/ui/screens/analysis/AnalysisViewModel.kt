@@ -16,6 +16,7 @@ import com.allergytrack.app.domain.analysis.CorrelationEngine
 import com.allergytrack.app.domain.export.MedicalReportExporter
 import com.allergytrack.app.domain.model.AnalysisReadiness
 import com.allergytrack.app.domain.model.Correlation
+import com.allergytrack.app.domain.model.FoodTrigger
 import com.allergytrack.app.domain.premium.PremiumHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -26,10 +27,12 @@ data class AnalysisUiState(
     val isLoading: Boolean = true,
     val readiness: AnalysisReadiness = AnalysisReadiness.Locked(symptomCount = 0),
     val correlations: List<Correlation> = emptyList(),
+    val foodTriggers: List<FoodTrigger> = emptyList(),
+    val foodTriggersLoading: Boolean = false,
+    val selectedTrigger: FoodTrigger? = null,
     val aiSummary: String = "",
     val showDisclaimer: Boolean = false,
     val disclaimer: String = "",
-    val selectedCorrelation: Correlation? = null,
     val isExporting: Boolean = false,
     val exportSuccess: Boolean = false
 )
@@ -68,6 +71,42 @@ class AnalysisViewModel @Inject constructor(
 
     init {
         loadAnalysis()
+        loadFoodTriggers()
+    }
+
+    private fun loadFoodTriggers() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(foodTriggersLoading = true) }
+
+            combine(
+                foodLogDao.getAllLogs(),
+                symptomLogDao.getAllLogs(),
+                onboardingDataStore.selectedAllergyTypes
+            ) { foods, symptoms, allergyTypesRaw ->
+                Triple(foods, symptoms, allergyTypesRaw)
+            }.collect { (foods, symptoms, allergyTypesRaw) ->
+
+                // Načti alergeny z onboarding profilu pro označení "SHODA"
+                val knownAllergens = allergyTypesRaw
+                    .split(",")
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                    .toSet()
+
+                val triggers = correlationEngine.analyzeFoodTriggers(
+                    foodLogs = foods,
+                    symptomLogs = symptoms,
+                    knownAllergens = knownAllergens
+                )
+
+                _uiState.update {
+                    it.copy(
+                        foodTriggers = triggers,
+                        foodTriggersLoading = false
+                    )
+                }
+            }
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -160,8 +199,8 @@ class AnalysisViewModel @Inject constructor(
         }
     }
 
-    fun onCorrelationSelected(correlation: Correlation?) {
-        _uiState.update { it.copy(selectedCorrelation = correlation) }
+    fun selectTrigger(trigger: FoodTrigger) {
+        _uiState.update { it.copy(selectedTrigger = trigger) }
     }
 
     fun exportReport() {

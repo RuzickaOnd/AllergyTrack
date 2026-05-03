@@ -6,6 +6,9 @@ import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
 import com.allergytrack.app.domain.model.AnalysisReadiness
 import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.CorrelationSeverity
+import com.allergytrack.app.domain.model.FoodReactionEvent
+import com.allergytrack.app.domain.model.FoodTrigger
+import com.allergytrack.app.domain.model.SymptomInWindow
 import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.domain.model.TriggerType
 import kotlinx.serialization.json.Json
@@ -16,6 +19,37 @@ import kotlin.math.sqrt
 class CorrelationEngine @Inject constructor(
     private val json: Json
 ) {
+    // ─── Konstanty pro potravinovou korelaci ──────────────────────────────────────
+
+    companion object {
+        // Maximální prodleva mezi konzumací a symptomem (potravinové alergie: 2 min–72h)
+        const val FOOD_REACTION_WINDOW_MS = 72L * 60 * 60 * 1000
+
+        // Minimální počet konzumací pro statisticky relevantní výsledek
+        const val MIN_CONSUMPTION_COUNT = 2
+
+        // Práh pro zobrazení v TOP TRIGGERS (nízké skóre = nezobrazovat)
+        const val MIN_DISPLAY_SCORE = 0.15f
+
+        // Emoji mapování pro EU 14 alergenů
+        val ALLERGEN_EMOJI = mapOf(
+            "Milk"       to "🥛",
+            "Gluten"     to "🌾",
+            "Eggs"       to "🥚",
+            "Fish"       to "🐟",
+            "Crustaceans" to "🦐",
+            "Peanuts"    to "🥜",
+            "Soybeans"   to "🫘",
+            "Nuts"       to "🌰",
+            "Celery"     to "🥬",
+            "Mustard"    to "🌿",
+            "Sesame-seeds" to "🫙",
+            "Sulphur-dioxide-and-sulphites" to "🍷",
+            "Lupin"      to "🌸",
+            "Molluscs"   to "🦪"
+        )
+    }
+
     // Časová okna pro hledání korelace (ms)
     private val TIME_WINDOWS = listOf(
         2L, 4L, 8L, 12L, 24L, 48L, 72L
@@ -242,6 +276,139 @@ class CorrelationEngine @Inject constructor(
         symptomCount = symptomLogs.size,
         environmentLogCount = environmentLogs.size
     )
+
+    // ─── Hlavní metoda pro potravinové korelace ───────────────────────────────────
+
+    /**
+     * Analyzuje korelaci mezi zaznamenaným jídlem/alergeny a symptomy.
+     *
+     * Algoritmus:
+     * 1. Pro každé jedinečné jídlo/alergen najde všechny záznamy konzumace
+     * 2. Ke každé konzumaci přiřadí symptomy zaznamenané do 72h po ní
+     * 3. Spočítá skóre: reactionCount / totalCount s váhou intenzity
+     * 4. Seřadí sestupně podle skóre a odfiltruje pod MIN_DISPLAY_SCORE
+     * 5. Označí shody s alergickým profilem uživatele (isExpected)
+     *
+     * @param foodLogs         Všechny záznamy jídla
+     * @param symptomLogs      Všechny záznamy symptomů
+     * @param knownAllergens   Alergeny z onboarding profilu (pro isExpected)
+     */
+    fun analyzeFoodTriggers(
+        foodLogs: List<FoodLogEntity>,
+        symptomLogs: List<SymptomLogEntity>,
+        knownAllergens: Set<String> = emptySet()
+    ): List<FoodTrigger> {
+
+        if (foodLogs.isEmpty() || symptomLogs.isEmpty()) return emptyList()
+
+        // Krok 1: Seskup konzumace podle alergenu (nebo jídla pokud alergen neznámý)
+        val groupedByTrigger = mutableMapOf<String, MutableList<FoodLogEntity>>()
+
+        foodLogs.forEach { log ->
+            val allergens = try {
+                if (log.allergens.isNotEmpty()) {
+                    json.decodeFromString<List<String>>(log.allergens)
+                } else emptyList()
+            } catch (e: Exception) {
+                emptyList()
+            }
+
+            if (allergens.isNotEmpty()) {
+                // Skupina per alergen
+                allergens.forEach { allergen ->
+                    groupedByTrigger.getOrPut(allergen) { mutableListOf() }.add(log)
+                }
+            } else {
+                // Jídlo bez alergenu — skupinuj pod názvem jídla
+                val key = "__food__${log.foodName}"
+                groupedByTrigger.getOrPut(key) { mutableListOf() }.add(log)
+            }
+        }
+
+        // Krok 2: Pro každý trigger spočítej korelaci
+        val triggers = mutableListOf<FoodTrigger>()
+
+        groupedByTrigger.forEach { (triggerKey, logs) ->
+            if (logs.size < MIN_CONSUMPTION_COUNT) return@forEach
+
+            val events = logs.map { foodLog ->
+                val reactionsInWindow = symptomLogs.filter { symptom ->
+                    val delay = symptom.timestamp - foodLog.timestamp
+                    delay in 0..FOOD_REACTION_WINDOW_MS
+                }.map { symptom ->
+                    SymptomInWindow(
+                        symptomName = symptom.type,
+                        recordedAt = symptom.timestamp,
+                        delayHours = (symptom.timestamp - foodLog.timestamp)
+                            .toFloat() / (60 * 60 * 1000),
+                        intensity = symptom.intensity
+                    )
+                }.sortedBy { it.recordedAt }
+
+                FoodReactionEvent(
+                    foodLogId = foodLog.id,
+                    foodName = foodLog.foodName,
+                    consumedAt = foodLog.timestamp,
+                    reactions = reactionsInWindow,
+                    hadReaction = reactionsInWindow.isNotEmpty(),
+                    maxIntensity = reactionsInWindow.maxOfOrNull { it.intensity }
+                )
+            }
+
+            val reactionCount = events.count { it.hadReaction }
+            val totalCount = events.size
+
+            // Skóre = základní frekvence + bonus za intenzitu
+            val baseScore = reactionCount.toFloat() / totalCount
+            val intensityBonus = events
+                .filter { it.hadReaction }
+                .mapNotNull { it.maxIntensity }
+                .average()
+                .let { if (it.isNaN()) 0.0 else (it - 1) / 4.0 * 0.15 }  // max +15%
+            val finalScore = (baseScore + intensityBonus).toFloat().coerceIn(0f, 1f)
+
+            if (finalScore < MIN_DISPLAY_SCORE) return@forEach
+
+            // Dominantní symptomy (top 3 nejčastější)
+            val dominantSymptoms = events
+                .flatMap { it.reactions }
+                .groupingBy { it.symptomName }
+                .eachCount()
+                .entries
+                .sortedByDescending { it.value }
+                .take(3)
+                .map { it.key }
+
+            // Název a emoji
+            val isAllergen = !triggerKey.startsWith("__food__")
+            val displayName = if (isAllergen) triggerKey else triggerKey.removePrefix("__food__")
+            val emoji = ALLERGEN_EMOJI[triggerKey] ?: "🍽️"
+
+            // Shoda s profilem
+            val isExpected = isAllergen && triggerKey in knownAllergens
+
+            triggers.add(
+                FoodTrigger(
+                    triggerName = displayName,
+                    triggerEmoji = emoji,
+                    allergenKey = triggerKey,
+                    correlationScore = finalScore,
+                    severity = when {
+                        finalScore >= 0.70f -> CorrelationSeverity.HIGH
+                        finalScore >= 0.40f -> CorrelationSeverity.MEDIUM
+                        else -> CorrelationSeverity.LOW
+                    },
+                    reactionCount = reactionCount,
+                    totalCount = totalCount,
+                    dominantSymptoms = dominantSymptoms,
+                    isExpected = isExpected,
+                    reactionEvents = events.sortedByDescending { it.consumedAt }
+                )
+            )
+        }
+
+        return triggers.sortedByDescending { it.correlationScore }
+    }
 
     fun canAnalyze(readiness: AnalysisReadiness): Boolean =
         readiness !is AnalysisReadiness.Locked

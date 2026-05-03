@@ -181,6 +181,8 @@
     <string name="stat_matches">MATCHES</string>
     <string name="stat_latency">LATENCY</string>
     <string name="stat_impact">IMPACT</string>
+    <string name="analysis_correlation_detail">Correlation Detail</string>
+    <string name="analysis_food_trigger_detail">Food Trigger Detail</string>
     <string name="correlation_insight_title">Clinical insight</string>
     <string name="correlation_recommendation_title">Recommendation</string>
     <string name="analysis_locked_title">Analysis is being prepared</string>
