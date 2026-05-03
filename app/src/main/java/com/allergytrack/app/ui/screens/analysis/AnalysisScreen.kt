@@ -79,20 +79,32 @@ fun AnalysisScreen(
 
     LaunchedEffect(uiState.exportedFile) {
         uiState.exportedFile?.let { file ->
+            val appContext = context.applicationContext
             try {
                 val uri = FileProvider.getUriForFile(
-                    context,
-                    "${context.packageName}.fileprovider",
+                    appContext,
+                    "${appContext.packageName}.fileprovider",
                     file
                 )
-                val intent = Intent(Intent.ACTION_SEND).apply {
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
                     type = "application/pdf"
                     putExtra(Intent.EXTRA_STREAM, uri)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
-                context.startActivity(Intent.createChooser(intent, "Sdílet lékařský report"))
+                
+                val chooserTitle = appContext.getString(R.string.export_share_chooser_title)
+                val chooserIntent = Intent.createChooser(shareIntent, chooserTitle).apply {
+                    // Pokud startujeme z Application contextu, je nutný NEW_TASK, 
+                    // ale 'context' z LocalContext.current je obvykle Activity.
+                    if (context !is android.app.Activity) {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                }
+                
+                context.startActivity(chooserIntent)
+                Toast.makeText(appContext, appContext.getString(R.string.export_save_confirmation), Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
-                Toast.makeText(context, "Chyba při sdílení PDF", Toast.LENGTH_SHORT).show()
+                Toast.makeText(appContext, appContext.getString(R.string.export_error_msg), Toast.LENGTH_SHORT).show()
             } finally {
                 viewModel.dismissExport()
             }

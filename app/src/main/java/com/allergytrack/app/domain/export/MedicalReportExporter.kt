@@ -1,11 +1,14 @@
 package com.allergytrack.app.domain.export
 
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
+import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.FoodTrigger
@@ -16,7 +19,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class MedicalReportExporter @Inject constructor(
@@ -41,22 +45,22 @@ class MedicalReportExporter @Inject constructor(
         paint.textSize = 24f
         paint.isFakeBoldText = true
         paint.color = Color.BLACK
-        canvas.drawText("AllergyTrack - Lékařský report", margin, currentY, paint)
+        canvas.drawText(context.getString(R.string.export_pdf_header), margin, currentY, paint)
         currentY += 40f
 
         // Date
         paint.textSize = 12f
         paint.isFakeBoldText = false
         paint.color = Color.GRAY
-        val date = SimpleDateFormat("dd. MMMM yyyy", Locale("cs", "CZ")).format(Date())
-        canvas.drawText("Vygenerováno dne: $date", margin, currentY, paint)
+        val dateStr = SimpleDateFormat("dd. MMMM yyyy", Locale.getDefault()).format(Date())
+        canvas.drawText(context.getString(R.string.export_pdf_date_label, dateStr), margin, currentY, paint)
         currentY += 40f
 
         // AI Summary Section
         paint.color = Color.BLACK
         paint.isFakeBoldText = true
         paint.textSize = 16f
-        canvas.drawText("Klinické shrnutí (AI)", margin, currentY, paint)
+        canvas.drawText(context.getString(R.string.export_pdf_summary_header), margin, currentY, paint)
         currentY += 25f
 
         paint.isFakeBoldText = false
@@ -72,7 +76,7 @@ class MedicalReportExporter @Inject constructor(
         if (correlations.isNotEmpty()) {
             paint.isFakeBoldText = true
             paint.textSize = 16f
-            canvas.drawText("Identifikované korelace", margin, currentY, paint)
+            canvas.drawText(context.getString(R.string.export_pdf_correlations_header), margin, currentY, paint)
             currentY += 30f
 
             correlations.take(5).forEach { correlation ->
@@ -102,6 +106,7 @@ class MedicalReportExporter @Inject constructor(
 
         try {
             pdfDocument.writeTo(FileOutputStream(file))
+            saveToPublicMediaStore(file)
             pdfDocument.close()
             file
         } catch (e: Exception) {
@@ -126,18 +131,19 @@ class MedicalReportExporter @Inject constructor(
         paint.isFakeBoldText = true
         paint.textSize = 14f
         paint.color = Color.BLACK
-        canvas.drawText("${correlation.trigger}", margin + 10, y + 10, paint)
+        canvas.drawText(correlation.trigger, margin + 10, y + 10, paint)
 
         paint.isFakeBoldText = false
         paint.textSize = 11f
         paint.color = Color.DKGRAY
         val symptomLabel = context.getString(correlation.symptomType.labelRes())
         canvas.drawText(
-            "Spolehlivost: ${(correlation.score * 100).toInt()}% | Příznak: $symptomLabel",
+            context.getString(R.string.export_pdf_confidence_label, (correlation.score * 100).toInt()) +
+                    " | " + context.getString(R.string.export_pdf_symptom_label, symptomLabel),
             margin + 10, y + 30, paint
         )
-        
-        val details = "Zaznamenáno v ${correlation.occurrences} z ${correlation.totalEvents} případů."
+
+        val details = context.getString(R.string.export_pdf_occurrences_label, correlation.occurrences, correlation.totalEvents)
         canvas.drawText(details, margin + 10, y + 45, paint)
     }
 
@@ -155,35 +161,68 @@ class MedicalReportExporter @Inject constructor(
         paint.isFakeBoldText = true
         paint.textSize = 16f
         paint.color = Color.BLACK
-        canvas.drawText("Podezřelé potraviny a alergeny", margin, currentY, paint)
+        canvas.drawText(context.getString(R.string.export_pdf_food_triggers_header), margin, currentY, paint)
         currentY += 30f
 
         foodTriggers.take(8).forEach { trigger ->
             paint.isFakeBoldText = true
             paint.textSize = 12f
             canvas.drawText("${trigger.triggerEmoji} ${trigger.triggerName}", margin + 10, currentY, paint)
-            
+
             paint.isFakeBoldText = false
             paint.textSize = 10f
             paint.color = Color.GRAY
-            val reactionInfo = "Reakce: ${trigger.reactionCount}/${trigger.totalCount} konzumací (${(trigger.correlationScore * 100).toInt()}%)"
+            val reactionInfo = context.getString(
+                R.string.export_pdf_reaction_label,
+                trigger.reactionCount,
+                trigger.totalCount,
+                (trigger.correlationScore * 100).toInt()
+            )
             canvas.drawText(reactionInfo, margin + 150, currentY, paint)
-            
+
             if (trigger.dominantSymptoms.isNotEmpty()) {
                 currentY += 15f
                 paint.textSize = 9f
-                canvas.drawText("Příznaky: ${trigger.dominantSymptoms.joinToString(", ")}", margin + 30, currentY, paint)
+                canvas.drawText(
+                    context.getString(R.string.export_pdf_symptoms_list_label, trigger.dominantSymptoms.joinToString(", ")),
+                    margin + 30,
+                    currentY,
+                    paint
+                )
             }
-            
+
             currentY += 25f
         }
-        
+
         // Footer (simplified for current page)
         paint.textSize = 9f
         paint.color = Color.LTGRAY
-        canvas.drawText("Tento report je generován AI na základě uživatelských dat a slouží pouze jako podklad pro lékaře.", margin, 810f, paint)
-        
+        canvas.drawText(context.getString(R.string.export_pdf_disclaimer), margin, 810f, paint)
+
         pdfDocument.finishPage(currentPage)
+    }
+
+    private fun saveToPublicMediaStore(file: File) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
+                val resolver = context.contentResolver
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, file.name)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS + "/AllergyTrack")
+                }
+                val uri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+                uri?.let { targetUri ->
+                    resolver.openOutputStream(targetUri)?.use { output ->
+                        file.inputStream().use { input ->
+                            input.copyTo(output)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun wrapText(text: String, paint: Paint, maxWidth: Float): List<String> {
@@ -192,7 +231,7 @@ class MedicalReportExporter @Inject constructor(
         var currentLine = StringBuilder()
 
         for (word in words) {
-            val testLine = if (currentLine.isEmpty()) word else "${currentLine} $word"
+            val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
             if (paint.measureText(testLine) <= maxWidth) {
                 currentLine.append(if (currentLine.isEmpty()) word else " $word")
             } else {

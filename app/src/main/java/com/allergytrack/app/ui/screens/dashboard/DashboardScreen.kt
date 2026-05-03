@@ -1,18 +1,35 @@
 package com.allergytrack.app.ui.screens.dashboard
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,13 +44,19 @@ import com.allergytrack.app.data.local.database.entity.FoodLogEntity
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
 import com.allergytrack.app.domain.model.EnvironmentLog
 import com.allergytrack.app.domain.model.SymptomType
-import com.allergytrack.app.ui.components.*
+import com.allergytrack.app.ui.components.AiBadge
+import com.allergytrack.app.ui.components.AppCard
+import com.allergytrack.app.ui.components.CardTitle
+import com.allergytrack.app.ui.components.PrimaryButton
 import com.allergytrack.app.ui.navigation.Screen
-import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.theme.MonoFontFamily
+import com.allergytrack.app.ui.theme.SerifFontFamily
+import com.allergytrack.app.ui.theme.okColor
+import com.allergytrack.app.ui.theme.symptomColor
+import com.allergytrack.app.ui.theme.warningColor
 import com.allergytrack.app.ui.util.labelRes
 import java.text.SimpleDateFormat
-import java.util.*
-import androidx.compose.ui.platform.LocalLocale
+import java.util.Date
 
 @Composable
 fun DashboardScreen(
@@ -57,11 +80,9 @@ fun DashboardScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item { Spacer(Modifier.height(8.dp)) }
-
             item {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     PrimaryButton(
@@ -126,8 +147,6 @@ fun DashboardScreen(
             }
 
             item { InsightBadge(uiState.insight) }
-
-            item { Spacer(Modifier.height(24.dp)) }
         }
     }
 }
@@ -138,8 +157,10 @@ fun InsightBadge(insight: DashboardInsight?) {
     val message = when (insight) {
         is DashboardInsight.HighPollen ->
             stringResource(R.string.dashboard_insight_high_pollen, insight.maxLevel)
+
         is DashboardInsight.HighAqi ->
             stringResource(R.string.dashboard_insight_high_aqi, insight.aqi)
+
         DashboardInsight.GoodDay ->
             stringResource(R.string.dashboard_insight_good_day)
     }
@@ -277,7 +298,11 @@ fun TimelineFoodItem(log: FoodLogEntity) {
 @Composable
 fun TimelineSymptomItem(log: SymptomLogEntity) {
     val timeFormat = SimpleDateFormat("HH:mm", LocalLocale.current.platformLocale)
-    val symptomType = try { SymptomType.valueOf(log.type) } catch (_: IllegalArgumentException) { null }
+    val symptomType = try {
+        SymptomType.valueOf(log.type)
+    } catch (_: IllegalArgumentException) {
+        null
+    }
     val typeLabel = symptomType?.let { stringResource(it.labelRes()) } ?: log.type
     val emoji = symptomType?.emoji ?: "⚡"
 
