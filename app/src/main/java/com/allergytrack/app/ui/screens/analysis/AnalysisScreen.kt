@@ -64,6 +64,7 @@ import com.allergytrack.app.ui.components.SecondaryButton
 import com.allergytrack.app.ui.theme.okColor
 import com.allergytrack.app.ui.theme.symptomColor
 import com.allergytrack.app.ui.theme.warningColor
+import com.allergytrack.app.ui.util.AnalysisExportHandler
 import com.allergytrack.app.ui.util.labelRes
 
 @Composable
@@ -77,39 +78,7 @@ fun AnalysisScreen(
     val isExportVisible by viewModel.isExportVisible.collectAsStateWithLifecycle()
     val showExportUpsell by viewModel.showExportUpsell.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState.exportedFile) {
-        uiState.exportedFile?.let { file ->
-            val appContext = context.applicationContext
-            try {
-                val uri = FileProvider.getUriForFile(
-                    appContext,
-                    "${appContext.packageName}.fileprovider",
-                    file
-                )
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    type = "application/pdf"
-                    putExtra(Intent.EXTRA_STREAM, uri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-                
-                val chooserTitle = appContext.getString(R.string.export_share_chooser_title)
-                val chooserIntent = Intent.createChooser(shareIntent, chooserTitle).apply {
-                    // Pokud startujeme z Application contextu, je nutný NEW_TASK, 
-                    // ale 'context' z LocalContext.current je obvykle Activity.
-                    if (context !is android.app.Activity) {
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
-                }
-                
-                context.startActivity(chooserIntent)
-                Toast.makeText(appContext, appContext.getString(R.string.export_save_confirmation), Toast.LENGTH_LONG).show()
-            } catch (e: Exception) {
-                Toast.makeText(appContext, appContext.getString(R.string.export_error_msg), Toast.LENGTH_SHORT).show()
-            } finally {
-                viewModel.dismissExport()
-            }
-        }
-    }
+    AnalysisExportHandler(viewModel = viewModel)
 
     if (!isAnalysisVisible) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

@@ -21,6 +21,7 @@ import com.allergytrack.app.ui.screens.analysis.AnalysisViewModel
 import com.allergytrack.app.ui.screens.dashboard.DashboardViewModel
 import com.allergytrack.app.ui.screens.debug.DebugMenuViewModel
 import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.util.AnalysisExportHandler
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +38,9 @@ fun MainAppScaffold() {
     val isExportVisible by analysisViewModel.isExportVisible.collectAsStateWithLifecycle()
 
     val debugViewModel: DebugMenuViewModel = hiltViewModel()
+
+    // Unifikované zpracování exportu (funguje pro TopBar i AnalysisScreen)
+    AnalysisExportHandler(viewModel = analysisViewModel)
 
     val showBottomBar = when (currentRoute) {
         Screen.Dashboard.route,
