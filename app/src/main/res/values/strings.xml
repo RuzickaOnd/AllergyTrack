@@ -237,6 +237,24 @@
     <string name="profile_user_name">User</string>
     <string name="profile_option_premium">Premium</string>
     <string name="about_version">Version %s</string>
+    <string name="profile_edit_name">Edit name</string>
+    <string name="profile_name_done">Done</string>
+    <string name="profile_change_avatar">Change avatar</string>
+    <string name="profile_name_placeholder">Anonym</string>
+    <string name="avatar_picker_title">Choose avatar</string>
+    <string name="avatar_from_gallery">From gallery</string>
+    <string name="avatar_person">Person</string>
+    <string name="avatar_favorite">Favorite</string>
+    <string name="avatar_star">Star</string>
+    <string name="avatar_pets">Pets</string>
+    <string name="avatar_florist">Flower</string>
+    <string name="avatar_fitness">Fitness</string>
+    <string name="avatar_run">Running</string>
+    <string name="avatar_spa">Spa</string>
+    <string name="avatar_eco">Eco</string>
+    <string name="avatar_health">Health</string>
+    <string name="avatar_happy">Happy</string>
+    <string name="avatar_mindful">Mindful</string>
 
     <!-- About -->
     <string name="about_section_what_title">What AllergyTrack does</string>

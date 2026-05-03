@@ -77,6 +77,7 @@ com.allergytrack.app/
 │   ├── navigation/
 │   ├── components/  Sdílené Compose komponenty
 │   └── screens/     Jedna složka per obrazovka (Screen + ViewModel)
+│       └── profile/ ProfileScreen, AvatarPickerScreen (sdílí AVATAR_PRESETS + AvatarCircle), ProfileViewModel
 ├── domain/
 │   ├── model/       Čisté Kotlin datové třídy
 │   ├── repository/  Pouze interfaces
@@ -147,6 +148,7 @@ fun XyzPreview() { AllergyTrackTheme { Xyz(...) } }
 - ❌ `Column` s `verticalScroll` + `LazyColumn` vnořeně
 - ❌ Hardcoded `dp` hodnoty mimo definované konstanty — používej `MaterialTheme.spacing`
 - ❌ `android:layout_*` XML atributy (jsme full Compose)
+- ❌ `remember { ... }` nebo composable volání **po** podmíněném `return` — porušení Compose Rules of Hooks způsobí slot table corruption a crash při změně stavu. Vždy: nejdřív všechna `remember`, pak podmíněná logika.
 
 ---
 

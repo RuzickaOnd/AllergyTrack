@@ -237,6 +237,24 @@
     <string name="profile_user_name">Uživatel</string>
     <string name="profile_option_premium">Premium</string>
     <string name="about_version">Verze %s</string>
+    <string name="profile_edit_name">Upravit jméno</string>
+    <string name="profile_name_done">Hotovo</string>
+    <string name="profile_change_avatar">Změnit avatara</string>
+    <string name="profile_name_placeholder">Anonym</string>
+    <string name="avatar_picker_title">Vybrat avatara</string>
+    <string name="avatar_from_gallery">Z galerie</string>
+    <string name="avatar_person">Osoba</string>
+    <string name="avatar_favorite">Srdce</string>
+    <string name="avatar_star">Hvězda</string>
+    <string name="avatar_pets">Mazlíček</string>
+    <string name="avatar_florist">Květ</string>
+    <string name="avatar_fitness">Fitness</string>
+    <string name="avatar_run">Běh</string>
+    <string name="avatar_spa">Relax</string>
+    <string name="avatar_eco">Eko</string>
+    <string name="avatar_health">Zdraví</string>
+    <string name="avatar_happy">Nálada</string>
+    <string name="avatar_mindful">Pohoda</string>
 
     <!-- O aplikaci -->
     <string name="about_section_what_title">Co AllergyTrack dělá</string>

@@ -21,6 +21,8 @@ class UserPreferencesDataStore @Inject constructor(
 ) {
     companion object {
         private val KEY_FOOD_LANGUAGE = stringPreferencesKey("food_search_language")
+        private val KEY_USER_NAME = stringPreferencesKey("user_name")
+        private val KEY_AVATAR_SELECTION = stringPreferencesKey("avatar_selection")
     }
 
     /** Uložený kód jazyka pro vyhledávání jídla. Prázdný string = auto (dle zařízení). */
@@ -29,5 +31,20 @@ class UserPreferencesDataStore @Inject constructor(
 
     suspend fun setFoodSearchLanguage(code: String) {
         context.userPreferencesDataStore.edit { it[KEY_FOOD_LANGUAGE] = code }
+    }
+
+    val userName: Flow<String> = context.userPreferencesDataStore.data
+        .map { prefs -> prefs[KEY_USER_NAME] ?: "Anonym" }
+
+    suspend fun setUserName(name: String) {
+        context.userPreferencesDataStore.edit { it[KEY_USER_NAME] = name }
+    }
+
+    /** ID presetu (např. "person") nebo "gallery:<uri>" pro obrázek z galerie. */
+    val avatarSelection: Flow<String> = context.userPreferencesDataStore.data
+        .map { prefs -> prefs[KEY_AVATAR_SELECTION] ?: "person" }
+
+    suspend fun setAvatarSelection(selection: String) {
+        context.userPreferencesDataStore.edit { it[KEY_AVATAR_SELECTION] = selection }
     }
 }

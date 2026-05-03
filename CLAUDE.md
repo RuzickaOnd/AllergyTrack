@@ -96,8 +96,9 @@ com.allergytrack.app/
 │       │   ├── AnalysisScreen.kt
 │       │   └── AnalysisViewModel.kt
 │       ├── profile/
-│       │   ├── ProfileScreen.kt
-│       │   ├── ProfileViewModel.kt
+│       │   ├── ProfileScreen.kt       ← Avatar s pencil badge, inline editace jména
+│       │   ├── AvatarPickerScreen.kt  ← 12 presetů (LazyVerticalGrid 4 sl.) + galerie
+│       │   ├── ProfileViewModel.kt    ← UserPreferencesDataStore: userName, avatarSelection
 │       │   └── AboutScreen.kt
 │       └── settings/
 │           ├── SettingsScreen.kt         ← Obsahuje FoodLanguageDialog
@@ -178,10 +179,11 @@ Vstupní bod je `FoodLogScreen`, sdílený ViewModel je `FoodLogViewModel`. Vše
 
 #### Navigation routes (Screen.kt):
 ```
-camera/{mode}                    ← mode = "photo" | "barcode"
+camera/{mode}                        ← mode = "photo" | "barcode"
 food_confirm/{foodName}/{allergens}
-food_manual_search
+food_manual_search?query={query}     ← query je volitelný; Uri.encode() před navigate()
 food_manual_entry/{foodName}
+avatar_picker                        ← výběr avatara profilu
 ```
 
 Parametry `foodName` a `allergens` jsou **vždy URL-enkódované** pomocí `Uri.encode()` před navigací.
@@ -196,7 +198,7 @@ Parametry `foodName` a `allergens` jsou **vždy URL-enkódované** pomocí `Uri.
 `FoodLogScreen` → `CameraScreen(mode=barcode)` → ML Kit BarcodeScanning → `getFoodByBarcode()` → `FoodConfirmScreen`
 
 **C) Hlas**
-`FoodLogScreen` → `SpeechRecognizer` dialog → rozpoznaný text → `onSearchQueryChange()` → navigace na `FoodManualSearchScreen` s předvyplněným dotazem
+`FoodLogScreen` → `SpeechRecognizer` dialog → rozpoznaný text → navigace na `FoodManualSearchScreen?query={encodedText}` → `initialQuery` předán přes nav argument → `viewModel.onSearchQueryChange(initialQuery)` spustí debounced vyhledávání
 
 **D) Vyhledávání (Supabase)**
 `FoodLogScreen` (tap na search card) → `FoodManualSearchScreen` → debounced search (400ms, min 2 znaky) → `SearchFoodUseCase` → Supabase RPC → výsledky → `FoodConfirmScreen`
@@ -210,6 +212,7 @@ Parametry `foodName` a `allergens` jsou **vždy URL-enkódované** pomocí `Uri.
 - Klikatelné → navigace přímo na `FoodConfirmScreen` s předvyplněnými daty
 
 #### FoodManualSearchScreen — důležité detaily:
+- Přijímá `initialQuery: String = ""` z nav argumentu; pokud neprázdný, volá `viewModel.onSearchQueryChange(initialQuery)` v `LaunchedEffect(Unit)`
 - Info banner vysvětluje zdroj: "Databáze produktů s čárovým kódem"
 - Tlačítko "Zadat ručně" je **vždy viditelné** (ne jen při prázdných výsledcích)
 - Styl tlačítka: **Primary** = žádné výsledky nebo prázdné pole; **Secondary (Outlined)** = výsledky nalezeny
@@ -337,8 +340,27 @@ Každá změna schématu = zvýšení verze + Migration objekt.
 | Klíč | Typ | Výchozí | Popis |
 |------|-----|---------|-------|
 | `food_search_language` | String | `""` | Kód jazyka vyhledávání; prázdný = auto z `Locale.getDefault()` |
+| `user_name` | String | `""` | Zobrazované jméno uživatele; prázdný = nezadáno |
+| `avatar_selection` | String | `"person"` | ID presetu (např. `"pets"`) nebo `"gallery:<uri>"` pro obrázek z galerie |
 
-### 9. Export a PDF reporty
+### 9. ProfileScreen — avatar a editace jména
+
+#### Avatar systém:
+- `AvatarPreset(id, icon, labelRes)` + `AVATAR_PRESETS` (12 položek) definovány v `AvatarPickerScreen.kt`
+- `AvatarCircle(selection, size, modifier)` — sdílená composable: renderuje preset ikonu nebo `AsyncImage` pro galerii
+- Výběr persistován v `UserPreferencesDataStore.avatarSelection`
+- Galerie: `ActivityResultContracts.PickVisualMedia` + `takePersistableUriPermission(FLAG_GRANT_READ_URI_PERMISSION)` pro přežití restartu
+
+#### Inline editace jména:
+- `isEditingName` stav v ProfileScreen; při aktivaci `FocusRequester.requestFocus()` + `editName = userName`
+- Uložení na `ImeAction.Done` nebo klik na Done ikonu → `viewModel.setUserName(editName.trim())`
+- Prázdné jméno = zobrazí placeholder v `onSurfaceVariant` barvě
+
+#### 12 presetů avatarů (ID → Material Icon):
+`person`, `favorite`, `star`, `pets`, `local_florist`, `fitness_center`,
+`directions_run` (AutoMirrored), `spa`, `eco`, `health_and_safety`, `sentiment_satisfied`, `self_improvement`
+
+### 10. Export a PDF reporty
 
 Aplikace umožňuje vygenerovat lékařský report ve formátu PDF pro sdílení s lékařem.
 
@@ -522,6 +544,10 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 | 10e | FoodManualSearchScreen: info banner, always-visible "Přidat ručně", 503 handling | ✅ |
 | 11 | Supabase backend: vlastní PostgreSQL, denní OFF import, Android integrace | ✅ |
 | 12 | PDF Export: MedicalReportExporter, MediaStore, AnalysisExportHandler | ✅ |
+| 13 | Příznak DIGESTIVE (Zažívání 🤢) přidán do SymptomType + OnboardingModels + strings | ✅ |
+| 14 | Voice input fix: FoodManualSearch přijímá initialQuery přes nav argument | ✅ |
+| 15 | ChartsScreen: oprava 6 bugů (mrtvý DAO, filter stats, AQI normalizace, X-osa) + crash fix (Compose Rules) | ✅ |
+| 16 | ProfileScreen: avatar (12 presetů + galerie) + inline editace jména + AvatarPickerScreen | ✅ |
 
 ---
 
@@ -548,6 +574,7 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 - `recognizeFoodFromImage()` je placeholder → napojit na FatSecret nebo Passio API
 - `FoodAllergenHelper.suggestFromName()` — varianta C (Claude API) pro přesnější návrhy alergenů (naplánováno po spuštění monetizace)
 - `CameraScreen.kt` — navigace na `FoodConfirmScreen` bez `Uri.encode()` (drobná chyba pro produkty s mezerami v názvu)
+- `ChartsScreen.kt` — `rememberXAxisFormatter` je lokální helper; při přidání nových grafů dodržet vzor (unconditional `remember` před jakýmkoliv podmíněným returnem)
 
 ---
 
