@@ -319,7 +319,9 @@ def process_stream(url: str, label: str) -> tuple[int, int, int]:
 
 def get_delta_urls() -> list[str]:
     """Vrátí URL delta souborů z posledních 24 hodin."""
-    response = off_session.get(OFF_DELTA_BASE_URL, timeout=30)
+    # Open Food Facts často zakazuje directory listing (403 Forbidden).
+    # Musíme přistupovat přímo k index.txt, který obsahuje seznam souborů.
+    response = off_session.get(OFF_DELTA_BASE_URL + "index.txt", timeout=30)
     response.raise_for_status()
 
     cutoff = int(time.time()) - 86400
@@ -345,6 +347,8 @@ def get_delta_urls() -> list[str]:
         except ValueError:
             continue
 
+    # Seřadíme soubory podle názvu (chronologicky), aby byl import v pořádku
+    urls.sort()
     log.info(f"Nalezeno {len(urls)} delta souborů za posledních 24 h")
     return urls
 
