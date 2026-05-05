@@ -392,7 +392,13 @@ def run_delta_import():
             return
 
         for url in urls:
-            p, u, s = process_stream(url, url.split("/")[-1])
+            try:
+                p, u, s = process_stream(url, url.split("/")[-1])
+            except requests.HTTPError as e:
+                if e.response is not None and e.response.status_code == 404:
+                    log.warning(f"Delta soubor není dostupný (404), přeskakuji: {url.split('/')[-1]}")
+                    continue
+                raise
             total_p += p
             total_u += u
             total_s += s

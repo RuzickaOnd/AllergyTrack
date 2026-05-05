@@ -15,6 +15,7 @@
 # BEZPEČNOST — nikdy nezahrnovat
 # =============================================
 local.properties
+.claude/settings.local.json
 *.jks
 *.keystore
 google-services.json
