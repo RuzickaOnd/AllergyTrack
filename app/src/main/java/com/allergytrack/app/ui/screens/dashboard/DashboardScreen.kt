@@ -47,6 +47,7 @@ import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.ui.components.AiBadge
 import com.allergytrack.app.ui.components.AppCard
 import com.allergytrack.app.ui.components.CardTitle
+import com.allergytrack.app.ui.components.PermissionRequiredCard
 import com.allergytrack.app.ui.components.PrimaryButton
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.MonoFontFamily
@@ -100,9 +101,20 @@ fun DashboardScreen(
 
             if (uiState.showEnvironmentSection) {
                 item {
-                    uiState.latestEnvironment?.let { env ->
-                        EnvironmentCard(env = env)
-                    } ?: NoEnvironmentCard()
+                    when {
+                        !uiState.locationGranted -> PermissionRequiredCard(
+                            title = stringResource(R.string.permission_required_location_title),
+                            description = stringResource(R.string.permission_required_location_body),
+                            actionLabel = stringResource(R.string.permission_required_go_to_settings),
+                            onAction = { navController.navigate(Screen.Settings.route) }
+                        )
+
+                        uiState.latestEnvironment != null -> uiState.latestEnvironment?.let {
+                            EnvironmentCard(env = it)
+                        } ?: run { NoEnvironmentCard() }
+
+                        else -> NoEnvironmentCard()
+                    }
                 }
             }
 

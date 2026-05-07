@@ -326,6 +326,9 @@
     <string name="permission_location_desc">Automaticky načítá pylová data a kvalitu ovzduší podle tvého pohybu.</string>
     <string name="permission_camera_title">Fotoaparát</string>
     <string name="permission_camera_desc">AI rozpoznávání jídla z fotek. Jídlo lze zadávat i ručně bez fotoaparátu.</string>
+    <string name="permission_required_location_title">Poloha není povolena</string>
+    <string name="permission_required_location_body">Pro zobrazení dat kvality ovzduší a pylového indexu povolte oprávnění Poloha v Nastavení → Oprávnění.</string>
+    <string name="permission_required_go_to_settings">Nastavit oprávnění</string>
     <string name="permission_notifications_title">Oznámení</string>
     <string name="permission_notifications_desc">Večerní připomínky a upozornění na vysoké hladiny pylu.</string>
     <string name="permission_privacy_note">Tvá data zůstávají pouze v zařízení. Nikdy je nesdílíme s třetími stranami.</string>

@@ -21,8 +21,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.allergytrack.app.ui.navigation.Screen
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
@@ -51,6 +55,16 @@ fun ChartsScreen(
     val showExtendedChartsBadge by viewModel.showExtendedChartsBadge.collectAsStateWithLifecycle()
     val isPollenVisible by viewModel.isPollenVisible.collectAsStateWithLifecycle()
     val showPollenUpsell by viewModel.showPollenUpsell.collectAsStateWithLifecycle()
+    val locationGranted by viewModel.locationGranted.collectAsStateWithLifecycle()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) viewModel.refreshPermissions()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     if (uiState.isLoading) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -92,20 +106,31 @@ fun ChartsScreen(
                         SymptomIntensityChart(data = data, days = days)
                     }
                 }
-                item {
-                    PremiumGate(
-                        isVisible = isPollenVisible,
-                        showUpsell = showPollenUpsell,
-                        feature = PremiumFeature.POLLEN_DATA
-                    ) {
-                        ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
-                            PollenVsSymptomChart(data = data, days = days)
+                if (!locationGranted) {
+                    item {
+                        PermissionRequiredCard(
+                            title = stringResource(R.string.permission_required_location_title),
+                            description = stringResource(R.string.permission_required_location_body),
+                            actionLabel = stringResource(R.string.permission_required_go_to_settings),
+                            onAction = { navController.navigate(Screen.Settings.route) }
+                        )
+                    }
+                } else {
+                    item {
+                        PremiumGate(
+                            isVisible = isPollenVisible,
+                            showUpsell = showPollenUpsell,
+                            feature = PremiumFeature.POLLEN_DATA
+                        ) {
+                            ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
+                                PollenVsSymptomChart(data = data, days = days)
+                            }
                         }
                     }
-                }
-                item {
-                    ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
-                        AqiVsSymptomChart(data = data, days = days)
+                    item {
+                        ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
+                            AqiVsSymptomChart(data = data, days = days)
+                        }
                     }
                 }
             } ?: run {

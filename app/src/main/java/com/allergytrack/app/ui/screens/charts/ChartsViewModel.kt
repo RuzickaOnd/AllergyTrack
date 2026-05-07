@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
+import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.domain.model.SymptomType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -32,11 +33,18 @@ data class ChartsUiState(
 class ChartsViewModel @Inject constructor(
     private val symptomLogDao: SymptomLogDao,
     private val environmentLogDao: EnvironmentLogDao,
-    private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper
+    private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper,
+    private val permissionsHelper: PermissionsHelper
 ) : ViewModel() {
 
     private val _selectedRange = MutableStateFlow(TimeRange.WEEK)
     private val _selectedFilter = MutableStateFlow<SymptomType?>(null)
+    private val _locationGranted = MutableStateFlow(permissionsHelper.hasLocationPermission())
+    val locationGranted: StateFlow<Boolean> = _locationGranted.asStateFlow()
+
+    fun refreshPermissions() {
+        _locationGranted.value = permissionsHelper.hasLocationPermission()
+    }
 
     val isExtendedChartsVisible: StateFlow<Boolean> =
         premiumHelper.observeVisible(com.allergytrack.app.domain.model.PremiumFeature.EXTENDED_CHARTS)

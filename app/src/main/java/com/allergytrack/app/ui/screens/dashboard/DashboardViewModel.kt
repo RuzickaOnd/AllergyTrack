@@ -8,6 +8,7 @@ import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
+import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.domain.model.EnvironmentLog
 import com.allergytrack.app.domain.model.EnvironmentRegion
 import com.allergytrack.app.domain.repository.EnvironmentRepository
@@ -31,6 +32,7 @@ data class DashboardUiState(
     val latestEnvironment: EnvironmentLog? = null,
     val isRefreshingEnvironment: Boolean = false,
     val showEnvironmentSection: Boolean = false,
+    val locationGranted: Boolean = true,
     @get:StringRes val greetingRes: Int = R.string.greeting_morning,
     val insight: DashboardInsight? = null,
     val error: String? = null
@@ -40,12 +42,14 @@ data class DashboardUiState(
 class DashboardViewModel @Inject constructor(
     private val foodLogDao: FoodLogDao,
     private val symptomLogDao: SymptomLogDao,
-    private val environmentRepository: EnvironmentRepository
+    private val environmentRepository: EnvironmentRepository,
+    private val permissionsHelper: PermissionsHelper
 ) : ViewModel() {
 
     // Začíná jako false — loading se zobrazí až po potvrzení EU regionu v refreshEnvironment()
     private val _isRefreshingEnv = MutableStateFlow(false)
     private val isFetchingEnv = AtomicBoolean(false)
+    private val _locationGranted = MutableStateFlow(permissionsHelper.hasLocationPermission())
 
     private val startOfDay: Long
         get() {
@@ -61,8 +65,9 @@ class DashboardViewModel @Inject constructor(
         foodLogDao.getTodayLogs(startOfDay),
         symptomLogDao.getTodayLogs(startOfDay),
         environmentRepository.getAllLogs(),
-        _isRefreshingEnv
-    ) { foodLogs, symptomLogs, envLogs, isRefreshing ->
+        _isRefreshingEnv,
+        _locationGranted
+    ) { foodLogs, symptomLogs, envLogs, isRefreshing, locationGranted ->
         val latest = envLogs.maxByOrNull { it.timestamp }
         // DŮLEŽITÉ: Sekce prostředí se zobrazuje POUZE pro uživatele v Evropě.
         // Používáme Open-Meteo Air Quality API s modelem CAMS (Copernicus), který
@@ -78,8 +83,9 @@ class DashboardViewModel @Inject constructor(
             // Null pro non-EU: AQI by byl uložen jako 0 (chybějící data, ne skutečná hodnota).
             latestEnvironment = if (isEurope) latest else null,
             isRefreshingEnvironment = isRefreshing,
-            // Zobrazit sekci: dokud načítáme (region ještě neznáme) NEBO jsme v EU.
-            showEnvironmentSection = (latest == null && isRefreshing) || isEurope,
+            locationGranted = locationGranted,
+            // Zobrazit sekci: chybějící oprávnění (zobrazíme kartu s výzvou) NEBO načítáme/EU.
+            showEnvironmentSection = !locationGranted || (latest == null && isRefreshing) || isEurope,
             greetingRes = getGreeting(),
             insight = computeInsight(if (isEurope) latest else null)
         )
@@ -90,6 +96,7 @@ class DashboardViewModel @Inject constructor(
     )
 
     fun refreshEnvironment() {
+        _locationGranted.value = permissionsHelper.hasLocationPermission()
         if (!isFetchingEnv.compareAndSet(false, true)) return
         viewModelScope.launch {
             // Rychlý pre-check z kešované polohy (žádný GPS fix, okamžité).
