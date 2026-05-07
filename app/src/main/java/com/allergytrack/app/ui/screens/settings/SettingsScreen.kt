@@ -9,19 +9,48 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,12 +62,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.R
-import com.allergytrack.app.ui.components.*
+import com.allergytrack.app.ui.components.AppCard
 import com.allergytrack.app.ui.navigation.Screen
-import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.theme.MonoFontFamily
 import com.allergytrack.app.ui.util.sharePdfFile
-import java.util.Locale
-import androidx.compose.ui.platform.LocalLocale
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
@@ -55,6 +83,8 @@ fun SettingsScreen(
     val exportedFile by viewModel.exportedFile.collectAsStateWithLifecycle()
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(exportedFile) {
         exportedFile?.let { file ->
@@ -102,158 +132,169 @@ fun SettingsScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Spacer(Modifier.height(8.dp))
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Spacer(Modifier.height(8.dp))
 
-        SettingsHeader(title = stringResource(R.string.settings_section_general))
+            SettingsHeader(title = stringResource(R.string.settings_section_general))
 
-        AppCard(contentPadding = PaddingValues(0.dp)) {
-            SettingsSwitchItem(
-                label = stringResource(R.string.settings_dark_mode),
-                checked = darkMode,
-                onCheckedChange = { viewModel.setDarkMode(it) }
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
-            SettingsSwitchItem(
-                label = stringResource(R.string.settings_push_notifications),
-                checked = notificationsEnabled,
-                onCheckedChange = { viewModel.setNotificationsEnabled(it) }
-            )
-        }
+            AppCard(contentPadding = PaddingValues(0.dp)) {
+                SettingsSwitchItem(
+                    label = stringResource(R.string.settings_dark_mode),
+                    checked = darkMode,
+                    onCheckedChange = { viewModel.setDarkMode(it) }
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
+                val permissionHint = stringResource(R.string.settings_notifications_permission_required)
+                SettingsSwitchItem(
+                    label = stringResource(R.string.settings_push_notifications),
+                    checked = notificationsEnabled && permissions.notifications,
+                    enabled = permissions.notifications,
+                    onCheckedChange = { viewModel.setNotificationsEnabled(it) },
+                    onDisabledClick = {
+                        scope.launch { snackbarHostState.showSnackbar(permissionHint) }
+                    }
+                )
+            }
 
-        SettingsHeader(title = stringResource(R.string.settings_section_food_search))
+            SettingsHeader(title = stringResource(R.string.settings_section_food_search))
 
-        AppCard(contentPadding = PaddingValues(0.dp)) {
-            val autoLabel = stringResource(
-                R.string.settings_food_language_auto,
-                LocalLocale.current.platformLocale.language.uppercase()
-            )
-            val currentLabel = if (foodLanguage.isEmpty()) autoLabel
+            AppCard(contentPadding = PaddingValues(0.dp)) {
+                val autoLabel = stringResource(
+                    R.string.settings_food_language_auto,
+                    LocalLocale.current.platformLocale.language.uppercase()
+                )
+                val currentLabel = if (foodLanguage.isEmpty()) autoLabel
                 else FOOD_LANGUAGE_OPTIONS.find { it.code == foodLanguage }?.nativeName ?: autoLabel
-            SettingsActionItem(
-                label = stringResource(R.string.settings_food_language),
-                sublabel = currentLabel,
-                onClick = { showLanguageDialog = true }
-            )
-        }
+                SettingsActionItem(
+                    label = stringResource(R.string.settings_food_language),
+                    sublabel = currentLabel,
+                    onClick = { showLanguageDialog = true }
+                )
+            }
 
-        if (showLanguageDialog) {
-            FoodLanguageDialog(
-                current = foodLanguage,
-                onSelect = { code ->
-                    viewModel.setFoodSearchLanguage(code)
-                    showLanguageDialog = false
-                },
-                onDismiss = { showLanguageDialog = false }
-            )
-        }
+            if (showLanguageDialog) {
+                FoodLanguageDialog(
+                    current = foodLanguage,
+                    onSelect = { code ->
+                        viewModel.setFoodSearchLanguage(code)
+                        showLanguageDialog = false
+                    },
+                    onDismiss = { showLanguageDialog = false }
+                )
+            }
 
-        SettingsHeader(title = stringResource(R.string.settings_section_permissions))
+            SettingsHeader(title = stringResource(R.string.settings_section_permissions))
 
-        AppCard(contentPadding = PaddingValues(0.dp)) {
-            PermissionSettingItem(
-                label = stringResource(R.string.permission_location_title),
-                isGranted = permissions.location,
-                onClick = {
-                    handlePermissionClick(permissions.location, PermissionType.LOCATION) {
-                        locationLauncher.launch(
-                            arrayOf(
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION
+            AppCard(contentPadding = PaddingValues(0.dp)) {
+                PermissionSettingItem(
+                    label = stringResource(R.string.permission_location_title),
+                    isGranted = permissions.location,
+                    onClick = {
+                        handlePermissionClick(permissions.location, PermissionType.LOCATION) {
+                            locationLauncher.launch(
+                                arrayOf(
+                                    Manifest.permission.ACCESS_FINE_LOCATION,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION
+                                )
                             )
-                        )
+                        }
                     }
-                }
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
-            PermissionSettingItem(
-                label = stringResource(R.string.permission_camera_title),
-                isGranted = permissions.camera,
-                onClick = {
-                    handlePermissionClick(permissions.camera, PermissionType.CAMERA) {
-                        cameraLauncher.launch(Manifest.permission.CAMERA)
-                    }
-                }
-            )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
                 PermissionSettingItem(
-                    label = stringResource(R.string.permission_notifications_title),
-                    isGranted = permissions.notifications,
+                    label = stringResource(R.string.permission_camera_title),
+                    isGranted = permissions.camera,
                     onClick = {
-                        handlePermissionClick(permissions.notifications, PermissionType.NOTIFICATIONS) {
-                            notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        handlePermissionClick(permissions.camera, PermissionType.CAMERA) {
+                            cameraLauncher.launch(Manifest.permission.CAMERA)
+                        }
+                    }
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
+                    PermissionSettingItem(
+                        label = stringResource(R.string.permission_notifications_title),
+                        isGranted = permissions.notifications,
+                        onClick = {
+                            handlePermissionClick(permissions.notifications, PermissionType.NOTIFICATIONS) {
+                                notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            }
+                        }
+                    )
+                }
+            }
+
+            SettingsHeader(title = stringResource(R.string.settings_section_data_privacy))
+
+            AppCard(contentPadding = PaddingValues(0.dp)) {
+                SettingsActionItem(
+                    label = stringResource(R.string.settings_export_data),
+                    sublabel = if (isExporting) stringResource(R.string.settings_exporting) else null,
+                    onClick = { if (!isExporting) viewModel.exportData() }
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
+                SettingsActionItem(
+                    label = stringResource(R.string.settings_delete_data),
+                    onClick = { showDeleteConfirmDialog = true }
+                )
+            }
+
+            if (showDeleteConfirmDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDeleteConfirmDialog = false },
+                    title = { Text(stringResource(R.string.settings_delete_confirm_title)) },
+                    text = { Text(stringResource(R.string.settings_delete_confirm_message)) },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                viewModel.deleteAllData()
+                                showDeleteConfirmDialog = false
+                            },
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Text(stringResource(R.string.settings_delete_confirm_btn))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDeleteConfirmDialog = false }) {
+                            Text(stringResource(R.string.btn_close))
                         }
                     }
                 )
             }
-        }
 
-        SettingsHeader(title = stringResource(R.string.settings_section_data_privacy))
-
-        AppCard(contentPadding = PaddingValues(0.dp)) {
-            SettingsActionItem(
-                label = stringResource(R.string.settings_export_data),
-                sublabel = if (isExporting) stringResource(R.string.settings_exporting) else null,
-                onClick = { if (!isExporting) viewModel.exportData() }
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
-            SettingsActionItem(
-                label = stringResource(R.string.settings_delete_data),
-                onClick = { showDeleteConfirmDialog = true }
-            )
-        }
-
-        if (showDeleteConfirmDialog) {
-            AlertDialog(
-                onDismissRequest = { showDeleteConfirmDialog = false },
-                title = { Text(stringResource(R.string.settings_delete_confirm_title)) },
-                text = { Text(stringResource(R.string.settings_delete_confirm_message)) },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            viewModel.deleteAllData()
-                            showDeleteConfirmDialog = false
-                        },
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.error
-                        )
-                    ) {
-                        Text(stringResource(R.string.settings_delete_confirm_btn))
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDeleteConfirmDialog = false }) {
-                        Text(stringResource(R.string.btn_close))
-                    }
+            if (BuildConfig.DEBUG) {
+                SettingsHeader(title = stringResource(R.string.settings_section_developer))
+                AppCard(contentPadding = PaddingValues(0.dp)) {
+                    SettingsActionItem(
+                        label = stringResource(R.string.settings_debug_menu_label),
+                        icon = Icons.Default.Build,
+                        onClick = { navController.navigate(Screen.DebugMenu.route) }
+                    )
                 }
+            }
+
+            Spacer(Modifier.height(40.dp))
+            Text(
+                text = stringResource(R.string.settings_version_format, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE.toString()),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                fontFamily = MonoFontFamily
             )
         }
-
-        if (BuildConfig.DEBUG) {
-            SettingsHeader(title = stringResource(R.string.settings_section_developer))
-            AppCard(contentPadding = PaddingValues(0.dp)) {
-                SettingsActionItem(
-                    label = stringResource(R.string.settings_debug_menu_label),
-                    icon = Icons.Default.Build,
-                    onClick = { navController.navigate(Screen.DebugMenu.route) }
-                )
-            }
-        }
-
-        Spacer(Modifier.height(40.dp))
-        Text(
-            text = stringResource(R.string.settings_version_format, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE.toString()),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            fontFamily = MonoFontFamily
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 }
@@ -294,15 +335,10 @@ private fun openAppSettings(context: Context) {
 }
 
 private fun openNotificationSettings(context: Context) {
-    val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    val intent =
         Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
             putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
         }
-    } else {
-        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.fromParts("package", context.packageName, null)
-        }
-    }
     context.startActivity(intent)
 }
 
@@ -322,19 +358,33 @@ fun SettingsHeader(title: String) {
 fun SettingsSwitchItem(
     label: String,
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
+    enabled: Boolean = true,
+    onDisabledClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                if (enabled) onCheckedChange(!checked)
+                else onDisabledClick?.invoke()
+            }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+        Text(
+            label,
+            style = MaterialTheme.typography.bodyLarge,
+            color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange,
+            onCheckedChange = null,
+            enabled = enabled,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = MaterialTheme.colorScheme.primary,
                 checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),

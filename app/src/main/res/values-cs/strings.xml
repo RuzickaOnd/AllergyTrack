@@ -271,6 +271,7 @@
     <string name="settings_section_general">OBECNÉ</string>
     <string name="settings_dark_mode">Tmavý režim (vynucený)</string>
     <string name="settings_push_notifications">Push notifikace</string>
+    <string name="settings_notifications_permission_required">Pro notifikace je nejprve potřeba udělit oprávnění v sekci Oprávnění níže.</string>
     <string name="settings_section_food_search">VYHLEDÁVÁNÍ JÍDLA</string>
     <string name="settings_food_language">Jazyk vyhledávání jídla</string>
     <string name="settings_food_language_auto">Automaticky (%s)</string>

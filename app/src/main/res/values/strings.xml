@@ -271,6 +271,7 @@
     <string name="settings_section_general">GENERAL</string>
     <string name="settings_dark_mode">Dark mode (forced)</string>
     <string name="settings_push_notifications">Push notifications</string>
+    <string name="settings_notifications_permission_required">To enable notifications, first grant permission in the Permissions section below.</string>
     <string name="settings_section_food_search">FOOD SEARCH</string>
     <string name="settings_food_language">Food search language</string>
     <string name="settings_food_language_auto">Auto (%s)</string>
