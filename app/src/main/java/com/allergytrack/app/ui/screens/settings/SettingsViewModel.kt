@@ -75,7 +75,7 @@ class SettingsViewModel @Inject constructor(
      * ho přímo do AllergyTrackTheme(darkTheme = ...).
      */
     val darkMode: StateFlow<Boolean> = userPreferencesDataStore.darkMode
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     fun setDarkMode(enabled: Boolean) {
         viewModelScope.launch { userPreferencesDataStore.setDarkMode(enabled) }

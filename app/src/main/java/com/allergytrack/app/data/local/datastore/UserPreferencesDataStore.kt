@@ -53,7 +53,7 @@ class UserPreferencesDataStore @Inject constructor(
 
     /** Tmavý režim. Výchozí = true (dark-first design). */
     val darkMode: Flow<Boolean> = context.userPreferencesDataStore.data
-        .map { prefs -> prefs[KEY_DARK_MODE] ?: true }
+        .map { prefs -> prefs[KEY_DARK_MODE] ?: false }
 
     suspend fun setDarkMode(enabled: Boolean) {
         context.userPreferencesDataStore.edit { it[KEY_DARK_MODE] = enabled }
