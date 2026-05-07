@@ -59,7 +59,7 @@ com.allergytrack.app/
 │   │   ├── StringResExt.kt
 │   │   └── ExportUtils.kt     ← AnalysisExportHandler, sharePdfFile()
 │   ├── components/
-│   │   ├── CommonUI.kt        ← AppCard, CardTitle(icon), Pill(onClick), PrimaryButton,
+│   │   ├── CommonUI.kt        ← AppCard(contentPadding), CardTitle(icon), Pill(onClick), PrimaryButton,
 │   │   │                         SecondaryButton, SectionHeading, AiBadge
 │   │   ├── BottomNavBar.kt
 │   │   ├── PremiumGate.kt     ← Třístavový wrapper (hidden/upsell/content)
@@ -101,8 +101,8 @@ com.allergytrack.app/
 │       │   ├── ProfileViewModel.kt    ← UserPreferencesDataStore: userName, avatarSelection
 │       │   └── AboutScreen.kt
 │       └── settings/
-│           ├── SettingsScreen.kt         ← Obsahuje FoodLanguageDialog
-│           ├── SettingsViewModel.kt      ← FOOD_LANGUAGE_OPTIONS, setFoodSearchLanguage()
+│           ├── SettingsScreen.kt         ← Plně implementovaná nastavení (viz sekce 11)
+│           ├── SettingsViewModel.kt      ← export, smazání dat, dark mode, notifikace, jazyk
 │           ├── DebugMenuScreen.kt        ← Jen v BuildConfig.DEBUG
 │           └── DebugMenuViewModel.kt
 ├── domain/
@@ -147,7 +147,7 @@ com.allergytrack.app/
 │   │   │       └── EnvironmentLogDao.kt
 │   │   └── datastore/
 │   │       ├── OnboardingDataStore.kt       ← isCompleted, allergyProfile
-│   │       ├── UserPreferencesDataStore.kt  ← food_search_language ("" = auto)
+│   │       ├── UserPreferencesDataStore.kt  ← 5 klíčů: jazyk, jméno, avatar, dark mode, notifikace
 │   │       └── DebugPreferences.kt          ← debug_preferences, DebugPremiumOverride
 │   ├── remote/
 │   │   ├── airquality/
@@ -166,7 +166,8 @@ com.allergytrack.app/
 │   │   └── PermissionsHelper.kt       ← GPS, kamera, notifikace, mikrofon
 │   └── worker/
 │       ├── EnvironmentWorker.kt       ← HiltWorker, GPS + AQI každých 30 min
-│       └── WorkManagerScheduler.kt
+│       ├── ReminderWorker.kt          ← HiltWorker, večerní připomínka ~20:00
+│       └── WorkManagerScheduler.kt   ← scheduleReminder() + cancelReminder()
 ```
 
 ---
@@ -342,6 +343,8 @@ Každá změna schématu = zvýšení verze + Migration objekt.
 | `food_search_language` | String | `""` | Kód jazyka vyhledávání; prázdný = auto z `Locale.getDefault()` |
 | `user_name` | String | `""` | Zobrazované jméno uživatele; prázdný = nezadáno |
 | `avatar_selection` | String | `"person"` | ID presetu (např. `"pets"`) nebo `"gallery:<uri>"` pro obrázek z galerie |
+| `dark_mode` | Boolean | `true` | Tmavý/světlý režim; změna se projeví okamžitě — MainActivity sleduje tento flow |
+| `notifications_enabled` | Boolean | `false` | Večerní připomínka ~20:00; zapnutí/vypnutí řídí WorkManager job (`ReminderWorker`) |
 
 ### 9. ProfileScreen — avatar a editace jména
 
@@ -372,7 +375,41 @@ Aplikace umožňuje vygenerovat lékařský report ve formátu PDF pro sdílení
 #### Implementace v UI:
 - **AnalysisExportHandler**: Sjednocená Composable funkce v `ExportUtils.kt`.
 - **Sjednocení**: Handler je umístěn v `AnalysisScreen` i v `MainAppScaffold`, aby export fungoval konzistentně z obou míst.
+- **SettingsScreen**: Druhý vstupní bod exportu — `SettingsViewModel.exportData()` spouští stejný pipeline (korelace → AI → PDF → `sharePdfFile()`).
 - **Context**: Využívá `AllergyTrackApplication.instance` nebo `applicationContext` pro operace mimo UI (Toast, FileProvider).
+
+### 11. SettingsScreen — architektura a implementované funkce
+
+Všechny položky v SettingsScreen jsou plně implementovány.
+
+#### AppCard pro seznam položek
+Pro klikatelné položky bez vnitřního paddingu karty se používá `contentPadding = PaddingValues(0.dp)`.
+Samotné položky (`SettingsActionItem`, `PermissionSettingItem`, `SettingsSwitchItem`) nesou
+vlastní padding (`horizontal = 12.dp`, `vertical = 16.dp`), čímž ripple efekt pokrývá celou
+šířku karty až ke krajům. Karta je ořezána na zaoblené rohy pomocí `clip(shape)`.
+
+#### Tmavý režim
+- Persistence: `UserPreferencesDataStore.darkMode` (Boolean, default = `true`)
+- `MainActivity`: `runBlocking { darkMode.first() }` pro bezpadový počáteční stav (žádný bílý záblesk),
+  pak `collectAsState` v `setContent {}` → okamžitá změna bez restartu aplikace
+
+#### Push notifikace — večerní připomínka
+- Kanál: `reminder_channel` (`IMPORTANCE_DEFAULT`) — registrován v `AllergyTrackApplication.onCreate()`
+- Worker: `ReminderWorker` (`@HiltWorker`) — odesílá notifikaci s `R.string.notification_reminder_*`
+- Scheduling: `WorkManagerScheduler.scheduleReminder()` — počítá delay na nejbližší 20:00 místního času;
+  pokud je již po 20:00, naplánuje na 20:00 následujícího dne
+- Policy: `ExistingPeriodicWorkPolicy.REPLACE` — opakované zapnutí resetuje timing (zabraňuje driftu)
+- Notifikace otevírá `MainActivity` s `FLAG_ACTIVITY_CLEAR_TASK` + `autoCancel = true`
+- WorkManager nezaručuje přesný čas — Doze mode může zpozdit o desítky minut
+
+#### Export dat ze Settings
+`SettingsViewModel.exportData()` spouští stejný pipeline jako `AnalysisViewModel`:
+`correlationEngine.analyze()` → `aiSummaryService.generateSummary()` →
+`medicalReportExporter.generatePdfReport()` → `sharePdfFile()`
+
+#### Smazání dat
+`SettingsViewModel.deleteAllData()` volá `deleteAll()` na všech třech DAO.
+DataStore preference (jméno, avatar, jazyk, dark mode, notifikace) zůstanou zachovány.
 
 ---
 
@@ -548,6 +585,12 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 | 14 | Voice input fix: FoodManualSearch přijímá initialQuery přes nav argument | ✅ |
 | 15 | ChartsScreen: oprava 6 bugů (mrtvý DAO, filter stats, AQI normalizace, X-osa) + crash fix (Compose Rules) | ✅ |
 | 16 | ProfileScreen: avatar (12 presetů + galerie) + inline editace jména + AvatarPickerScreen | ✅ |
+| 17 | ProfileScreen: restyling na AppCard + SettingsActionItem vzor (sjednocení se SettingsScreen) | ✅ |
+| 18 | AppCard: parametr `contentPadding` — ripple edge-to-edge pro položky v seznamu | ✅ |
+| 19 | SettingsScreen: Export dat — PDF pipeline, `sharePdfFile()`, progress sublabel | ✅ |
+| 20 | SettingsScreen: Smazání dat — AlertDialog, `deleteAll()` na všech třech DAO | ✅ |
+| 21 | SettingsScreen: Tmavý režim — reaktivní, perzistovaný, okamžitá změna v MainActivity | ✅ |
+| 22 | SettingsScreen: Push notifikace — ReminderWorker, kanál, scheduling na ~20:00 | ✅ |
 
 ---
 
@@ -566,8 +609,8 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 - Empty state pro Charts a Analysis (první týden bez dat)
 
 **Funkce:**
-- Notifikace — večerní připomínka logování (WorkManager + NotificationManager)
 - Nastavení intervalu WorkManager (30 min default, uživatel může změnit)
+- Vlastní čas připomínky (aktuálně fixní 20:00)
 
 **Technický dluh:**
 - `AiSummaryService.generateSummary()` je lokální šablona → napojit na Claude API

@@ -9,6 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.allergytrack.app.data.local.datastore.OnboardingDataStore
+import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.worker.WorkManagerScheduler
 import com.allergytrack.app.ui.navigation.MainAppScaffold
 import com.allergytrack.app.ui.onboarding.OnboardingFlow
@@ -23,20 +24,19 @@ class MainActivity : ComponentActivity() {
 
     @Inject lateinit var workManagerScheduler: WorkManagerScheduler
     @Inject lateinit var onboardingDataStore: OnboardingDataStore
+    @Inject lateinit var userPreferencesDataStore: UserPreferencesDataStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Synchronní čtení onboarding stavu — pouze jednou při startu.
-        // runBlocking je zde záměrný a bezpečný: čteme z DataStore
-        // před prvním sestavením UI, trvá < 5ms.
-        val onboardingCompleted = runBlocking {
-            onboardingDataStore.isCompleted.first()
-        }
+        // Synchronní čtení stavu před prvním sestavením UI — záměrné, trvá < 5ms.
+        val onboardingCompleted = runBlocking { onboardingDataStore.isCompleted.first() }
+        val initialDarkMode = runBlocking { userPreferencesDataStore.darkMode.first() }
 
         setContent {
-            AllergyTrackTheme {
+            val darkMode by userPreferencesDataStore.darkMode.collectAsState(initial = initialDarkMode)
+            AllergyTrackTheme(darkTheme = darkMode) {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     AppRoot(initialOnboardingCompleted = onboardingCompleted)
                 }

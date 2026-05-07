@@ -23,4 +23,7 @@ interface SymptomLogDao {
 
     @Query("DELETE FROM symptom_logs WHERE id = :id")
     suspend fun deleteById(id: String)
+
+    @Query("DELETE FROM symptom_logs")
+    suspend fun deleteAll()
 }

@@ -3,6 +3,7 @@ package com.allergytrack.app.data.local.datastore
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -23,6 +24,8 @@ class UserPreferencesDataStore @Inject constructor(
         private val KEY_FOOD_LANGUAGE = stringPreferencesKey("food_search_language")
         private val KEY_USER_NAME = stringPreferencesKey("user_name")
         private val KEY_AVATAR_SELECTION = stringPreferencesKey("avatar_selection")
+        private val KEY_DARK_MODE = booleanPreferencesKey("dark_mode")
+        private val KEY_NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
     }
 
     /** Uložený kód jazyka pro vyhledávání jídla. Prázdný string = auto (dle zařízení). */
@@ -46,5 +49,21 @@ class UserPreferencesDataStore @Inject constructor(
 
     suspend fun setAvatarSelection(selection: String) {
         context.userPreferencesDataStore.edit { it[KEY_AVATAR_SELECTION] = selection }
+    }
+
+    /** Tmavý režim. Výchozí = true (dark-first design). */
+    val darkMode: Flow<Boolean> = context.userPreferencesDataStore.data
+        .map { prefs -> prefs[KEY_DARK_MODE] ?: true }
+
+    suspend fun setDarkMode(enabled: Boolean) {
+        context.userPreferencesDataStore.edit { it[KEY_DARK_MODE] = enabled }
+    }
+
+    /** Push notifikace — večerní připomínka. Výchozí = false. */
+    val notificationsEnabled: Flow<Boolean> = context.userPreferencesDataStore.data
+        .map { prefs -> prefs[KEY_NOTIFICATIONS_ENABLED] ?: false }
+
+    suspend fun setNotificationsEnabled(enabled: Boolean) {
+        context.userPreferencesDataStore.edit { it[KEY_NOTIFICATIONS_ENABLED] = enabled }
     }
 }

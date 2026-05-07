@@ -278,7 +278,11 @@
     <string name="settings_section_data_privacy">DATA A SOUKROMÍ</string>
     <string name="settings_section_permissions">OPRÁVNĚNÍ</string>
     <string name="settings_export_data">Exportovat moje data</string>
+    <string name="settings_exporting">Generuji PDF…</string>
     <string name="settings_delete_data">Smazat všechny záznamy</string>
+    <string name="settings_delete_confirm_title">Smazat všechna data?</string>
+    <string name="settings_delete_confirm_message">Tato akce trvale smaže všechny záznamy jídla, příznaků a prostředí. Nelze vrátit zpět.</string>
+    <string name="settings_delete_confirm_btn">Smazat</string>
     <string name="settings_section_developer">VÝVOJÁŘ</string>
     <string name="settings_debug_menu_label">Debug menu</string>
     <string name="settings_version_format">Verze %1$s (%2$s)</string>
@@ -345,5 +349,11 @@
 
     <!-- Obrazovka zamítnutého oprávnění -->
     <string name="permission_denied_title">Oprávnění zamítnuto</string>
+
+    <!-- Notifikace -->
+    <string name="notification_channel_reminders_name">Připomínky logování</string>
+    <string name="notification_channel_reminders_desc">Večerní připomínka k zalogování jídla a příznaků</string>
+    <string name="notification_reminder_title">AllergyTrack</string>
+    <string name="notification_reminder_body">Nezapomeň zalogovat dnešní jídlo a příznaky.</string>
 
 </resources>

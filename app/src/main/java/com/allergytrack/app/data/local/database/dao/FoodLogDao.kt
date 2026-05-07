@@ -23,4 +23,7 @@ interface FoodLogDao {
 
     @Query("DELETE FROM food_logs WHERE id = :id")
     suspend fun deleteById(id: String)
+
+    @Query("DELETE FROM food_logs")
+    suspend fun deleteAll()
 }

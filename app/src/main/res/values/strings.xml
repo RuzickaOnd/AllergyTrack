@@ -278,7 +278,11 @@
     <string name="settings_section_data_privacy">DATA AND PRIVACY</string>
     <string name="settings_section_permissions">PERMISSIONS</string>
     <string name="settings_export_data">Export my data</string>
+    <string name="settings_exporting">Generating PDF…</string>
     <string name="settings_delete_data">Delete all records</string>
+    <string name="settings_delete_confirm_title">Delete all data?</string>
+    <string name="settings_delete_confirm_message">This will permanently delete all food, symptom, and environment records. This cannot be undone.</string>
+    <string name="settings_delete_confirm_btn">Delete</string>
     <string name="settings_section_developer">DEVELOPER</string>
     <string name="settings_debug_menu_label">Debug menu</string>
     <string name="settings_version_format">Version %1$s (%2$s)</string>
@@ -345,5 +349,11 @@
 
     <!-- Permission denied screen -->
     <string name="permission_denied_title">Permission denied</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_reminders_name">Logging reminders</string>
+    <string name="notification_channel_reminders_desc">Evening reminder to log food and symptoms</string>
+    <string name="notification_reminder_title">AllergyTrack</string>
+    <string name="notification_reminder_body">Don\'t forget to log today\'s food and symptoms.</string>
 
 </resources>

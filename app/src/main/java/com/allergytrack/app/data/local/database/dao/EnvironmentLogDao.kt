@@ -17,4 +17,7 @@ interface EnvironmentLogDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(log: EnvironmentLogEntity)
+
+    @Query("DELETE FROM environment_logs")
+    suspend fun deleteAll()
 }

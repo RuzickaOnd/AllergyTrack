@@ -36,6 +36,7 @@ import com.allergytrack.app.R
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.util.sharePdfFile
 import java.util.Locale
 import androidx.compose.ui.platform.LocalLocale
 
@@ -48,7 +49,19 @@ fun SettingsScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val permissions by viewModel.permissionsState.collectAsStateWithLifecycle()
     val foodLanguage by viewModel.foodSearchLanguage.collectAsStateWithLifecycle()
+    val darkMode by viewModel.darkMode.collectAsStateWithLifecycle()
+    val notificationsEnabled by viewModel.notificationsEnabled.collectAsStateWithLifecycle()
+    val isExporting by viewModel.isExporting.collectAsStateWithLifecycle()
+    val exportedFile by viewModel.exportedFile.collectAsStateWithLifecycle()
     var showLanguageDialog by remember { mutableStateOf(false) }
+    var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(exportedFile) {
+        exportedFile?.let { file ->
+            context.sharePdfFile(file)
+            viewModel.dismissExport()
+        }
+    }
 
     // Refresh permissions when returning to this screen
     DisposableEffect(lifecycleOwner) {
@@ -103,14 +116,14 @@ fun SettingsScreen(
         AppCard(contentPadding = PaddingValues(0.dp)) {
             SettingsSwitchItem(
                 label = stringResource(R.string.settings_dark_mode),
-                checked = true,
-                onCheckedChange = { /* Always dark in MVP */ }
+                checked = darkMode,
+                onCheckedChange = { viewModel.setDarkMode(it) }
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
             SettingsSwitchItem(
                 label = stringResource(R.string.settings_push_notifications),
-                checked = true,
-                onCheckedChange = { /* TODO */ }
+                checked = notificationsEnabled,
+                onCheckedChange = { viewModel.setNotificationsEnabled(it) }
             )
         }
 
@@ -187,12 +200,39 @@ fun SettingsScreen(
         AppCard(contentPadding = PaddingValues(0.dp)) {
             SettingsActionItem(
                 label = stringResource(R.string.settings_export_data),
-                onClick = { /* TODO */ }
+                sublabel = if (isExporting) stringResource(R.string.settings_exporting) else null,
+                onClick = { if (!isExporting) viewModel.exportData() }
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
             SettingsActionItem(
                 label = stringResource(R.string.settings_delete_data),
-                onClick = { /* TODO: Show confirmation dialog */ }
+                onClick = { showDeleteConfirmDialog = true }
+            )
+        }
+
+        if (showDeleteConfirmDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteConfirmDialog = false },
+                title = { Text(stringResource(R.string.settings_delete_confirm_title)) },
+                text = { Text(stringResource(R.string.settings_delete_confirm_message)) },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            viewModel.deleteAllData()
+                            showDeleteConfirmDialog = false
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text(stringResource(R.string.settings_delete_confirm_btn))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteConfirmDialog = false }) {
+                        Text(stringResource(R.string.btn_close))
+                    }
+                }
             )
         }
 
