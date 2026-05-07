@@ -25,6 +25,7 @@ fun AppCard(
     modifier: Modifier = Modifier,
     borderColor: Color = MaterialTheme.colorScheme.outline,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
+    contentPadding: PaddingValues = PaddingValues(12.dp),
     onClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -41,7 +42,7 @@ fun AppCard(
     }
 
     Column(
-        modifier = clickableModifier.padding(12.dp),
+        modifier = clickableModifier.padding(contentPadding),
         content = content
     )
 }

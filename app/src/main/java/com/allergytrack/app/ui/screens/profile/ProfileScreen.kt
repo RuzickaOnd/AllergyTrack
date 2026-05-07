@@ -5,7 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -52,7 +52,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.R
+import com.allergytrack.app.ui.components.AppCard
 import com.allergytrack.app.ui.navigation.Screen
+import com.allergytrack.app.ui.screens.settings.SettingsActionItem
+import com.allergytrack.app.ui.screens.settings.SettingsHeader
 
 @Composable
 fun ProfileScreen(
@@ -166,20 +169,26 @@ fun ProfileScreen(
 
         // Options list
         item {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                ProfileOptionItem(
+            AppCard(contentPadding = PaddingValues(0.dp)) {
+                SettingsActionItem(
                     icon = Icons.Default.Star,
                     label = stringResource(R.string.profile_option_premium),
                     onClick = {}
                 )
-                ProfileOptionItem(
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    thickness = 0.5.dp
+                )
+                SettingsActionItem(
                     icon = Icons.Default.Settings,
                     label = stringResource(R.string.screen_settings),
                     onClick = { navController.navigate(Screen.Settings.route) }
                 )
-                ProfileOptionItem(
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    thickness = 0.5.dp
+                )
+                SettingsActionItem(
                     icon = Icons.Default.Info,
                     label = stringResource(R.string.screen_about),
                     onClick = { navController.navigate(Screen.About.route) }
@@ -198,28 +207,3 @@ fun ProfileScreen(
     }
 }
 
-@Composable
-fun ProfileOptionItem(
-    icon: ImageVector,
-    label: String,
-    onClick: () -> Unit
-) {
-    Surface(
-        onClick = onClick,
-        shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 1.dp,
-        shadowElevation = 2.dp,
-        //border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Icon(icon, null, tint = MaterialTheme.colorScheme.primary)
-            Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-            Text("›", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.outline)
-        }
-    }
-}

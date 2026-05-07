@@ -37,6 +37,7 @@ import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*
 import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun SettingsScreen(
@@ -99,7 +100,7 @@ fun SettingsScreen(
 
         SettingsHeader(title = stringResource(R.string.settings_section_general))
 
-        AppCard {
+        AppCard(contentPadding = PaddingValues(0.dp)) {
             SettingsSwitchItem(
                 label = stringResource(R.string.settings_dark_mode),
                 checked = true,
@@ -115,10 +116,10 @@ fun SettingsScreen(
 
         SettingsHeader(title = stringResource(R.string.settings_section_food_search))
 
-        AppCard {
+        AppCard(contentPadding = PaddingValues(0.dp)) {
             val autoLabel = stringResource(
                 R.string.settings_food_language_auto,
-                Locale.getDefault().language.uppercase()
+                LocalLocale.current.platformLocale.language.uppercase()
             )
             val currentLabel = if (foodLanguage.isEmpty()) autoLabel
                 else FOOD_LANGUAGE_OPTIONS.find { it.code == foodLanguage }?.nativeName ?: autoLabel
@@ -142,7 +143,7 @@ fun SettingsScreen(
 
         SettingsHeader(title = stringResource(R.string.settings_section_permissions))
 
-        AppCard {
+        AppCard(contentPadding = PaddingValues(0.dp)) {
             PermissionSettingItem(
                 label = stringResource(R.string.permission_location_title),
                 isGranted = permissions.location,
@@ -183,7 +184,7 @@ fun SettingsScreen(
 
         SettingsHeader(title = stringResource(R.string.settings_section_data_privacy))
 
-        AppCard {
+        AppCard(contentPadding = PaddingValues(0.dp)) {
             SettingsActionItem(
                 label = stringResource(R.string.settings_export_data),
                 onClick = { /* TODO */ }
@@ -197,7 +198,7 @@ fun SettingsScreen(
 
         if (BuildConfig.DEBUG) {
             SettingsHeader(title = stringResource(R.string.settings_section_developer))
-            AppCard {
+            AppCard(contentPadding = PaddingValues(0.dp)) {
                 SettingsActionItem(
                     label = stringResource(R.string.settings_debug_menu_label),
                     icon = Icons.Default.Build,
@@ -227,7 +228,7 @@ fun PermissionSettingItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 16.dp),
+            .padding(horizontal = 12.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -286,7 +287,7 @@ fun SettingsSwitchItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -315,7 +316,7 @@ fun SettingsActionItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 16.dp),
+            .padding(horizontal = 12.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
