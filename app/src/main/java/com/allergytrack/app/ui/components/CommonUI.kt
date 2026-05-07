@@ -21,6 +21,25 @@ import com.allergytrack.app.R
 import com.allergytrack.app.ui.theme.*
 
 @Composable
+fun AppSnackbarHost(
+    hostState: SnackbarHostState,
+    modifier: Modifier = Modifier
+) {
+    SnackbarHost(
+        hostState = hostState,
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+    ) { data ->
+        Snackbar(
+            snackbarData = data,
+            shape = RoundedCornerShape(14.dp),
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            actionColor = MaterialTheme.colorScheme.secondary,
+        )
+    }
+}
+
+@Composable
 fun AppCard(
     modifier: Modifier = Modifier,
     borderColor: Color = MaterialTheme.colorScheme.outline,

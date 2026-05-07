@@ -32,7 +32,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -63,6 +62,7 @@ import androidx.navigation.NavController
 import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.R
 import com.allergytrack.app.ui.components.AppCard
+import com.allergytrack.app.ui.components.AppSnackbarHost
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.MonoFontFamily
 import com.allergytrack.app.ui.util.sharePdfFile
@@ -292,7 +292,7 @@ fun SettingsScreen(
                 fontFamily = MonoFontFamily
             )
         }
-        SnackbarHost(
+        AppSnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
         )

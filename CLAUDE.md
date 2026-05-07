@@ -59,7 +59,7 @@ com.allergytrack.app/
 │   │   ├── StringResExt.kt
 │   │   └── ExportUtils.kt     ← AnalysisExportHandler, sharePdfFile()
 │   ├── components/
-│   │   ├── CommonUI.kt        ← AppCard(contentPadding), CardTitle(icon), Pill(onClick), PrimaryButton,
+│   │   ├── CommonUI.kt        ← AppCard(contentPadding), AppSnackbarHost, CardTitle(icon), Pill(onClick), PrimaryButton,
 │   │   │                         SecondaryButton, SectionHeading, AiBadge
 │   │   ├── BottomNavBar.kt
 │   │   ├── PremiumGate.kt     ← Třístavový wrapper (hidden/upsell/content)
@@ -411,6 +411,43 @@ vlastní padding (`horizontal = 12.dp`, `vertical = 16.dp`), čímž ripple efek
 `SettingsViewModel.deleteAllData()` volá `deleteAll()` na všech třech DAO.
 DataStore preference (jméno, avatar, jazyk, dark mode, notifikace) zůstanou zachovány.
 
+#### SettingsSwitchItem — disabled stav a onDisabledClick
+`SettingsSwitchItem` má parametr `enabled: Boolean` a `onDisabledClick: (() -> Unit)?`.
+Celý Row je klikatelný (`indication = null` — bez ripple efektu); `Switch` má `onCheckedChange = null`
+a slouží pouze jako vizuální indikátor — klik zpracovává Row.
+Pokud `enabled = false` a uživatel klikne, zavolá se `onDisabledClick` (např. zobrazí snackbar).
+
+#### AppSnackbarHost — sdílená snackbar komponenta
+`AppSnackbarHost` v `CommonUI.kt` je jediný způsob jak zobrazovat snackbary v aplikaci.
+Vždy jej použij místo raw `SnackbarHost`.
+
+**Použití:**
+```kotlin
+val snackbarHostState = remember { SnackbarHostState() }
+val scope = rememberCoroutineScope()
+
+Box(modifier = Modifier.fillMaxSize()) {
+    // obsah obrazovky
+    AppSnackbarHost(
+        hostState = snackbarHostState,
+        modifier = Modifier.align(Alignment.BottomCenter)
+    )
+}
+
+scope.launch { snackbarHostState.showSnackbar(message) }
+```
+
+**Design:**
+| Vlastnost | Hodnota |
+|-----------|---------|
+| Tvar | `RoundedCornerShape(14.dp)` — shodné s `AppCard` |
+| Pozadí (dark) | `secondaryContainer = Forest600 #3D6E4F` |
+| Text (dark) | `onSecondaryContainer = Forest100 #EAF4ED` |
+| Pozadí (light) | `secondaryContainer = Forest200 #C2DECA` |
+| Text (light) | `onSecondaryContainer = Forest700 #2D5A3D` |
+| Akce | `secondary` (Sage400 / Forest400) |
+| Padding od okrajů | `horizontal 16 dp, vertical 12 dp` |
+
 ---
 
 ## API PŘEHLED
@@ -549,6 +586,7 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 ✅ Veškerý text UI v češtině (resources values-cs/ jsou primární)
 ✅ foodName a allergens v navigaci vždy Uri.encode() před navigate()
 ✅ HttpException ze síťových volání propagovat do ViewModelu — nekousat v repository
+✅ Snackbary vždy přes AppSnackbarHost (CommonUI.kt) — nikdy raw SnackbarHost
 
 ❌ runBlocking v produkčním kódu (výjimka: MainActivity onCreate)
 ❌ Přímé volání DAO z ViewModelu
@@ -591,6 +629,8 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 | 20 | SettingsScreen: Smazání dat — AlertDialog, `deleteAll()` na všech třech DAO | ✅ |
 | 21 | SettingsScreen: Tmavý režim — reaktivní, perzistovaný, okamžitá změna v MainActivity | ✅ |
 | 22 | SettingsScreen: Push notifikace — ReminderWorker, kanál, scheduling na ~20:00 | ✅ |
+| 23 | SettingsScreen: notifications switch disabled při chybějícím oprávnění + snackbar hint | ✅ |
+| 24 | AppSnackbarHost: sdílená komponenta s green brand barvami, zaoblené rohy, brand barvy | ✅ |
 
 ---
 
@@ -604,7 +644,7 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 
 **UX vylepšení:**
 - Animace při přidání záznamu na Dashboard (timeline item appear)
-- Snackbar feedback po uložení jídla/symptomu
+- Snackbar feedback po uložení jídla/symptomu — použít `AppSnackbarHost` z `CommonUI.kt`
 - Pull-to-refresh na Dashboardu
 - Empty state pro Charts a Analysis (první týden bez dat)
 

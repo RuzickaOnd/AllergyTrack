@@ -149,6 +149,36 @@ fun XyzPreview() { AllergyTrackTheme { Xyz(...) } }
 - ❌ Hardcoded `dp` hodnoty mimo definované konstanty — používej `MaterialTheme.spacing`
 - ❌ `android:layout_*` XML atributy (jsme full Compose)
 - ❌ `remember { ... }` nebo composable volání **po** podmíněném `return` — porušení Compose Rules of Hooks způsobí slot table corruption a crash při změně stavu. Vždy: nejdřív všechna `remember`, pak podmíněná logika.
+- ❌ Raw `SnackbarHost` — vždy použij `AppSnackbarHost` z `CommonUI.kt`
+
+### Snackbary — AppSnackbarHost
+`AppSnackbarHost` v `CommonUI.kt` je **jediný** způsob zobrazení snackbarů v aplikaci.
+
+```kotlin
+val snackbarHostState = remember { SnackbarHostState() }
+val scope = rememberCoroutineScope()
+
+Box(modifier = Modifier.fillMaxSize()) {
+    // obsah obrazovky
+    AppSnackbarHost(
+        hostState = snackbarHostState,
+        modifier = Modifier.align(Alignment.BottomCenter)
+    )
+}
+
+scope.launch { snackbarHostState.showSnackbar(message) }
+```
+
+**Design (neměnit bez důvodu):**
+- Tvar: `RoundedCornerShape(14.dp)` — shodné s `AppCard`
+- Barvy: `secondaryContainer` / `onSecondaryContainer` — zelené brand tóny adaptivní pro dark i light mód
+- Padding od okrajů obrazovky: `horizontal 16 dp, vertical 12 dp`
+
+### SettingsSwitchItem — disabled stav
+Pro Switch položky s podmíněnou dostupností:
+- `enabled = false` + `onDisabledClick` lambda → klik zobrazí snackbar hint
+- `Switch(onCheckedChange = null)` — Switch je pouze vizuální; klik řídí Row
+- `Modifier.clickable(indication = null)` na Row — bez ripple efektu
 
 ---
 
@@ -409,6 +439,13 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 // Přidat do Room.databaseBuilder(...).addMigrations(MIGRATION_1_2)
 ```
 
+**Q: Jak zobrazit snackbar na obrazovce?**
+1. `val snackbarHostState = remember { SnackbarHostState() }` + `val scope = rememberCoroutineScope()`
+2. Obal obsah do `Box(modifier = Modifier.fillMaxSize())`
+3. Přidej `AppSnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.BottomCenter))`
+4. Spusť: `scope.launch { snackbarHostState.showSnackbar(message) }`
+→ Nikdy nepoužívej raw `SnackbarHost` — vždy `AppSnackbarHost` z `CommonUI.kt`
+
 **Q: Jak přidat prémiovou funkci?**
 1. Přidej položku do `PremiumFeature` v `PremiumConfig.kt`.
 2. V `PremiumHelper` ji přidej do `premiumFeatures` setu.
@@ -446,6 +483,7 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 ### Pravidla pro UI export
 - Veškerá logika pro odchycení vygenerovaného souboru a spuštění sdílení musí být unifikována v **`AnalysisExportHandler(viewModel)`** (v `ui/util/ExportUtils.kt`).
 - Tento handler se umisťuje do obrazovek (`AnalysisScreen`) nebo scaffoldů (`MainAppScaffold`), které mají možnost export spustit.
+- **SettingsScreen** je druhý vstupní bod exportu — `SettingsViewModel.exportData()` spouští stejný pipeline (korelace → AI → PDF → `sharePdfFile()`) nezávisle na `AnalysisExportHandler`.
 - Pro samotné sdílení souboru z libovolného místa slouží extension funkce `Context.sharePdfFile(file)`.
 
 ### Globální Context
