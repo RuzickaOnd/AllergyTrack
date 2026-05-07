@@ -107,14 +107,16 @@ fun AllergyTrackTheme(
         else      -> LightColorScheme
     }
 
-    // Nastavení barvy status baru — edge-to-edge design
+    // Nastavení barvy status baru a navigační lišty — edge-to-edge design
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
+            val controller = WindowCompat.getInsetsController(window, view)
             window.statusBarColor = colorScheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view)
-                .isAppearanceLightStatusBars = !darkTheme
+            window.navigationBarColor = colorScheme.background.toArgb()
+            controller.isAppearanceLightStatusBars = !darkTheme
+            controller.isAppearanceLightNavigationBars = !darkTheme
         }
     }
 
