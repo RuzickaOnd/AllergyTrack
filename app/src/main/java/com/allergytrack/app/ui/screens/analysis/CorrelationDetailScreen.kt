@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.allergytrack.app.R
+import com.allergytrack.app.data.remote.food.FoodAllergenHelper
 import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.CorrelationSeverity
 import com.allergytrack.app.domain.model.TriggerType
@@ -69,7 +70,7 @@ fun CorrelationDetailScreen(
                 title = { Text(stringResource(R.string.analysis_correlation_detail)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Zpět")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -146,23 +147,36 @@ fun CorrelationDetailScreen(
 }
 
 @Composable
-private fun getRecommendation(correlation: Correlation): String =
-    when (correlation.triggerType) {
-        TriggerType.FOOD        -> stringResource(R.string.recommendation_food, correlation.trigger)
-        TriggerType.ENVIRONMENT -> stringResource(R.string.recommendation_environment, correlation.trigger)
+private fun localizedTriggerName(correlation: Correlation): String =
+    if (correlation.triggerType == TriggerType.FOOD) {
+        FoodAllergenHelper.keyToDisplayRes[correlation.trigger]
+            ?.let { stringResource(it) }
+            ?: correlation.trigger
+    } else {
+        correlation.trigger
+    }
+
+@Composable
+private fun getRecommendation(correlation: Correlation): String {
+    val trigger = localizedTriggerName(correlation)
+    return when (correlation.triggerType) {
+        TriggerType.FOOD        -> stringResource(R.string.recommendation_food, trigger)
+        TriggerType.ENVIRONMENT -> stringResource(R.string.recommendation_environment, trigger)
         TriggerType.COMBINED    -> stringResource(R.string.recommendation_combined)
     }
+}
 
 @Composable
 private fun generateInterpretation(correlation: Correlation): String {
     val scorePercent = (correlation.score * 100).toInt()
     val symptomLabel = stringResource(correlation.symptomType.labelRes())
+    val trigger = localizedTriggerName(correlation)
     return when (correlation.triggerType) {
         TriggerType.FOOD ->
-            stringResource(R.string.interpretation_food, correlation.trigger, symptomLabel, scorePercent, correlation.avgDelayHours.toInt())
+            stringResource(R.string.interpretation_food, trigger, symptomLabel, scorePercent, correlation.avgDelayHours.toInt())
         TriggerType.ENVIRONMENT ->
-            stringResource(R.string.interpretation_environment, correlation.trigger, symptomLabel, scorePercent)
+            stringResource(R.string.interpretation_environment, trigger, symptomLabel, scorePercent)
         TriggerType.COMBINED ->
-            stringResource(R.string.interpretation_combined, correlation.trigger)
+            stringResource(R.string.interpretation_combined, trigger)
     }
 }

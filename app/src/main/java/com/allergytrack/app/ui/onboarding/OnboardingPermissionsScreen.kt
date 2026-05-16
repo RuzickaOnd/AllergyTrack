@@ -179,7 +179,7 @@ fun PermissionCard(
             if (isGranted) {
                 Icon(
                     Icons.Default.CheckCircle,
-                    contentDescription = "Granted",
+                    contentDescription = stringResource(R.string.cd_permission_granted),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
@@ -193,7 +193,7 @@ fun PermissionCard(
                 ) {
                     Icon(
                         Icons.Default.Add,
-                        contentDescription = "Grant",
+                        contentDescription = stringResource(R.string.cd_permission_grant),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(20.dp)
                     )

@@ -110,6 +110,7 @@
     <string name="allergen_molluscs">Měkkýši</string>
 
     <!-- Potvrzení jídla -->
+    <string name="food_name_original_lang">Název v orig. jazyce</string>
     <string name="food_ai_identified">IDENTIFIKOVÁNO POMOCÍ AI</string>
     <string name="section_detected_allergens">DETEKOVANÉ ALERGENY</string>
     <string name="no_allergens_detected">Nebyly detekovány žádné běžné alergeny</string>
@@ -176,6 +177,13 @@
     <string name="feature_unavailable">Tato funkce je momentálně nedostupná.</string>
     <string name="analysis_top_triggers">Hlavní spouštěče</string>
     <string name="analysis_no_patterns">Zatím nebyly nalezeny žádné výrazné vzory. Pokračuj v logování.</string>
+    <string name="analysis_food_triggers_title">Spouštěče z jídla</string>
+    <string name="analysis_food_triggers_subtitle">Jídla a alergeny nejčastěji spojené s reakcemi</string>
+    <string name="analysis_show_all_triggers">Zobrazit všechny spouštěče (%d)</string>
+    <string name="analysis_no_food_patterns">Zatím nejsou nalezeny žádné vzorce.\nZaznamenávej jídlo a příznaky pravidelně — analýza se zlepšuje s časem.</string>
+    <string name="analysis_locked_no_data">Zatím nedostatek dat</string>
+    <string name="analysis_symptom_count_label">Zaznamenané symptomy</string>
+    <string name="analysis_log_encouragement">Každý symptom se počítá — zaznamenej jak se cítíš kdykoli během dne.</string>
     <string name="btn_export_pdf">Exportovat PDF report</string>
     <string name="export_pdf_header">AllergyTrack - Lékařský report</string>
     <string name="export_pdf_date_label">Vygenerováno dne: %s</string>
@@ -353,6 +361,36 @@
 
     <!-- Obrazovka zamítnutého oprávnění -->
     <string name="permission_denied_title">Oprávnění zamítnuto</string>
+
+    <!-- Detail spouštěče jídla -->
+    <string name="food_trigger_reaction_probability">pravděpodobnost reakce</string>
+    <string name="food_trigger_servings_fraction">%1$d z %2$d</string>
+    <string name="food_trigger_servings_with_reaction">konzumací s reakcí</string>
+    <string name="food_trigger_matches_profile">Odpovídá tvému alergickému profilu</string>
+    <string name="food_trigger_typical_reactions">Typické reakce: %s</string>
+    <string name="food_trigger_frequency_title">Frekvence reakcí</string>
+    <string name="food_trigger_bar_with_reaction">%d× reakce</string>
+    <string name="food_trigger_bar_without_reaction">%d× bez reakce</string>
+    <string name="food_trigger_legend_with_reaction">S reakcí</string>
+    <string name="food_trigger_legend_without_reaction">Bez reakce</string>
+    <string name="food_trigger_symptom_matrix_title">Nejčastější reakce po konzumaci</string>
+    <string name="food_trigger_history_title">Historie konzumací</string>
+    <string name="food_trigger_history_subtitle">Kliknutím zobrazíš detail reakcí po konzumaci</string>
+    <string name="food_trigger_reactions_timeline">Průběh reakcí:</string>
+    <string name="food_trigger_no_reactions">Po této konzumaci nebyly zaznamenány žádné symptomy.</string>
+    <string name="food_trigger_intensity_label">intenzita %d/5</string>
+    <string name="delay_minutes">%d min</string>
+    <string name="delay_hours">+%d h</string>
+    <string name="delay_days">+%d d</string>
+    <string name="cd_back">Zpět</string>
+    <string name="debug_analysis_sim_title">Analýza — simulace počtu symptomů</string>
+    <string name="debug_analysis_sim_desc">Přepíše skutečný počet symptomů pro testování stavů analýzy. -1 = skutečná data.</string>
+    <string name="debug_analysis_real_data">Skutečná data</string>
+    <string name="debug_analysis_0">0 symptomů (Locked — prázdný progress)</string>
+    <string name="debug_analysis_3">3 symptomy (Locked — 60% progress)</string>
+    <string name="debug_analysis_5">5 symptomů (Partial — první analýza)</string>
+    <string name="debug_analysis_8">8 symptomů (Partial — disclaimer)</string>
+    <string name="debug_analysis_10">10 symptomů (Full — bez disclaimeru)</string>
 
     <!-- Notifikace -->
     <string name="notification_channel_reminders_name">Připomínky logování</string>

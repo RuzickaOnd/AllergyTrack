@@ -17,18 +17,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.allergytrack.app.R
+import com.allergytrack.app.data.remote.food.FoodAllergenHelper
 import com.allergytrack.app.domain.model.CorrelationSeverity
 import com.allergytrack.app.domain.model.FoodReactionEvent
 import com.allergytrack.app.domain.model.FoodTrigger
 import com.allergytrack.app.domain.model.SymptomInWindow
+import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.ui.theme.symptomColor
 import com.allergytrack.app.ui.theme.warningColor
 import com.allergytrack.app.ui.util.foodTriggerIcon
+import com.allergytrack.app.ui.util.labelRes
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -72,6 +77,13 @@ fun FoodTriggerDetailScreen(
         topBar = {
             TopAppBar(
                 title = {
+                    val localizedName = if (trigger.allergenKey.startsWith("__food__")) {
+                        trigger.triggerName
+                    } else {
+                        FoodAllergenHelper.keyToDisplayRes[trigger.allergenKey]
+                            ?.let { stringResource(it) }
+                            ?: trigger.triggerName
+                    }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -81,12 +93,12 @@ fun FoodTriggerDetailScreen(
                             contentDescription = null,
                             modifier = Modifier.size(22.dp)
                         )
-                        Text(trigger.triggerName)
+                        Text(localizedName)
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Zpět")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -121,13 +133,13 @@ fun FoodTriggerDetailScreen(
             // ── Reakční časová osa — seznam konzumací ────────────────────
             item {
                 Text(
-                    "Historie konzumací",
+                    stringResource(R.string.food_trigger_history_title),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 Text(
-                    "Kliknutím zobrazíš detail reakcí po konzumaci",
+                    stringResource(R.string.food_trigger_history_subtitle),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -179,19 +191,19 @@ fun FoodTriggerSummaryCard(trigger: FoodTrigger) {
                         color = severityColor
                     )
                     Text(
-                        "pravděpodobnost reakce",
+                        stringResource(R.string.food_trigger_reaction_probability),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        "${trigger.reactionCount} z ${trigger.totalCount}",
+                        stringResource(R.string.food_trigger_servings_fraction, trigger.reactionCount, trigger.totalCount),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        "konzumací s reakcí",
+                        stringResource(R.string.food_trigger_servings_with_reaction),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -226,7 +238,7 @@ fun FoodTriggerSummaryCard(trigger: FoodTrigger) {
                             tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            "Odpovídá tvému alergickému profilu",
+                            stringResource(R.string.food_trigger_matches_profile),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
@@ -235,9 +247,13 @@ fun FoodTriggerSummaryCard(trigger: FoodTrigger) {
             }
 
             if (trigger.dominantSymptoms.isNotEmpty()) {
+                val localizedSymptoms = trigger.dominantSymptoms.map { typeName ->
+                    val type = try { SymptomType.valueOf(typeName) } catch (e: IllegalArgumentException) { null }
+                    if (type != null) stringResource(type.labelRes()) else typeName  // stringResource mimo try-catch — Compose pravidlo
+                }
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    "Typické reakce: ${trigger.dominantSymptoms.joinToString(", ")}",
+                    stringResource(R.string.food_trigger_typical_reactions, localizedSymptoms.joinToString(", ")),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -253,7 +269,7 @@ fun FoodReactionFrequencyCard(trigger: FoodTrigger) {
     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                "Frekvence reakcí",
+                stringResource(R.string.food_trigger_frequency_title),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold
             )
@@ -280,7 +296,7 @@ fun FoodReactionFrequencyCard(trigger: FoodTrigger) {
                     ) {
                         if (reactionFraction > 0.25f) {
                             Text(
-                                "${trigger.reactionCount}× reakce",
+                                stringResource(R.string.food_trigger_bar_with_reaction, trigger.reactionCount),
                                 modifier = Modifier.padding(start = 8.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onError
@@ -298,7 +314,7 @@ fun FoodReactionFrequencyCard(trigger: FoodTrigger) {
                     ) {
                         if (okFraction > 0.2f) {
                             Text(
-                                "${trigger.totalCount - trigger.reactionCount}× bez reakce",
+                                stringResource(R.string.food_trigger_bar_without_reaction, trigger.totalCount - trigger.reactionCount),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
@@ -311,11 +327,11 @@ fun FoodReactionFrequencyCard(trigger: FoodTrigger) {
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 LegendItem(
                     color = MaterialTheme.colorScheme.symptomColor,
-                    label = "S reakcí"
+                    label = stringResource(R.string.food_trigger_legend_with_reaction)
                 )
                 LegendItem(
                     color = MaterialTheme.colorScheme.primaryContainer,
-                    label = "Bez reakce",
+                    label = stringResource(R.string.food_trigger_legend_without_reaction),
                     textColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
@@ -350,7 +366,7 @@ fun FoodSymptomMatrixCard(trigger: FoodTrigger) {
     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                "Nejčastější reakce po konzumaci",
+                stringResource(R.string.food_trigger_symptom_matrix_title),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold
             )
@@ -361,10 +377,12 @@ fun FoodSymptomMatrixCard(trigger: FoodTrigger) {
                     .flatMap { it.reactions }
                     .count { it.symptomName == symptomName }
                 val fraction = count.toFloat() / trigger.reactionCount.coerceAtLeast(1)
+                val symptomType = try { SymptomType.valueOf(symptomName) } catch (e: IllegalArgumentException) { null }
+                val localizedSymptom = if (symptomType != null) stringResource(symptomType.labelRes()) else symptomName
 
                 if (index > 0) Spacer(Modifier.height(6.dp))
                 Text(
-                    symptomName,
+                    localizedSymptom,
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Medium
                 )
@@ -453,7 +471,7 @@ fun FoodEventCard(
                         shape = RoundedCornerShape(6.dp)
                     ) {
                         Text(
-                            "intenzita ${event.maxIntensity}/5",
+                            stringResource(R.string.food_trigger_intensity_label, event.maxIntensity),
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.symptomColor
@@ -468,7 +486,7 @@ fun FoodEventCard(
                 HorizontalDivider()
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    "Průběh reakcí:",
+                    stringResource(R.string.food_trigger_reactions_timeline),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.SemiBold
@@ -481,7 +499,7 @@ fun FoodEventCard(
             } else if (isExpanded && !event.hadReaction) {
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Po této konzumaci nebyly zaznamenány žádné symptomy.",
+                    stringResource(R.string.food_trigger_no_reactions),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -493,10 +511,12 @@ fun FoodEventCard(
 @Composable
 fun ReactionTimelineItem(symptom: SymptomInWindow) {
     val delayStr = when {
-        symptom.delayHours < 1f -> "${(symptom.delayHours * 60).toInt()} min"
-        symptom.delayHours < 24f -> "+${symptom.delayHours.toInt()} h"
-        else -> "+${(symptom.delayHours / 24).toInt()} d"
+        symptom.delayHours < 1f -> stringResource(R.string.delay_minutes, (symptom.delayHours * 60).toInt())
+        symptom.delayHours < 24f -> stringResource(R.string.delay_hours, symptom.delayHours.toInt())
+        else -> stringResource(R.string.delay_days, (symptom.delayHours / 24).toInt())
     }
+    val symptomType = try { SymptomType.valueOf(symptom.symptomName) } catch (e: IllegalArgumentException) { null }
+    val localizedSymptomName = if (symptomType != null) stringResource(symptomType.labelRes()) else symptom.symptomName
     val intensityColor = when {
         symptom.intensity >= 4 -> MaterialTheme.colorScheme.symptomColor
         symptom.intensity >= 2 -> MaterialTheme.colorScheme.warningColor
@@ -521,7 +541,7 @@ fun ReactionTimelineItem(symptom: SymptomInWindow) {
                 .background(intensityColor)
         )
         Text(
-            symptom.symptomName,
+            localizedSymptomName,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.weight(1f)
         )

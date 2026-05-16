@@ -51,11 +51,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.content.Intent
 import android.widget.Toast
 import com.allergytrack.app.R
+import com.allergytrack.app.data.remote.food.FoodAllergenHelper
 import com.allergytrack.app.domain.model.AnalysisReadiness
 import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.CorrelationSeverity
 import com.allergytrack.app.domain.model.FoodTrigger
 import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.domain.model.TriggerType
 import com.allergytrack.app.ui.components.AiBadge
 import com.allergytrack.app.ui.components.AppCard
@@ -161,12 +163,12 @@ fun AnalysisScreen(
             item {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Spouštěče z jídla",
+                    stringResource(R.string.analysis_food_triggers_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    "Jídla a alergeny nejčastěji spojené s reakcemi",
+                    stringResource(R.string.analysis_food_triggers_subtitle),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -193,7 +195,7 @@ fun AnalysisScreen(
                         onClick = { /* TODO: rozbalit / zobrazit všechny */ },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Zobrazit všechny spouštěče (${uiState.foodTriggers.size})")
+                        Text(stringResource(R.string.analysis_show_all_triggers, uiState.foodTriggers.size))
                     }
                 }
             }
@@ -215,8 +217,7 @@ fun AnalysisScreen(
                     )
                 ) {
                     Text(
-                        "Zatím nejsou nalezeny žádné vzorce. " +
-                                "Zaznamenávej jídlo a příznaky pravidelně — analýza se zlepšuje s časem.",
+                        stringResource(R.string.analysis_no_food_patterns),
                         modifier = Modifier.padding(16.dp),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -252,6 +253,13 @@ fun CorrelationItem(
         CorrelationSeverity.LOW -> MaterialTheme.colorScheme.okColor
     }
     val triggerIcon = correlation.triggerType.icon()
+    val localizedTrigger = if (correlation.triggerType == TriggerType.FOOD) {
+        FoodAllergenHelper.keyToDisplayRes[correlation.trigger]
+            ?.let { stringResource(it) }
+            ?: correlation.trigger
+    } else {
+        correlation.trigger
+    }
     val symptomLabel = stringResource(correlation.symptomType.labelRes())
     val detailsText = stringResource(
         R.string.correlation_item_details,
@@ -298,7 +306,7 @@ fun CorrelationItem(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            correlation.trigger,
+                            localizedTrigger,
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -371,7 +379,7 @@ fun AnalysisLockedScreen(readiness: AnalysisReadiness.Locked) {
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            "Zatím nedostatek dat",
+            stringResource(R.string.analysis_locked_no_data),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
@@ -391,7 +399,7 @@ fun AnalysisLockedScreen(readiness: AnalysisReadiness.Locked) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    "Zaznamenané symptomy",
+                    stringResource(R.string.analysis_symptom_count_label),
                     style = MaterialTheme.typography.labelMedium
                 )
                 Text(
@@ -413,8 +421,7 @@ fun AnalysisLockedScreen(readiness: AnalysisReadiness.Locked) {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                "Každý symptom se počítá — " +
-                        "zaznamenej jak se cítíš kdykoli během dne.",
+                stringResource(R.string.analysis_log_encouragement),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -490,12 +497,19 @@ fun FoodTriggerCard(
 
             // Název + symptomy
             Column(modifier = Modifier.weight(1f)) {
+                val localizedTriggerName = if (trigger.allergenKey.startsWith("__food__")) {
+                    trigger.triggerName
+                } else {
+                    FoodAllergenHelper.keyToDisplayRes[trigger.allergenKey]
+                        ?.let { stringResource(it) }
+                        ?: trigger.triggerName
+                }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        trigger.triggerName,
+                        localizedTriggerName,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -505,7 +519,7 @@ fun FoodTriggerCard(
                             shape = RoundedCornerShape(4.dp)
                         ) {
                             Text(
-                                "SHODA",
+                                stringResource(R.string.correlation_badge_expected),
                                 modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -515,8 +529,12 @@ fun FoodTriggerCard(
                     }
                 }
                 if (trigger.dominantSymptoms.isNotEmpty()) {
+                    val localizedSymptoms = trigger.dominantSymptoms.map { typeName ->
+                        val type = try { SymptomType.valueOf(typeName) } catch (e: IllegalArgumentException) { null }
+                        if (type != null) stringResource(type.labelRes()) else typeName
+                    }
                     Text(
-                        trigger.dominantSymptoms.joinToString(", "),
+                        localizedSymptoms.joinToString(", "),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1

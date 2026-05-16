@@ -46,6 +46,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.R
+import com.allergytrack.app.data.remote.food.FoodAllergenHelper
 import com.allergytrack.app.data.remote.food.RecognizedFood
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.MonoFontFamily
@@ -268,7 +269,19 @@ fun FoodSearchResultItem(
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
                 )
+                if (!food.nameIsLocalized) {
+                    Text(
+                        text = stringResource(R.string.food_name_original_lang),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+                }
                 if (food.allergens.isNotEmpty()) {
+                    val localizedAllergens = food.allergens.map { key ->
+                        FoodAllergenHelper.keyToDisplayRes[key]
+                            ?.let { stringResource(it) }
+                            ?: key
+                    }
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -280,7 +293,7 @@ fun FoodSearchResultItem(
                             tint = MaterialTheme.colorScheme.error
                         )
                         Text(
-                            food.allergens.joinToString(", "),
+                            localizedAllergens.joinToString(", "),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.error
                         )

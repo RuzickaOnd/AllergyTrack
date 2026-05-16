@@ -19,6 +19,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.R
+import com.allergytrack.app.data.remote.food.FoodAllergenHelper
 import com.allergytrack.app.data.remote.food.RecognizedFood
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
@@ -111,8 +112,9 @@ fun FoodConfirmScreen(
                         modifier = Modifier.padding(vertical = 4.dp)
                     ) {
                         parsedAllergens.forEach { allergen ->
+                            val displayRes = FoodAllergenHelper.keyToDisplayRes[allergen]
                             Pill(
-                                text = allergen.uppercase(),
+                                text = if (displayRes != null) stringResource(displayRes) else allergen,
                                 color = MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.15f),
                                 textColor = MaterialTheme.colorScheme.symptomColor
                             )

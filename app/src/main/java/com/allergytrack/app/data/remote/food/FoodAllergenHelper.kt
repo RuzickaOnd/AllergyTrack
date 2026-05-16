@@ -88,6 +88,9 @@ object FoodAllergenHelper {
         ) to "Molluscs",
     )
 
+    /** Mapa klíče alergenu → string resource ID pro lokalizaci v UI. */
+    val keyToDisplayRes: Map<String, Int> = EU_14.associate { it.key to it.displayRes }
+
     /** Navrhne alergeny na základě klíčových slov v názvu jídla (A: lokální heuristika). */
     fun suggestFromName(name: String): Set<String> {
         val lower = name.lowercase()

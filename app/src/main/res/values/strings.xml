@@ -110,6 +110,7 @@
     <string name="allergen_molluscs">Molluscs</string>
 
     <!-- Food Confirm -->
+    <string name="food_name_original_lang">Name in orig. language</string>
     <string name="food_ai_identified">IDENTIFIED BY AI</string>
     <string name="section_detected_allergens">DETECTED ALLERGENS</string>
     <string name="no_allergens_detected">No common allergens detected</string>
@@ -176,6 +177,13 @@
     <string name="feature_unavailable">This feature is currently unavailable.</string>
     <string name="analysis_top_triggers">Main triggers</string>
     <string name="analysis_no_patterns">No significant patterns found yet. Keep logging.</string>
+    <string name="analysis_food_triggers_title">Food Triggers</string>
+    <string name="analysis_food_triggers_subtitle">Foods and allergens most often linked to reactions</string>
+    <string name="analysis_show_all_triggers">Show all triggers (%d)</string>
+    <string name="analysis_no_food_patterns">No patterns found yet.\nKeep logging food and symptoms regularly — analysis improves over time.</string>
+    <string name="analysis_locked_no_data">Not enough data yet</string>
+    <string name="analysis_symptom_count_label">Recorded symptoms</string>
+    <string name="analysis_log_encouragement">Every symptom counts — record how you feel anytime during the day.</string>
     <string name="btn_export_pdf">Export PDF report</string>
     <string name="export_pdf_header">AllergyTrack - Medical Report</string>
     <string name="export_pdf_date_label">Generated on: %s</string>
@@ -353,6 +361,36 @@
 
     <!-- Permission denied screen -->
     <string name="permission_denied_title">Permission denied</string>
+
+    <!-- Food trigger detail -->
+    <string name="food_trigger_reaction_probability">probability of reaction</string>
+    <string name="food_trigger_servings_fraction">%1$d of %2$d</string>
+    <string name="food_trigger_servings_with_reaction">servings with reaction</string>
+    <string name="food_trigger_matches_profile">Matches your allergy profile</string>
+    <string name="food_trigger_typical_reactions">Typical reactions: %s</string>
+    <string name="food_trigger_frequency_title">Reaction Frequency</string>
+    <string name="food_trigger_bar_with_reaction">%d× reaction</string>
+    <string name="food_trigger_bar_without_reaction">%d× no reaction</string>
+    <string name="food_trigger_legend_with_reaction">With reaction</string>
+    <string name="food_trigger_legend_without_reaction">Without reaction</string>
+    <string name="food_trigger_symptom_matrix_title">Most common reactions after consumption</string>
+    <string name="food_trigger_history_title">Consumption History</string>
+    <string name="food_trigger_history_subtitle">Tap to see reaction details after consumption</string>
+    <string name="food_trigger_reactions_timeline">Reaction timeline:</string>
+    <string name="food_trigger_no_reactions">No symptoms recorded after this consumption.</string>
+    <string name="food_trigger_intensity_label">intensity %d/5</string>
+    <string name="delay_minutes">%d min</string>
+    <string name="delay_hours">+%d h</string>
+    <string name="delay_days">+%d d</string>
+    <string name="cd_back">Back</string>
+    <string name="debug_analysis_sim_title">Analysis — symptom count simulation</string>
+    <string name="debug_analysis_sim_desc">Overrides the actual symptom count for testing analysis states. -1 = real data.</string>
+    <string name="debug_analysis_real_data">Real data</string>
+    <string name="debug_analysis_0">0 symptoms (Locked — empty progress)</string>
+    <string name="debug_analysis_3">3 symptoms (Locked — 60% progress)</string>
+    <string name="debug_analysis_5">5 symptoms (Partial — first analysis)</string>
+    <string name="debug_analysis_8">8 symptoms (Partial — disclaimer)</string>
+    <string name="debug_analysis_10">10 symptoms (Full — no disclaimer)</string>
 
     <!-- Notifications -->
     <string name="notification_channel_reminders_name">Logging reminders</string>

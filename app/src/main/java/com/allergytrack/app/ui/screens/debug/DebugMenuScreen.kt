@@ -82,27 +82,27 @@ fun DebugMenuScreen(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                "Analýza — simulace počtu symptomů",
+                stringResource(R.string.debug_analysis_sim_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                "Přepíše skutečný počet symptomů pro testování stavů analýzy. " +
-                "-1 = skutečná data.",
+                stringResource(R.string.debug_analysis_sim_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
+            val analysisOptions = listOf(
+                -1 to stringResource(R.string.debug_analysis_real_data),
+                0  to stringResource(R.string.debug_analysis_0),
+                3  to stringResource(R.string.debug_analysis_3),
+                5  to stringResource(R.string.debug_analysis_5),
+                8  to stringResource(R.string.debug_analysis_8),
+                10 to stringResource(R.string.debug_analysis_10)
+            )
             Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) {
                 Column {
-                    listOf(
-                        -1 to "Skutečná data",
-                        0  to "0 symptomů (Locked — prázdný progress)",
-                        3  to "3 symptomy (Locked — 60% progress)",
-                        5  to "5 symptomů (Partial — první analýza)",
-                        8  to "8 symptomů (Partial — disclaimer)",
-                        10 to "10 symptomů (Full — bez disclaimeru)"
-                    ).forEachIndexed { index, (count, label) ->
+                    analysisOptions.forEachIndexed { index, (count, label) ->
                         if (index > 0) HorizontalDivider()
                         Row(
                             modifier = Modifier.fillMaxWidth(),

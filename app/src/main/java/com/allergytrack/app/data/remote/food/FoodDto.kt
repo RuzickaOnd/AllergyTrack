@@ -51,7 +51,9 @@ data class RecognizedFood(
     val imageUrl: String? = null,
     val barcode: String? = null,
     val brand: String? = null,
-    val nutriscoreGrade: String? = null
+    val nutriscoreGrade: String? = null,
+    /** false = název je ve fallback jazyce (preferovaný překlad chybí v databázi) */
+    val nameIsLocalized: Boolean = true
 )
 
 // ── Lokalizované mapper funkce ─────────────────────────────────────────────────
@@ -118,6 +120,7 @@ fun SupabaseFoodProduct.toRecognizedFood(languageCode: String): RecognizedFood {
     val cleanedAllergens = allergensTags.map { tag ->
         tag.removePrefix("en:").replaceFirstChar { it.uppercase() }
     }
+    val nameLocalized = if (languageCode == "cs") !productNameCs.isNullOrBlank() else !productName.isNullOrBlank()
     return RecognizedFood(
         name = localizedName(languageCode, "Neznámý produkt"),
         allergens = cleanedAllergens,
@@ -125,7 +128,8 @@ fun SupabaseFoodProduct.toRecognizedFood(languageCode: String): RecognizedFood {
         imageUrl = imageUrl,
         barcode = code,
         brand = brands,
-        nutriscoreGrade = nutriscoreGrade
+        nutriscoreGrade = nutriscoreGrade,
+        nameIsLocalized = nameLocalized
     )
 }
 
@@ -141,6 +145,7 @@ fun SupabaseSearchResult.toRecognizedFood(
     val cleanedAllergens = allergensTags.map { tag ->
         tag.removePrefix("en:").replaceFirstChar { it.uppercase() }
     }
+    val nameLocalized = if (languageCode == "cs") !productNameCs.isNullOrBlank() else !productName.isNullOrBlank()
     return RecognizedFood(
         name = localizedName(languageCode, originalQuery.ifBlank { "Neznámý produkt" }),
         confidence = rank,
@@ -148,6 +153,7 @@ fun SupabaseSearchResult.toRecognizedFood(
         imageUrl = imageUrl,
         barcode = code,
         brand = brands,
-        nutriscoreGrade = nutriscoreGrade
+        nutriscoreGrade = nutriscoreGrade,
+        nameIsLocalized = nameLocalized
     )
 }
