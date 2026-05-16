@@ -37,6 +37,7 @@
     <string name="screen_log_symptom">Zalogovat příznak</string>
     <string name="screen_settings">Nastavení</string>
     <string name="screen_about">O aplikaci</string>
+    <string name="screen_faq">Časté dotazy</string>
     <string name="screen_debug_menu">Debug Menu</string>
     <string name="screen_confirm_food">Potvrdit jídlo</string>
     <string name="screen_search_food">Hledat potravinu</string>
@@ -391,6 +392,28 @@
     <string name="debug_analysis_5">5 symptomů (Partial — první analýza)</string>
     <string name="debug_analysis_8">8 symptomů (Partial — disclaimer)</string>
     <string name="debug_analysis_10">10 symptomů (Full — bez disclaimeru)</string>
+
+    <!-- Časté dotazy -->
+    <string name="faq_q_aqi">Co je to AQI?</string>
+    <string name="faq_a_aqi">AQI (Air Quality Index) je číslo, které vyjadřuje kvalitu ovzduší v tvém okolí. Data pochází z nejbližší meteorologické stanice podle tvé GPS polohy. Čím nižší číslo, tím čistší vzduch:\n\n• 0–20 — Výborná\n• 20–40 — Dobrá\n• 40–60 — Střední (citlivci mohou pociťovat mírné obtíže)\n• 60–80 — Špatná (doporučujeme omezit čas venku)\n• 80–100 — Velmi špatná\n• 100+ — Extrémní (vyhněte se pobytu venku)</string>
+    <string name="faq_q_pollen_scale">Jaká je stupnice pylových indexů?</string>
+    <string name="faq_a_pollen_scale">Indexy pylu trav, stromů a plevelů se udávají na stupnici 0–5:\n\n• 0 — Žádný pyl\n• 1 — Nízký (pro většinu lidí bez problémů)\n• 2 — Střední (alergici mohou pociťovat lehké příznaky)\n• 3 — Vysoký (doporučujeme omezit pobyt venku)\n• 4 — Velmi vysoký (vezmi si léky, pobyt venku minimalizuj)\n• 5 — Extrémní\n\nPylová data jsou dostupná jen v Evropě, přibližně od února do října.</string>
+    <string name="faq_q_analysis_unlock">Kdy se odemkne analýza?</string>
+    <string name="faq_a_analysis_unlock">Analýza potřebuje alespoň 5 zaznamenaných příznaků. Jakmile jich dosáhneš, zobrazí se první výsledky s poznámkou, že jsou orientační. Od 10 příznaků analýza funguje naplno a přesnost výsledků se s každým dalším záznamem dále zlepšuje.</string>
+    <string name="faq_q_how_correlations">Jak aplikace pozná, co způsobuje mé alergie?</string>
+    <string name="faq_a_how_correlations">Aplikace sleduje, jestli po konzumaci určitého jídla nebo alergenu do 72 hodin nastane alergická reakce. Čím víckrát se to opakuje, tím vyšší je skóre korelace. Podobně porovnává tvoje příznaky se změnami kvality vzduchu a hladinami pylu pomocí matematické metody zvané Pearsonova korelace.</string>
+    <string name="faq_q_correlation_percent">Co znamená procento u korelace?</string>
+    <string name="faq_a_correlation_percent">Procento říká, jak často se po výskytu daného spouštěče (jídla nebo alergenu) objevila alergická reakce. Například 75 % u mléka znamená, že ze 4 zaznamenaných konzumací mléka 3× následoval příznak. Čím vyšší číslo, tím silnější a spolehlivější je vazba.</string>
+    <string name="faq_q_match_badge">Co znamená štítek SHODA?</string>
+    <string name="faq_a_match_badge">Štítek SHODA se zobrazí u korelací, které odpovídají tvému alergickému profilu nastavenému při prvním spuštění aplikace. Pokud jsi uvedl/a pylovou alergii a aplikace najde korelaci s pylem, označí ji jako shodu — takové výsledky se v analýze zobrazují výše.</string>
+    <string name="faq_q_food_database">Odkud pocházejí informace o potravinách?</string>
+    <string name="faq_a_food_database">Data o balených potravinách pocházejí z Open Food Facts (openfoodfacts.org) — otevřené komunitní databáze produktů z celého světa. Pokud hledaný produkt v databázi nenajdeš, můžeš ho zadat ručně a sám/sama vybrat alergeny ze seznamu EU 14.</string>
+    <string name="faq_q_no_pollen">Proč nevidím pylová data?</string>
+    <string name="faq_a_no_pollen">Pylová data se zobrazí jen pokud jsou splněny tři podmínky: máš povolený přístup k poloze, nacházíš se v Evropě a je pylová sezóna (přibližně únor–říjen). Mimo toto období nebo mimo Evropu aplikace správně zobrazí hlášku o nedostupnosti — není to chyba.</string>
+    <string name="faq_q_eu_allergens">Co jsou EU 14 alergenů?</string>
+    <string name="faq_a_eu_allergens">Jsou to alergeny, které musí být povinně označeny na obalu potravin v Evropské unii. Patří sem: lepek (pšenice, žito, ječmen, oves), mléko, vejce, ryby, korýši (krevety, krabi, humr), arašídy, sója, ořechy (mandle, kešu, vlašské ořechy a další), celer, hořčice, sezam, siřičitany (konzervant v sušeném ovoci a víně), vlčí bob a měkkýši (chobotnice, mušle, hřebenatky).</string>
+    <string name="faq_q_data_safety">Jsou moje data v bezpečí?</string>
+    <string name="faq_a_data_safety">Ano. Všechna tvá data — záznamy jídla, příznaků i prostředí — jsou uložena jen v tvém telefonu. Aplikace neodesílá žádná osobní data na servery ani nesbírá žádné informace o tobě. K registraci nebo vytvoření účtu vůbec nepotřebuješ.</string>
 
     <!-- Notifikace -->
     <string name="notification_channel_reminders_name">Připomínky logování</string>

@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -183,6 +184,15 @@ fun ProfileScreen(
                     icon = Icons.Default.Settings,
                     label = stringResource(R.string.screen_settings),
                     onClick = { navController.navigate(Screen.Settings.route) }
+                )
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    thickness = 0.5.dp
+                )
+                SettingsActionItem(
+                    icon = Icons.Outlined.HelpOutline,
+                    label = stringResource(R.string.screen_faq),
+                    onClick = { navController.navigate(Screen.Faq.route) }
                 )
                 HorizontalDivider(
                     color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),

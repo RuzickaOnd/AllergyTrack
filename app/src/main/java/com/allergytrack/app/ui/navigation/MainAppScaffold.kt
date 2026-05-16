@@ -69,6 +69,7 @@ fun MainAppScaffold() {
                                 currentRoute == Screen.SymptomLog.route -> stringResource(R.string.screen_log_symptom)
                                 currentRoute == Screen.Settings.route -> stringResource(R.string.screen_settings)
                                 currentRoute == Screen.About.route -> stringResource(R.string.screen_about)
+                                currentRoute == Screen.Faq.route -> stringResource(R.string.screen_faq)
                                 currentRoute == Screen.DebugMenu.route -> stringResource(R.string.screen_debug_menu)
                                 currentRoute?.startsWith("food_confirm") == true -> stringResource(R.string.screen_confirm_food)
                                 currentRoute == Screen.FoodManualSearch.route -> stringResource(R.string.screen_search_food)

@@ -20,6 +20,7 @@ import com.allergytrack.app.ui.screens.food.FoodLogScreen
 import com.allergytrack.app.ui.screens.food.FoodManualEntryScreen
 import com.allergytrack.app.ui.screens.food.FoodManualSearchScreen
 import com.allergytrack.app.ui.screens.profile.AboutScreen
+import com.allergytrack.app.ui.screens.profile.FaqScreen
 import com.allergytrack.app.ui.screens.profile.ProfileScreen
 import com.allergytrack.app.ui.screens.settings.SettingsScreen
 import com.allergytrack.app.ui.screens.symptom.SymptomLogScreen
@@ -106,6 +107,9 @@ fun AllergyNavGraph(
         }
         composable(Screen.About.route) {
             AboutScreen(navController = navController)
+        }
+        composable(Screen.Faq.route) {
+            FaqScreen(navController = navController)
         }
         if (BuildConfig.DEBUG) {
             composable(Screen.DebugMenu.route) {

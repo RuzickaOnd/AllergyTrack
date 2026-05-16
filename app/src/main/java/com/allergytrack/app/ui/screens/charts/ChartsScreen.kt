@@ -300,7 +300,10 @@ fun SymptomIntensityChart(data: ChartDataSet, days: Int) {
                 rememberColumnCartesianLayer(
                     columnProvider = ColumnProvider.series(rememberLineComponent(fill = Fill(symptomColor), thickness = 12.dp))
                 ),
-                startAxis = VerticalAxis.rememberStart(valueFormatter = CartesianValueFormatter { _, value, _ -> "%.0f".format(value) }),
+                startAxis = VerticalAxis.rememberStart(
+                    valueFormatter = CartesianValueFormatter { _, value, _ -> "%.0f".format(value) },
+                    itemPlacer = VerticalAxis.ItemPlacer.step(step = { 1.0 })
+                ),
                 bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = xFormatter, itemPlacer = xItemPlacer)
             ),
             modelProducer = modelProducer,

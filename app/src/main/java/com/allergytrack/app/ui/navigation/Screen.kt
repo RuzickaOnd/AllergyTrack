@@ -10,6 +10,7 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
     object Settings : Screen("settings")
     object About : Screen("about")
+    object Faq : Screen("faq")
     object DebugMenu : Screen("debug_menu")
 
     // Food sub-flow

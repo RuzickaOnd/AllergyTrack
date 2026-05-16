@@ -37,6 +37,7 @@
     <string name="screen_log_symptom">Log symptom</string>
     <string name="screen_settings">Settings</string>
     <string name="screen_about">About</string>
+    <string name="screen_faq">FAQ</string>
     <string name="screen_debug_menu">Debug Menu</string>
     <string name="screen_confirm_food">Confirm food</string>
     <string name="screen_search_food">Search food</string>
@@ -391,6 +392,28 @@
     <string name="debug_analysis_5">5 symptoms (Partial — first analysis)</string>
     <string name="debug_analysis_8">8 symptoms (Partial — disclaimer)</string>
     <string name="debug_analysis_10">10 symptoms (Full — no disclaimer)</string>
+
+    <!-- FAQ -->
+    <string name="faq_q_aqi">What is AQI?</string>
+    <string name="faq_a_aqi">AQI (Air Quality Index) is a number expressing air quality in your area. The data comes from the nearest weather station based on your GPS location. The lower the number, the cleaner the air:\n\n• 0–20 — Excellent\n• 20–40 — Good\n• 40–60 — Moderate (sensitive people may experience mild discomfort)\n• 60–80 — Poor (we recommend limiting time outdoors)\n• 80–100 — Very poor\n• 100+ — Extreme (avoid outdoor exposure)</string>
+    <string name="faq_q_pollen_scale">What is the pollen index scale?</string>
+    <string name="faq_a_pollen_scale">Grass, tree and weed pollen indices are on a scale of 0–5:\n\n• 0 — No pollen\n• 1 — Low (no problem for most people)\n• 2 — Moderate (allergy sufferers may experience mild symptoms)\n• 3 — High (we recommend reducing time outdoors)\n• 4 — Very high (take your medication, minimize outdoor exposure)\n• 5 — Extreme\n\nPollen data is only available in Europe, approximately from February to October.</string>
+    <string name="faq_q_analysis_unlock">When does the analysis unlock?</string>
+    <string name="faq_a_analysis_unlock">The analysis needs at least 5 recorded symptoms. Once you reach that, the first results will appear with a note that they are indicative. From 10 symptoms, the analysis works fully and accuracy improves with each additional record.</string>
+    <string name="faq_q_how_correlations">How does the app know what causes my allergies?</string>
+    <string name="faq_a_how_correlations">The app tracks whether an allergic reaction occurs within 72 hours after consuming a certain food or allergen. The more often this repeats, the higher the correlation score. It also compares your symptoms with changes in air quality and pollen levels using a mathematical method called Pearson correlation.</string>
+    <string name="faq_q_correlation_percent">What does the percentage next to a correlation mean?</string>
+    <string name="faq_a_correlation_percent">The percentage tells you how often an allergic reaction occurred after the given trigger (food or allergen). For example, 75% for milk means that out of 4 recorded milk consumptions, a symptom followed 3 times. The higher the number, the stronger and more reliable the connection.</string>
+    <string name="faq_q_match_badge">What does the MATCH badge mean?</string>
+    <string name="faq_a_match_badge">The MATCH badge appears on correlations that correspond to your allergy profile set up when you first launched the app. If you indicated a pollen allergy and the app finds a correlation with pollen, it marks it as a match — such results appear higher in the analysis.</string>
+    <string name="faq_q_food_database">Where does the food information come from?</string>
+    <string name="faq_a_food_database">Data on packaged foods comes from Open Food Facts (openfoodfacts.org) — an open community database of products from around the world. If you can\'t find a product in the database, you can enter it manually and select allergens yourself from the EU 14 list.</string>
+    <string name="faq_q_no_pollen">Why don\'t I see pollen data?</string>
+    <string name="faq_a_no_pollen">Pollen data will only appear if three conditions are met: you have location access enabled, you are in Europe, and it is pollen season (approximately February–October). Outside this period or outside Europe, the app correctly displays an unavailability message — this is not an error.</string>
+    <string name="faq_q_eu_allergens">What are the EU 14 allergens?</string>
+    <string name="faq_a_eu_allergens">These are allergens that must be mandatorily labeled on food packaging in the European Union. They include: gluten (wheat, rye, barley, oats), milk, eggs, fish, crustaceans (shrimp, crab, lobster), peanuts, soya, nuts (almonds, cashews, walnuts etc.), celery, mustard, sesame, sulphites (preservative in dried fruit and wine), lupin and molluscs (octopus, mussels, scallops).</string>
+    <string name="faq_q_data_safety">Is my data safe?</string>
+    <string name="faq_a_data_safety">Yes. All your data — food, symptom and environment records — is stored only on your phone. The app does not send any personal data to servers or collect any information about you. You don\'t need to register or create an account at all.</string>
 
     <!-- Notifications -->
     <string name="notification_channel_reminders_name">Logging reminders</string>
