@@ -36,6 +36,8 @@ import com.patrykandpatrick.vico.compose.cartesian.layer.*
 import com.patrykandpatrick.vico.compose.cartesian.layer.ColumnCartesianLayer.ColumnProvider
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer.LineFill
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.VicoScrollState
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
 import com.allergytrack.app.R
@@ -58,6 +60,8 @@ fun ChartsScreen(
     val isPollenVisible by viewModel.isPollenVisible.collectAsStateWithLifecycle()
     val showPollenUpsell by viewModel.showPollenUpsell.collectAsStateWithLifecycle()
     val locationGranted by viewModel.locationGranted.collectAsStateWithLifecycle()
+    val syncChartsScroll by viewModel.syncChartsScroll.collectAsStateWithLifecycle()
+    val sharedScrollState = rememberVicoScrollState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -105,7 +109,7 @@ fun ChartsScreen(
                 val days = uiState.selectedRange.days
                 item {
                     ChartCard(title = stringResource(R.string.chart_symptom_intensity), icon = Icons.Outlined.ShowChart) {
-                        SymptomIntensityChart(data = data, days = days)
+                        SymptomIntensityChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
                     }
                 }
                 if (!locationGranted) {
@@ -125,13 +129,13 @@ fun ChartsScreen(
                             feature = PremiumFeature.POLLEN_DATA
                         ) {
                             ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
-                                PollenVsSymptomChart(data = data, days = days)
+                                PollenVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
                             }
                         }
                     }
                     item {
                         ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
-                            AqiVsSymptomChart(data = data, days = days)
+                            AqiVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
                         }
                     }
                 }
@@ -277,11 +281,12 @@ private fun rememberXAxisItemPlacer(days: Int): HorizontalAxis.ItemPlacer {
 }
 
 @Composable
-fun SymptomIntensityChart(data: ChartDataSet, days: Int) {
+fun SymptomIntensityChart(data: ChartDataSet, days: Int, scrollState: VicoScrollState? = null) {
     val symptomColor = MaterialTheme.colorScheme.symptomColor
     val modelProducer = remember { CartesianChartModelProducer() }
     val xFormatter = rememberXAxisFormatter(data.dateLabels)
     val xItemPlacer = rememberXAxisItemPlacer(days)
+    val ownScrollState = rememberVicoScrollState()
     val hasData = data.symptomPoints.isNotEmpty() && data.symptomPoints.any { it.avgIntensity > 0f }
 
     LaunchedEffect(data) {
@@ -307,6 +312,7 @@ fun SymptomIntensityChart(data: ChartDataSet, days: Int) {
                 bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = xFormatter, itemPlacer = xItemPlacer)
             ),
             modelProducer = modelProducer,
+            scrollState = scrollState ?: ownScrollState,
             modifier = Modifier.fillMaxWidth().height(180.dp)
         )
     } else {
@@ -315,12 +321,13 @@ fun SymptomIntensityChart(data: ChartDataSet, days: Int) {
 }
 
 @Composable
-fun PollenVsSymptomChart(data: ChartDataSet, days: Int) {
+fun PollenVsSymptomChart(data: ChartDataSet, days: Int, scrollState: VicoScrollState? = null) {
     val pollenColor = MaterialTheme.colorScheme.secondary
     val symptomColor = MaterialTheme.colorScheme.symptomColor
     val modelProducer = remember { CartesianChartModelProducer() }
     val xFormatter = rememberXAxisFormatter(data.dateLabels)
     val xItemPlacer = rememberXAxisItemPlacer(days)
+    val ownScrollState = rememberVicoScrollState()
     val hasPollenData = data.environmentPoints.any { it.pollenAvailable }
     val pollenPoints = data.environmentPoints.filter { it.pollenAvailable }
 
@@ -344,10 +351,14 @@ fun PollenVsSymptomChart(data: ChartDataSet, days: Int) {
                         LineCartesianLayer.Line(fill = LineFill.single(Fill(symptomColor)))
                     )
                 ),
-                startAxis = VerticalAxis.rememberStart(),
+                startAxis = VerticalAxis.rememberStart(
+                    valueFormatter = CartesianValueFormatter { _, value, _ -> "%.0f".format(value) },
+                    itemPlacer = VerticalAxis.ItemPlacer.step(step = { 1.0 })
+                ),
                 bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = xFormatter, itemPlacer = xItemPlacer)
             ),
             modelProducer = modelProducer,
+            scrollState = scrollState ?: ownScrollState,
             modifier = Modifier.fillMaxWidth().height(180.dp)
         )
         Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -372,12 +383,13 @@ fun PollenVsSymptomChart(data: ChartDataSet, days: Int) {
 }
 
 @Composable
-fun AqiVsSymptomChart(data: ChartDataSet, days: Int) {
+fun AqiVsSymptomChart(data: ChartDataSet, days: Int, scrollState: VicoScrollState? = null) {
     val aqiColor = MaterialTheme.colorScheme.okColor
     val symptomColor = MaterialTheme.colorScheme.symptomColor
     val modelProducer = remember { CartesianChartModelProducer() }
     val xFormatter = rememberXAxisFormatter(data.dateLabels)
     val xItemPlacer = rememberXAxisItemPlacer(days)
+    val ownScrollState = rememberVicoScrollState()
     val hasData = data.environmentPoints.any { it.aqi > 0f } || data.symptomPoints.any { it.avgIntensity > 0f }
 
     LaunchedEffect(data) {
@@ -400,10 +412,14 @@ fun AqiVsSymptomChart(data: ChartDataSet, days: Int) {
                         LineCartesianLayer.Line(fill = LineFill.single(Fill(symptomColor)))
                     )
                 ),
-                startAxis = VerticalAxis.rememberStart(),
+                startAxis = VerticalAxis.rememberStart(
+                    valueFormatter = CartesianValueFormatter { _, value, _ -> "%.0f".format(value) },
+                    itemPlacer = VerticalAxis.ItemPlacer.step(step = { 1.0 })
+                ),
                 bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = xFormatter, itemPlacer = xItemPlacer)
             ),
             modelProducer = modelProducer,
+            scrollState = scrollState ?: ownScrollState,
             modifier = Modifier.fillMaxWidth().height(180.dp)
         )
         Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {

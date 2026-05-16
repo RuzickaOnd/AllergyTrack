@@ -111,6 +111,15 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch { userPreferencesDataStore.setFoodSearchLanguage(code) }
     }
 
+    // --- GRAFY ---
+
+    val syncChartsScroll: StateFlow<Boolean> = userPreferencesDataStore.syncChartsScroll
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
+
+    fun setSyncChartsScroll(enabled: Boolean) {
+        viewModelScope.launch { userPreferencesDataStore.setSyncChartsScroll(enabled) }
+    }
+
     // --- DATA A SOUKROMÍ ---
 
     private val _isExporting = MutableStateFlow(false)

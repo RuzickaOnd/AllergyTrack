@@ -79,6 +79,7 @@ fun SettingsScreen(
     val foodLanguage by viewModel.foodSearchLanguage.collectAsStateWithLifecycle()
     val darkMode by viewModel.darkMode.collectAsStateWithLifecycle()
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsStateWithLifecycle()
+    val syncChartsScroll by viewModel.syncChartsScroll.collectAsStateWithLifecycle()
     val isExporting by viewModel.isExporting.collectAsStateWithLifecycle()
     val exportedFile by viewModel.exportedFile.collectAsStateWithLifecycle()
     var showLanguageDialog by remember { mutableStateOf(false) }
@@ -160,6 +161,16 @@ fun SettingsScreen(
                     onDisabledClick = {
                         scope.launch { snackbarHostState.showSnackbar(permissionHint) }
                     }
+                )
+            }
+
+            SettingsHeader(title = stringResource(R.string.settings_section_charts))
+
+            AppCard(contentPadding = PaddingValues(0.dp)) {
+                SettingsSwitchItem(
+                    label = stringResource(R.string.settings_sync_charts_scroll),
+                    checked = syncChartsScroll,
+                    onCheckedChange = { viewModel.setSyncChartsScroll(it) }
                 )
             }
 

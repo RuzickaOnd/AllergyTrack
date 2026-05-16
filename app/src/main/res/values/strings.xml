@@ -284,6 +284,8 @@
     <string name="permission_required_location_title">Location permission required</string>
     <string name="permission_required_location_body">To display air quality and pollen data, grant Location permission in Settings → Permissions.</string>
     <string name="permission_required_go_to_settings">Set permissions</string>
+    <string name="settings_section_charts">CHARTS</string>
+    <string name="settings_sync_charts_scroll">Synchronised chart scrolling</string>
     <string name="settings_section_food_search">FOOD SEARCH</string>
     <string name="settings_food_language">Food search language</string>
     <string name="settings_food_language_auto">Auto (%s)</string>

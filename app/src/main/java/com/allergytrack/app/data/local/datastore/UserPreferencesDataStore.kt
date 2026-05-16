@@ -26,6 +26,7 @@ class UserPreferencesDataStore @Inject constructor(
         private val KEY_AVATAR_SELECTION = stringPreferencesKey("avatar_selection")
         private val KEY_DARK_MODE = booleanPreferencesKey("dark_mode")
         private val KEY_NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
+        private val KEY_SYNC_CHARTS_SCROLL = booleanPreferencesKey("sync_charts_scroll")
     }
 
     /** Uložený kód jazyka pro vyhledávání jídla. Prázdný string = auto (dle zařízení). */
@@ -65,5 +66,13 @@ class UserPreferencesDataStore @Inject constructor(
 
     suspend fun setNotificationsEnabled(enabled: Boolean) {
         context.userPreferencesDataStore.edit { it[KEY_NOTIFICATIONS_ENABLED] = enabled }
+    }
+
+    /** Synchronní scrollování všech grafů. Výchozí = true. */
+    val syncChartsScroll: Flow<Boolean> = context.userPreferencesDataStore.data
+        .map { prefs -> prefs[KEY_SYNC_CHARTS_SCROLL] ?: true }
+
+    suspend fun setSyncChartsScroll(enabled: Boolean) {
+        context.userPreferencesDataStore.edit { it[KEY_SYNC_CHARTS_SCROLL] = enabled }
     }
 }

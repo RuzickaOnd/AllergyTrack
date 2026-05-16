@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
+import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.domain.model.SymptomType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +35,8 @@ class ChartsViewModel @Inject constructor(
     private val symptomLogDao: SymptomLogDao,
     private val environmentLogDao: EnvironmentLogDao,
     private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper,
-    private val permissionsHelper: PermissionsHelper
+    private val permissionsHelper: PermissionsHelper,
+    private val userPreferencesDataStore: UserPreferencesDataStore
 ) : ViewModel() {
 
     private val _selectedRange = MutableStateFlow(TimeRange.WEEK)
@@ -115,6 +117,9 @@ class ChartsViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = ChartsUiState()
     )
+
+    val syncChartsScroll: StateFlow<Boolean> = userPreferencesDataStore.syncChartsScroll
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
 
     fun onRangeSelected(range: TimeRange) {
         _selectedRange.value = range
