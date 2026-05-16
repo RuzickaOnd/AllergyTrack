@@ -1,8 +1,26 @@
 package com.allergytrack.app.ui.util
 
 import androidx.annotation.StringRes
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Air
+import androidx.compose.material.icons.outlined.Healing
+import androidx.compose.material.icons.outlined.Help
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Insights
+import androidx.compose.material.icons.outlined.LocalFlorist
+import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material.icons.outlined.MedicalServices
+import androidx.compose.material.icons.outlined.Pets
+import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.Science
+import androidx.compose.material.icons.outlined.Sick
+import androidx.compose.material.icons.outlined.TouchApp
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.WaterDrop
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.AllergyType
+import com.allergytrack.app.domain.model.TriggerType
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.domain.model.SymptomTypeOnboarding
@@ -39,6 +57,47 @@ fun AllergyType.labelRes(): Int = when (this) {
     AllergyType.DUST    -> R.string.allergy_dust
     AllergyType.MOLD    -> R.string.allergy_mold
     AllergyType.UNKNOWN -> R.string.allergy_unknown
+}
+
+fun AllergyType.icon(): ImageVector = when (this) {
+    AllergyType.POLLEN  -> Icons.Outlined.LocalFlorist
+    AllergyType.FOOD    -> Icons.Outlined.Restaurant
+    AllergyType.ANIMAL  -> Icons.Outlined.Pets
+    AllergyType.DUST    -> Icons.Outlined.Home
+    AllergyType.MOLD    -> Icons.Outlined.Science
+    AllergyType.UNKNOWN -> Icons.Outlined.Help
+}
+
+fun SymptomType.icon(): ImageVector = when (this) {
+    SymptomType.ECZEMA      -> Icons.Outlined.Healing
+    SymptomType.RHINITIS    -> Icons.Outlined.WaterDrop
+    SymptomType.EYE_ITCHING -> Icons.Outlined.Visibility
+    SymptomType.URTICARIA   -> Icons.Outlined.MedicalServices
+    SymptomType.ASTHMA      -> Icons.Outlined.Air
+    SymptomType.ITCHING     -> Icons.Outlined.TouchApp
+    SymptomType.DIGESTIVE   -> Icons.Outlined.Restaurant
+    SymptomType.OTHER       -> Icons.Outlined.Help
+}
+
+fun TriggerType.icon(): ImageVector = when (this) {
+    TriggerType.FOOD        -> Icons.Outlined.Restaurant
+    TriggerType.ENVIRONMENT -> Icons.Outlined.LocalFlorist
+    TriggerType.COMBINED    -> Icons.Outlined.Insights
+}
+
+/** Ikona pro FoodTrigger: allergen (EU 14) → Warning, obecné jídlo → Restaurant */
+fun foodTriggerIcon(allergenKey: String): ImageVector =
+    if (allergenKey.startsWith("__food__")) Icons.Outlined.Restaurant else Icons.Outlined.Warning
+
+fun SymptomTypeOnboarding.icon(): ImageVector = when (this) {
+    SymptomTypeOnboarding.ECZEMA      -> Icons.Outlined.Healing
+    SymptomTypeOnboarding.RHINITIS    -> Icons.Outlined.WaterDrop
+    SymptomTypeOnboarding.EYE_ITCHING -> Icons.Outlined.Visibility
+    SymptomTypeOnboarding.URTICARIA   -> Icons.Outlined.MedicalServices
+    SymptomTypeOnboarding.ASTHMA      -> Icons.Outlined.Air
+    SymptomTypeOnboarding.ITCHING     -> Icons.Outlined.TouchApp
+    SymptomTypeOnboarding.DIGESTIVE   -> Icons.Outlined.Restaurant
+    SymptomTypeOnboarding.SNEEZING    -> Icons.Outlined.Sick
 }
 
 @StringRes

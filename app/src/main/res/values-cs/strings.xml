@@ -265,7 +265,7 @@
     <string name="about_section_data_content">Veškerá data jsou uložena pouze v tvém zařízení a nikdy nejsou sdílena s třetími stranami. Aplikace nesbírá žádná osobní data.</string>
     <string name="about_section_sources_title">Zdroje dat</string>
     <string name="about_section_sources_content">Kvalita ovzduší a pylová data: Open-Meteo (open-meteo.com)\nDatabáze potravin: Open Food Facts (openfoodfacts.org)</string>
-    <string name="about_disclaimer">⚠️ Tato aplikace není zdravotnický prostředek a neposkytuje lékařskou diagnózu ani léčbu. Pro lékařskou radu se vždy obraťte na kvalifikovaného zdravotnického pracovníka.</string>
+    <string name="about_disclaimer">Tato aplikace není zdravotnický prostředek a neposkytuje lékařskou diagnózu ani léčbu. Pro lékařskou radu se vždy obraťte na kvalifikovaného zdravotnického pracovníka.</string>
 
     <!-- Nastavení -->
     <string name="settings_section_general">OBECNÉ</string>
@@ -300,7 +300,7 @@
     <!-- Premium -->
     <string name="premium_upsell_desc">Tato funkce je dostupná v Premium verzi.</string>
     <string name="premium_badge_label">PREMIUM</string>
-    <string name="ai_badge_label">✨ KLINICKÝ VHLED</string>
+    <string name="ai_badge_label">KLINICKÝ VHLED</string>
 
     <!-- Prémiové funkce -->
     <string name="premium_feature_food_photo">Foto rozpoznávání jídla</string>
@@ -343,8 +343,8 @@
     <string name="ready_location_label">Poloha</string>
     <string name="ready_camera_label">Fotoaparát</string>
     <string name="ready_notifications_label">Oznámení</string>
-    <string name="ready_status_granted">✓ Povoleno</string>
-    <string name="ready_status_denied">✗ Zakázáno</string>
+    <string name="ready_status_granted">Povoleno</string>
+    <string name="ready_status_denied">Zakázáno</string>
     <string name="ready_first_day_title">JAK TO FUNGUJE</string>
     <string name="ready_tip_breakfast">Loguj jídlo a nápoje, které konzumuješ</string>
     <string name="ready_tip_feeling">Zaznamenej příznaky a jejich intenzitu</string>

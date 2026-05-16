@@ -23,6 +23,7 @@ import com.allergytrack.app.domain.model.CorrelationSeverity
 import com.allergytrack.app.domain.model.TriggerType
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.util.icon
 import com.allergytrack.app.ui.util.labelRes
 
 @Composable
@@ -114,7 +115,7 @@ fun CorrelationDetailScreen(
                 ) {
                     DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_matches), value = "${correlation.occurrences}/${correlation.totalEvents}")
                     DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_latency), value = "${correlation.avgDelayHours.toInt()}h")
-                    DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_impact), value = correlation.symptomType.emoji)
+                    DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_impact), icon = correlation.symptomType.icon())
                 }
             }
 

@@ -28,6 +28,7 @@ import com.allergytrack.app.domain.model.FoodTrigger
 import com.allergytrack.app.domain.model.SymptomInWindow
 import com.allergytrack.app.ui.theme.symptomColor
 import com.allergytrack.app.ui.theme.warningColor
+import com.allergytrack.app.ui.util.foodTriggerIcon
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -75,7 +76,11 @@ fun FoodTriggerDetailScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(trigger.triggerEmoji, style = MaterialTheme.typography.titleLarge)
+                        Icon(
+                            imageVector = foodTriggerIcon(trigger.allergenKey),
+                            contentDescription = null,
+                            modifier = Modifier.size(22.dp)
+                        )
                         Text(trigger.triggerName)
                     }
                 },
@@ -209,12 +214,23 @@ fun FoodTriggerSummaryCard(trigger: FoodTrigger) {
                     color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text(
-                        "✓ Odpovídá tvému alergickému profilu",
+                    Row(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Text(
+                            "Odpovídá tvému alergickému profilu",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
                 }
             }
 

@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.FilterVintage
+import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.*
@@ -41,6 +42,7 @@ import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.util.icon
 import com.allergytrack.app.ui.util.labelRes
 import com.allergytrack.app.domain.model.PremiumFeature
 
@@ -229,7 +231,10 @@ fun SymptomFilterRow(selected: SymptomType?, onSelected: (SymptomType?) -> Unit)
                 FilterChip(
                     selected = selected == type,
                     onClick = { onSelected(type) },
-                    label = { Text("${type.emoji} ${label.uppercase()}", fontFamily = MonoFontFamily, fontSize = 10.sp) },
+                    leadingIcon = {
+                    Icon(imageVector = type.icon(), contentDescription = null, modifier = Modifier.size(14.dp))
+                },
+                label = { Text(label.uppercase(), fontFamily = MonoFontFamily, fontSize = 10.sp) },
                     shape = RoundedCornerShape(8.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -430,7 +435,12 @@ fun EmptyChartsCard() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("📊", style = androidx.compose.ui.text.TextStyle(fontSize = 40.sp))
+            Icon(
+                imageVector = Icons.Outlined.BarChart,
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
             Text(stringResource(R.string.empty_charts_title), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
             Text(
                 stringResource(R.string.empty_charts_desc),

@@ -14,6 +14,7 @@ import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.AllergyType
 import com.allergytrack.app.domain.model.SymptomTypeOnboarding
 import com.allergytrack.app.ui.theme.*
+import com.allergytrack.app.ui.util.icon
 import com.allergytrack.app.ui.util.labelRes
 
 @Composable
@@ -57,7 +58,7 @@ fun OnboardingProfileContent(
                     row.forEach { type ->
                         OnboardingSelectCard(
                             modifier = Modifier.weight(1f),
-                            emoji = type.emoji,
+                            icon = type.icon(),
                             label = stringResource(type.labelRes()),
                             isSelected = type in uiState.selectedAllergyTypes,
                             onClick = { onAllergyTypeToggled(type) }
@@ -89,7 +90,7 @@ fun OnboardingProfileContent(
                     row.forEach { type ->
                         OnboardingSelectCard(
                             modifier = Modifier.weight(1f),
-                            emoji = type.emoji,
+                            icon = type.icon(),
                             label = stringResource(type.labelRes()),
                             isSelected = type in uiState.selectedSymptomTypes,
                             onClick = { onSymptomTypeToggled(type) }

@@ -20,7 +20,6 @@ enum class CorrelationSeverity { HIGH, MEDIUM, LOW }
  * Výsledek korelační analýzy pro jedno jídlo nebo alergen.
  *
  * @param triggerName    Zobrazovaný název spouštěče (např. "Mléčné výrobky", "Lepek")
- * @param triggerEmoji   Emoji reprezentace (např. "??", "??") — odvozeno z klíče alergenu
  * @param allergenKey    Klíč alergenu z EU_14 (např. "Milk", "Gluten") nebo název jídla pokud
  *                       není alergen znám ("__food__Jogurt")
  * @param correlationScore   0.0–1.0 — síla korelace (zobrazuje se jako %)
@@ -33,7 +32,6 @@ enum class CorrelationSeverity { HIGH, MEDIUM, LOW }
  */
 data class FoodTrigger(
     val triggerName: String,
-    val triggerEmoji: String,
     val allergenKey: String,
     val correlationScore: Float,           // 0.0–1.0
     val severity: CorrelationSeverity,

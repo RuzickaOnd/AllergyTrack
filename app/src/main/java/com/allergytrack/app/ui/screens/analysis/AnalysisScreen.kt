@@ -22,6 +22,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Insights
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -65,6 +67,8 @@ import com.allergytrack.app.ui.theme.okColor
 import com.allergytrack.app.ui.theme.symptomColor
 import com.allergytrack.app.ui.theme.warningColor
 import com.allergytrack.app.ui.util.AnalysisExportHandler
+import com.allergytrack.app.ui.util.foodTriggerIcon
+import com.allergytrack.app.ui.util.icon
 import com.allergytrack.app.ui.util.labelRes
 
 @Composable
@@ -247,11 +251,7 @@ fun CorrelationItem(
         CorrelationSeverity.MEDIUM -> MaterialTheme.colorScheme.warningColor
         CorrelationSeverity.LOW -> MaterialTheme.colorScheme.okColor
     }
-    val triggerIcon = when (correlation.triggerType) {
-        TriggerType.FOOD -> "🍽"
-        TriggerType.ENVIRONMENT -> "🌿"
-        TriggerType.COMBINED -> "⚡"
-    }
+    val triggerIcon = correlation.triggerType.icon()
     val symptomLabel = stringResource(correlation.symptomType.labelRes())
     val detailsText = stringResource(
         R.string.correlation_item_details,
@@ -286,13 +286,24 @@ fun CorrelationItem(
 
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        "$triggerIcon ${correlation.trigger}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.weight(1f, fill = false)
-                    )
+                    Row(
+                        modifier = Modifier.weight(1f, fill = false),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            imageVector = triggerIcon,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            correlation.trigger,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                     if (correlation.isExpected) {
                         Spacer(Modifier.width(8.dp))
                         Surface(
@@ -327,13 +338,17 @@ fun CorrelationItem(
 }
 
 @Composable
-fun DetailStatCard(modifier: Modifier = Modifier, label: String, value: String) {
+fun DetailStatCard(modifier: Modifier = Modifier, label: String, value: String = "", icon: ImageVector? = null) {
     AppCard(modifier = modifier) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+            if (icon != null) {
+                Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(22.dp), tint = MaterialTheme.colorScheme.onSurface)
+            } else {
+                Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+            }
             Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp)
         }
     }
@@ -348,7 +363,12 @@ fun AnalysisLockedScreen(readiness: AnalysisReadiness.Locked) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("🔒", style = androidx.compose.ui.text.TextStyle(fontSize = 64.sp))
+        Icon(
+            imageVector = Icons.Outlined.Lock,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Spacer(Modifier.height(16.dp))
         Text(
             "Zatím nedostatek dat",
@@ -453,14 +473,18 @@ fun FoodTriggerCard(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Emoji ikona
             Surface(
                 modifier = Modifier.size(44.dp),
                 shape = RoundedCornerShape(10.dp),
                 color = severityColor.copy(alpha = 0.1f)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text(trigger.triggerEmoji, style = MaterialTheme.typography.titleLarge)
+                    Icon(
+                        imageVector = foodTriggerIcon(trigger.allergenKey),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = severityColor
+                    )
                 }
             }
 

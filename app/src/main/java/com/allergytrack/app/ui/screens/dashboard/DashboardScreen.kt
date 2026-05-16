@@ -18,8 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -55,6 +57,7 @@ import com.allergytrack.app.ui.theme.SerifFontFamily
 import com.allergytrack.app.ui.theme.okColor
 import com.allergytrack.app.ui.theme.symptomColor
 import com.allergytrack.app.ui.theme.warningColor
+import com.allergytrack.app.ui.util.icon
 import com.allergytrack.app.ui.util.labelRes
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -297,10 +300,11 @@ fun TimelineFoodItem(log: FoodLogEntity) {
                 shape = RoundedCornerShape(6.dp),
                 color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
             ) {
-                Text(
-                    text = "⚠️",
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                Icon(
+                    imageVector = Icons.Outlined.Warning,
+                    contentDescription = null,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp).size(14.dp),
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
         }
@@ -316,7 +320,7 @@ fun TimelineSymptomItem(log: SymptomLogEntity) {
         null
     }
     val typeLabel = symptomType?.let { stringResource(it.labelRes()) } ?: log.type
-    val emoji = symptomType?.emoji ?: "⚡"
+    val symptomIcon = symptomType?.icon() ?: Icons.Outlined.Air
 
     val intensityColor = when {
         log.intensity >= 4 -> MaterialTheme.colorScheme.symptomColor
@@ -341,12 +345,23 @@ fun TimelineSymptomItem(log: SymptomLogEntity) {
                 color = intensityColor.copy(alpha = 0.7f),
                 fontFamily = MonoFontFamily
             )
-            Text(
-                text = "$emoji $typeLabel",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Medium
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Icon(
+                    imageVector = symptomIcon,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = typeLabel,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(3.dp),

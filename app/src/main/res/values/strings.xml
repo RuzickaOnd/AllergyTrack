@@ -265,7 +265,7 @@
     <string name="about_section_data_content">All data is stored only on your device and is never shared with third parties. The app collects no personal data.</string>
     <string name="about_section_sources_title">Data sources</string>
     <string name="about_section_sources_content">Air quality and pollen data: Open-Meteo (open-meteo.com)\nFood database: Open Food Facts (openfoodfacts.org)</string>
-    <string name="about_disclaimer">⚠️ This application is not a medical device and does not provide medical diagnosis or treatment. For medical advice, always consult a qualified healthcare professional.</string>
+    <string name="about_disclaimer">This application is not a medical device and does not provide medical diagnosis or treatment. For medical advice, always consult a qualified healthcare professional.</string>
 
     <!-- Settings -->
     <string name="settings_section_general">GENERAL</string>
@@ -303,7 +303,7 @@
     <!-- Premium -->
     <string name="premium_upsell_desc">This feature is available in the Premium version.</string>
     <string name="premium_badge_label">PREMIUM</string>
-    <string name="ai_badge_label">✨ CLINICAL INSIGHT</string>
+    <string name="ai_badge_label">CLINICAL INSIGHT</string>
 
     <!-- Premium features -->
     <string name="premium_feature_food_photo">Food photo recognition</string>
@@ -343,8 +343,8 @@
     <string name="ready_location_label">Location</string>
     <string name="ready_camera_label">Camera</string>
     <string name="ready_notifications_label">Notifications</string>
-    <string name="ready_status_granted">✓ Allowed</string>
-    <string name="ready_status_denied">✗ Denied</string>
+    <string name="ready_status_granted">Allowed</string>
+    <string name="ready_status_denied">Denied</string>
     <string name="ready_first_day_title">HOW IT WORKS</string>
     <string name="ready_tip_breakfast">Log the food and drinks you consume</string>
     <string name="ready_tip_feeling">Record your symptoms and their intensity</string>

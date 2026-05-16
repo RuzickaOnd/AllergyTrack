@@ -1,6 +1,9 @@
 package com.allergytrack.app.ui.onboarding
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.LocalFlorist
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,11 +26,21 @@ fun OnboardingWelcomeContent() {
         Spacer(Modifier.weight(0.4f))
 
         // Large Decorative Icon
-        Text(
-            text = "🌿",
-            fontSize = 96.sp,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
+        Surface(
+            modifier = Modifier.size(96.dp),
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.primaryContainer
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Outlined.LocalFlorist,
+                    contentDescription = null,
+                    modifier = Modifier.size(52.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
+        Spacer(Modifier.height(24.dp))
 
         // Title
         Text(

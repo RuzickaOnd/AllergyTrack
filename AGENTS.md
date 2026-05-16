@@ -150,6 +150,7 @@ fun XyzPreview() { AllergyTrackTheme { Xyz(...) } }
 - ❌ `android:layout_*` XML atributy (jsme full Compose)
 - ❌ `remember { ... }` nebo composable volání **po** podmíněném `return` — porušení Compose Rules of Hooks způsobí slot table corruption a crash při změně stavu. Vždy: nejdřív všechna `remember`, pak podmíněná logika.
 - ❌ Raw `SnackbarHost` — vždy použij `AppSnackbarHost` z `CommonUI.kt`
+- ❌ Emoji nebo Unicode znaky vložené do `String` resource nebo `Text()` jako vizuální ikona — ikona musí být vždy samostatné `Icon()` composable s `ImageVector` z Material Icons. Pouze čistý text patří do String resources.
 
 ### Snackbary — AppSnackbarHost
 `AppSnackbarHost` v `CommonUI.kt` je **jediný** způsob zobrazení snackbarů v aplikaci.

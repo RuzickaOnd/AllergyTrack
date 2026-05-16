@@ -587,6 +587,7 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 ✅ foodName a allergens v navigaci vždy Uri.encode() před navigate()
 ✅ HttpException ze síťových volání propagovat do ViewModelu — nekousat v repository
 ✅ Snackbary vždy přes AppSnackbarHost (CommonUI.kt) — nikdy raw SnackbarHost
+✅ Ikony v UI vždy jako samostatné Icon() composable — nikdy emoji ani Unicode znaky vložené přímo do String resource nebo Text() tam, kde slouží jako ikona. Vizuální ikona a text musí být vždy oddělené composable elementy.
 
 ❌ runBlocking v produkčním kódu (výjimka: MainActivity onCreate)
 ❌ Přímé volání DAO z ViewModelu

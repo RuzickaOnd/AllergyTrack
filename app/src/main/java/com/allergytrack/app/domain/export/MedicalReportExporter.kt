@@ -167,7 +167,7 @@ class MedicalReportExporter @Inject constructor(
         foodTriggers.take(8).forEach { trigger ->
             paint.isFakeBoldText = true
             paint.textSize = 12f
-            canvas.drawText("${trigger.triggerEmoji} ${trigger.triggerName}", margin + 10, currentY, paint)
+            canvas.drawText(trigger.triggerName, margin + 10, currentY, paint)
 
             paint.isFakeBoldText = false
             paint.textSize = 10f

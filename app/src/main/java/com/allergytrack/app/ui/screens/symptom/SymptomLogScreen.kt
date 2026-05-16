@@ -19,7 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.compose.material3.Icon
 import com.allergytrack.app.R
+import com.allergytrack.app.ui.util.icon
 import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
@@ -164,7 +166,12 @@ fun SymptomTypeCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(type.emoji, style = MaterialTheme.typography.headlineSmall)
+            Icon(
+                imageVector = type.icon(),
+                contentDescription = null,
+                modifier = Modifier.size(28.dp),
+                tint = if (isSelected) MaterialTheme.colorScheme.warningColor else MaterialTheme.colorScheme.onSurfaceVariant
+            )
             Text(
                 stringResource(type.labelRes()).uppercase(),
                 style = MaterialTheme.typography.labelMedium,

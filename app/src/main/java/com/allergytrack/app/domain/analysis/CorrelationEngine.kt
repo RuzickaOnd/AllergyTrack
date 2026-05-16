@@ -30,24 +30,6 @@ class CorrelationEngine @Inject constructor(
 
         // Práh pro zobrazení v TOP TRIGGERS (nízké skóre = nezobrazovat)
         const val MIN_DISPLAY_SCORE = 0.15f
-
-        // Emoji mapování pro EU 14 alergenů
-        val ALLERGEN_EMOJI = mapOf(
-            "Milk"       to "🥛",
-            "Gluten"     to "🌾",
-            "Eggs"       to "🥚",
-            "Fish"       to "🐟",
-            "Crustaceans" to "🦐",
-            "Peanuts"    to "🥜",
-            "Soybeans"   to "🫘",
-            "Nuts"       to "🌰",
-            "Celery"     to "🥬",
-            "Mustard"    to "🌿",
-            "Sesame-seeds" to "🫙",
-            "Sulphur-dioxide-and-sulphites" to "🍷",
-            "Lupin"      to "🌸",
-            "Molluscs"   to "🦪"
-        )
     }
 
     // Časová okna pro hledání korelace (ms)
@@ -379,10 +361,8 @@ class CorrelationEngine @Inject constructor(
                 .take(3)
                 .map { it.key }
 
-            // Název a emoji
             val isAllergen = !triggerKey.startsWith("__food__")
             val displayName = if (isAllergen) triggerKey else triggerKey.removePrefix("__food__")
-            val emoji = ALLERGEN_EMOJI[triggerKey] ?: "🍽️"
 
             // Shoda s profilem
             val isExpected = isAllergen && triggerKey in knownAllergens
@@ -390,7 +370,6 @@ class CorrelationEngine @Inject constructor(
             triggers.add(
                 FoodTrigger(
                     triggerName = displayName,
-                    triggerEmoji = emoji,
                     allergenKey = triggerKey,
                     correlationScore = finalScore,
                     severity = when {
