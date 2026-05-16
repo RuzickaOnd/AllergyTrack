@@ -316,7 +316,7 @@
     <!-- Prémiové funkce -->
     <string name="premium_feature_food_photo">Foto rozpoznávání jídla</string>
     <string name="premium_feature_pollen">Pylová data</string>
-    <string name="premium_feature_extended_charts">Grafy 30+ dní</string>
+    <string name="premium_feature_extended_charts">Grafy 14+ dní</string>
     <string name="premium_feature_ai_analysis">AI analýza spouštěčů</string>
     <string name="premium_feature_pdf_export">Export PDF pro lékaře</string>
     <string name="premium_feature_unlimited_history">Neomezená historie</string>

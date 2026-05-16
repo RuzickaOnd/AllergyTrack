@@ -9,7 +9,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.FilterVintage
 import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -56,7 +56,7 @@ fun ChartsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isExtendedChartsVisible by viewModel.isExtendedChartsVisible.collectAsStateWithLifecycle()
     val canUseExtendedCharts by viewModel.canUseExtendedCharts.collectAsStateWithLifecycle()
-    val showExtendedChartsBadge by viewModel.showExtendedChartsBadge.collectAsStateWithLifecycle()
+    val showExtendedChartsUpsell by viewModel.showExtendedChartsUpsell.collectAsStateWithLifecycle()
     val isPollenVisible by viewModel.isPollenVisible.collectAsStateWithLifecycle()
     val showPollenUpsell by viewModel.showPollenUpsell.collectAsStateWithLifecycle()
     val locationGranted by viewModel.locationGranted.collectAsStateWithLifecycle()
@@ -85,33 +85,32 @@ fun ChartsScreen(
         ) {
             item { Spacer(Modifier.height(8.dp)) }
 
-            if (isExtendedChartsVisible) {
-                item {
+            when {
+                isExtendedChartsVisible && canUseExtendedCharts -> item {
                     TimeRangeSelector(
                         selected = uiState.selectedRange,
-                        canUseExtendedCharts = canUseExtendedCharts,
-                        showBadge = showExtendedChartsBadge,
+                        canUseExtendedCharts = true,
+                        showBadge = false,
                         onSelected = viewModel::onRangeSelected
                     )
+                }
+                showExtendedChartsUpsell -> item {
+                    PremiumUpsellCard(feature = PremiumFeature.EXTENDED_CHARTS)
                 }
             }
 
             item { SummaryRow(uiState = uiState) }
 
-            item {
-                SymptomFilterRow(
-                    selected = uiState.selectedSymptomFilter,
-                    onSelected = viewModel::onFilterSelected
-                )
-            }
-
             uiState.chartData?.let { data ->
                 val days = uiState.selectedRange.days
+
                 item {
-                    ChartCard(title = stringResource(R.string.chart_symptom_intensity), icon = Icons.Outlined.ShowChart) {
-                        SymptomIntensityChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
-                    }
+                    SymptomFilterRow(
+                        selected = uiState.selectedSymptomFilter,
+                        onSelected = viewModel::onFilterSelected
+                    )
                 }
+
                 if (!locationGranted) {
                     item {
                         PermissionRequiredCard(
@@ -133,10 +132,17 @@ fun ChartsScreen(
                             }
                         }
                     }
+                }
+                if (locationGranted) {
                     item {
                         ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
                             AqiVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
                         }
+                    }
+                }
+                item {
+                    ChartCard(title = stringResource(R.string.chart_symptom_intensity), icon = Icons.AutoMirrored.Outlined.ShowChart) {
+                        SymptomIntensityChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
                     }
                 }
             } ?: run {

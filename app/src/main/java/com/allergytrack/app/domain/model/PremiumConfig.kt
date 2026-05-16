@@ -14,7 +14,7 @@ enum class PremiumStatus {
 enum class PremiumFeature(val displayName: String) {
     FOOD_PHOTO_RECOGNITION("Foto rozpoznávání jídla"),
     POLLEN_DATA("Pylová data"),
-    EXTENDED_CHARTS("Grafy 30+ dní"),
+    EXTENDED_CHARTS("Grafy 14+ dní"),
     AI_CORRELATION_ANALYSIS("AI analýza spouštěčů"),
     PDF_EXPORT("Export PDF pro lékaře"),
     UNLIMITED_HISTORY("Neomezená historie")

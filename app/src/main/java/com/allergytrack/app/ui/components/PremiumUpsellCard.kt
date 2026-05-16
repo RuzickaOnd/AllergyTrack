@@ -27,37 +27,51 @@ fun PremiumUpsellCard(
     modifier: Modifier = Modifier,
     onUpgradeClick: () -> Unit = {}
 ) {
+    val borderColor = MaterialTheme.colorScheme.warningColor.copy(alpha = 0.5f)
     AppCard(
         modifier = modifier,
-        borderColor = MaterialTheme.colorScheme.warningColor.copy(alpha = 0.5f),
-        backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+        borderColor = borderColor,
+        backgroundColor = MaterialTheme.colorScheme.warningColor.copy(alpha = 0.08f)
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(4.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Icon(
-                Icons.Default.Lock, null,
-                modifier = Modifier.size(36.dp),
-                tint = MaterialTheme.colorScheme.warningColor
-            )
-            Text(
-                stringResource(feature.displayNameRes()),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Icon(
+                    Icons.Default.Lock, null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.warningColor
+                )
+                Text(
+                    stringResource(feature.displayNameRes()),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
             Text(
                 stringResource(R.string.premium_upsell_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            PrimaryButton(
-                text = stringResource(R.string.btn_upgrade_premium),
+            Button(
                 onClick = onUpgradeClick,
-                modifier = Modifier.fillMaxWidth()
-            )
+                modifier = Modifier.fillMaxWidth().height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.warningColor,
+                    contentColor = MaterialTheme.colorScheme.onTertiary
+                )
+            ) {
+                Text(
+                    stringResource(R.string.btn_upgrade_premium).uppercase(),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
         }
     }
 }

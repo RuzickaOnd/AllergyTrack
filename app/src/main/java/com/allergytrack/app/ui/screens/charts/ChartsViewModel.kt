@@ -60,6 +60,10 @@ class ChartsViewModel @Inject constructor(
         premiumHelper.observeShowBadge(com.allergytrack.app.domain.model.PremiumFeature.EXTENDED_CHARTS)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
+    val showExtendedChartsUpsell: StateFlow<Boolean> =
+        premiumHelper.observeShowUpsell(com.allergytrack.app.domain.model.PremiumFeature.EXTENDED_CHARTS)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
     val isPollenVisible: StateFlow<Boolean> =
         premiumHelper.observeVisible(com.allergytrack.app.domain.model.PremiumFeature.POLLEN_DATA)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
