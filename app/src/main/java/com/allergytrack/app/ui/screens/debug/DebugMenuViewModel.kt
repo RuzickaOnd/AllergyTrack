@@ -6,8 +6,10 @@ import com.allergytrack.app.data.local.datastore.OnboardingDataStore
 import com.allergytrack.app.data.local.datastore.DebugPreferences
 import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
 import com.allergytrack.app.domain.model.FoodLog
+import com.allergytrack.app.domain.model.PremiumVisibilityMode
 import com.allergytrack.app.domain.model.SymptomLog
 import com.allergytrack.app.domain.model.SymptomType
+import com.allergytrack.app.domain.premium.PremiumHelper
 import com.allergytrack.app.domain.repository.FoodRepository
 import com.allergytrack.app.domain.repository.SymptomRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,8 +25,11 @@ class DebugMenuViewModel @Inject constructor(
     private val debugPreferences: DebugPreferences,
     private val onboardingDataStore: OnboardingDataStore,
     private val foodRepository: FoodRepository,
-    private val symptomRepository: SymptomRepository
+    private val symptomRepository: SymptomRepository,
+    premiumHelper: PremiumHelper
 ) : ViewModel() {
+
+    val currentVisibilityMode: PremiumVisibilityMode = premiumHelper.currentVisibilityMode
 
     val premiumOverride: StateFlow<DebugPremiumOverride> = debugPreferences.premiumOverride
         .stateIn(

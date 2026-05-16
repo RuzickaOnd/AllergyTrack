@@ -100,11 +100,12 @@ com.allergytrack.app/
 │       │   ├── AvatarPickerScreen.kt  ← 12 presetů (LazyVerticalGrid 4 sl.) + galerie
 │       │   ├── ProfileViewModel.kt    ← UserPreferencesDataStore: userName, avatarSelection
 │       │   └── AboutScreen.kt
-│       └── settings/
-│           ├── SettingsScreen.kt         ← Plně implementovaná nastavení (viz sekce 11)
-│           ├── SettingsViewModel.kt      ← export, smazání dat, dark mode, notifikace, jazyk
-│           ├── DebugMenuScreen.kt        ← Jen v BuildConfig.DEBUG
-│           └── DebugMenuViewModel.kt
+│       ├── settings/
+│       │   ├── SettingsScreen.kt         ← Plně implementovaná nastavení (viz sekce 11)
+│       │   └── SettingsViewModel.kt      ← export, smazání dat, dark mode, notifikace, jazyk
+│       └── debug/
+│           ├── DebugMenuScreen.kt        ← Jen v BuildConfig.DEBUG; info chip s aktuálním visibilityMode
+│           └── DebugMenuViewModel.kt     ← injektuje PremiumHelper pro currentVisibilityMode
 ├── domain/
 │   ├── model/
 │   │   ├── FoodLog.kt
@@ -289,11 +290,23 @@ when {
 ```
 
 V DEBUG buildu: `DebugPreferences` přepisuje stav přes `DebugPremiumOverride` enum.
+`PremiumHelper.currentVisibilityMode` (val) zpřístupňuje aktuální `visibilityMode` pro DebugMenuViewModel.
+
+**`DebugPremiumOverride` — 3 položky (redundantní FORCE_FREE a FORCE_PREMIUM odstraněny):**
+
+| Hodnota | mode | status | Výsledek v UI |
+|---|---|---|---|
+| `USE_APP_STATE` | dle `visibilityMode` | skutečný | produkční chování |
+| `FORCE_VISIBLE_FREE` | vždy VISIBLE | FREE | upsell karty, hvězdičky |
+| `FORCE_VISIBLE_PREMIUM` | vždy VISIBLE | PREMIUM | vše odemčeno |
+
+Deserializace v DataStore má `catch (IllegalArgumentException)` → fallback na `USE_APP_STATE` (odolné vůči starým hodnotám).
+DebugMenuScreen zobrazuje aktuální `visibilityMode` jako info chip (šedý = HIDDEN, zelený = VISIBLE).
 
 **Prémiové funkce** (aktuálně všechny HIDDEN):
 - `FOOD_PHOTO_RECOGNITION` — foto rozpoznávání jídla
 - `POLLEN_DATA` — pylová data
-- `EXTENDED_CHARTS` — grafy 30+ dní
+- `EXTENDED_CHARTS` — grafy 14+ dní (odemkne 14denní i 30denní rozsah)
 - `AI_CORRELATION_ANALYSIS` — AI korelační analýza
 - `PDF_EXPORT` — export PDF pro lékaře
 - `UNLIMITED_HISTORY` — neomezená historie
@@ -632,6 +645,9 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 | 22 | SettingsScreen: Push notifikace — ReminderWorker, kanál, scheduling na ~20:00 | ✅ |
 | 23 | SettingsScreen: notifications switch disabled při chybějícím oprávnění + snackbar hint | ✅ |
 | 24 | AppSnackbarHost: sdílená komponenta s green brand barvami, zaoblené rohy, brand barvy | ✅ |
+| 25 | ChartsScreen: premium UX — free uživatel vidí PremiumUpsellCard místo TimeRangeSelector; pořadí grafů: Pyl → AQI → Intenzita; SymptomFilterRow přesunuta nad grafy (uvnitř chartData bloku) | ✅ |
+| 26 | PremiumUpsellCard: redesign — ikona + nadpis v Row, pozadí warningColor 8% alpha, tlačítko v barvě okraje (tertiary/onTertiary) | ✅ |
+| 27 | DebugPremiumOverride: odstraněny redundantní FORCE_FREE a FORCE_PREMIUM; info chip s aktuálním visibilityMode v DebugMenuScreen; popisky upřesněny | ✅ |
 
 ---
 

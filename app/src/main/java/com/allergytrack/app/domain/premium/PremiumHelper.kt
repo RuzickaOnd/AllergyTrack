@@ -27,6 +27,8 @@ class PremiumHelper @Inject constructor(
     // =========================================================
     private val visibilityMode = PremiumVisibilityMode.HIDDEN
 
+    val currentVisibilityMode: PremiumVisibilityMode get() = visibilityMode
+
     private val premiumFeatures: Set<PremiumFeature> = setOf(
         PremiumFeature.FOOD_PHOTO_RECOGNITION,
         PremiumFeature.POLLEN_DATA,
@@ -47,8 +49,6 @@ class PremiumHelper @Inject constructor(
         return debugPreferences.premiumOverride.map { override ->
             when (override) {
                 DebugPremiumOverride.USE_APP_STATE -> visibilityMode
-                DebugPremiumOverride.FORCE_FREE -> visibilityMode
-                DebugPremiumOverride.FORCE_PREMIUM -> visibilityMode
                 DebugPremiumOverride.FORCE_VISIBLE_FREE -> PremiumVisibilityMode.VISIBLE
                 DebugPremiumOverride.FORCE_VISIBLE_PREMIUM -> PremiumVisibilityMode.VISIBLE
             }
@@ -67,8 +67,6 @@ class PremiumHelper @Inject constructor(
         ) { realStatus, override ->
             when (override) {
                 DebugPremiumOverride.USE_APP_STATE -> realStatus
-                DebugPremiumOverride.FORCE_FREE -> PremiumStatus.FREE
-                DebugPremiumOverride.FORCE_PREMIUM -> PremiumStatus.PREMIUM
                 DebugPremiumOverride.FORCE_VISIBLE_FREE -> PremiumStatus.FREE
                 DebugPremiumOverride.FORCE_VISIBLE_PREMIUM -> PremiumStatus.PREMIUM
             }

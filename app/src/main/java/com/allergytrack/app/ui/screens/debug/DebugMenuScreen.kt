@@ -2,9 +2,11 @@ package com.allergytrack.app.ui.screens.debug
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,7 +19,7 @@ import androidx.navigation.NavController
 import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
-import androidx.compose.foundation.shape.RoundedCornerShape
+import com.allergytrack.app.domain.model.PremiumVisibilityMode
 
 @Composable
 fun DebugMenuScreen(
@@ -25,6 +27,7 @@ fun DebugMenuScreen(
     viewModel: DebugMenuViewModel = hiltViewModel()
 ) {
     val premiumOverride by viewModel.premiumOverride.collectAsState()
+    val currentMode = viewModel.currentVisibilityMode
 
     Column(
         modifier = Modifier
@@ -38,6 +41,42 @@ fun DebugMenuScreen(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
+
+        // Info chip: aktuální mód nastavený v PremiumHelper.kt
+        Surface(
+            shape = RoundedCornerShape(10.dp),
+            color = if (currentMode == PremiumVisibilityMode.HIDDEN)
+                MaterialTheme.colorScheme.surfaceVariant
+            else
+                MaterialTheme.colorScheme.tertiaryContainer
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Outlined.Info,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = if (currentMode == PremiumVisibilityMode.HIDDEN)
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    else
+                        MaterialTheme.colorScheme.onTertiaryContainer
+                )
+                val modeLabel = if (currentMode == PremiumVisibilityMode.HIDDEN) "HIDDEN" else "VISIBLE"
+                Text(
+                    "visibilityMode v PremiumHelper.kt: $modeLabel",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (currentMode == PremiumVisibilityMode.HIDDEN)
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    else
+                        MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            }
+        }
 
         DebugPremiumOverride.values().forEach { option ->
             val isSelected = option == premiumOverride
@@ -100,22 +139,30 @@ fun DebugMenuScreen(
                 8  to stringResource(R.string.debug_analysis_8),
                 10 to stringResource(R.string.debug_analysis_10)
             )
-            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) {
-                Column {
-                    analysisOptions.forEachIndexed { index, (count, label) ->
-                        if (index > 0) HorizontalDivider()
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                analysisOptions.forEach { (count, label) ->
+                    val isSelected = symptomCountOverride == count
+                    Surface(
+                        onClick = { viewModel.setSymptomCountOverride(count) },
+                        shape = MaterialTheme.shapes.medium,
+                        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+                        tonalElevation = 1.dp
+                    ) {
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             RadioButton(
-                                selected = symptomCountOverride == count,
+                                selected = isSelected,
                                 onClick = { viewModel.setSymptomCountOverride(count) }
                             )
                             Text(
-                                label,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(end = 12.dp, top = 8.dp, bottom = 8.dp)
+                                text = label,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                             )
                         }
                     }

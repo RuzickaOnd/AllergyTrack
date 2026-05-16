@@ -74,22 +74,14 @@ class DebugPreferences @Inject constructor(
 enum class DebugPremiumOverride(val label: String, val description: String) {
     USE_APP_STATE(
         label = "Stav aplikace",
-        description = "Řídí se skutečným stavem PremiumHelper.visibilityMode"
-    ),
-    FORCE_FREE(
-        label = "Vynuceno FREE",
-        description = "Simuluje nepřihlášeného / free uživatele bez ohledu na nastavení"
-    ),
-    FORCE_PREMIUM(
-        label = "Vynuceno PREMIUM",
-        description = "Simuluje platícího uživatele, všechny prémiové funkce odemčeny"
+        description = "Respektuje visibilityMode nastavený v PremiumHelper.kt a skutečný stav předplatného"
     ),
     FORCE_VISIBLE_FREE(
         label = "VISIBLE + FREE",
-        description = "Zobrazí všechny prémiové prvky s hvězdičkou a upsell kartami"
+        description = "Vynutí mód VISIBLE bez ohledu na visibilityMode — prémiové prvky jsou viditelné, zobrazují upsell karty a hvězdičky"
     ),
     FORCE_VISIBLE_PREMIUM(
         label = "VISIBLE + PREMIUM",
-        description = "Zobrazí všechny prémiové prvky jako odemčené (platící uživatel)"
+        description = "Vynutí mód VISIBLE bez ohledu na visibilityMode — všechny prémiové funkce jsou odemčené"
     )
 }
