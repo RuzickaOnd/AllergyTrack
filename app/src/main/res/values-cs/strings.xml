@@ -303,7 +303,8 @@
     <string name="debug_premium_override_title">Nastavení přepsání Premium</string>
     <string name="debug_other_options">Ostatní možnosti</string>
     <string name="debug_seed_test_data">Vložit testovací data (Jídlo a Příznaky)</string>
-    <string name="debug_crash_app">Simulovat pád aplikace</string>
+    <string name="debug_crash_app">Crashlytics: testovací pád</string>
+    <string name="debug_nonfatal_test">Crashlytics: testovací non-fatal</string>
     <string name="debug_onboarding_section">Onboarding</string>
     <string name="debug_reset_onboarding_btn">Resetovat onboarding (restartuje app)</string>
     <string name="debug_reset_onboarding_note">Po resetu se onboarding zobrazí při dalším spuštění aplikace.</string>

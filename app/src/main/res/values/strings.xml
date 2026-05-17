@@ -306,7 +306,8 @@
     <string name="debug_premium_override_title">Premium Override Settings</string>
     <string name="debug_other_options">Other options</string>
     <string name="debug_seed_test_data">Insert test data (Food and Symptoms)</string>
-    <string name="debug_crash_app">Simulate app crash</string>
+    <string name="debug_crash_app">Crashlytics: test crash</string>
+    <string name="debug_nonfatal_test">Crashlytics: test non-fatal</string>
     <string name="debug_onboarding_section">Onboarding</string>
     <string name="debug_reset_onboarding_btn">Reset onboarding (restarts app)</string>
     <string name="debug_reset_onboarding_note">After reset, onboarding will appear on next app launch.</string>

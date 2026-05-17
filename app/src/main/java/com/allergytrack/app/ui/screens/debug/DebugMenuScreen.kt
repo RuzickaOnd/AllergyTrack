@@ -20,6 +20,7 @@ import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
 import com.allergytrack.app.domain.model.PremiumVisibilityMode
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 @Composable
 fun DebugMenuScreen(
@@ -28,6 +29,13 @@ fun DebugMenuScreen(
 ) {
     val premiumOverride by viewModel.premiumOverride.collectAsState()
     val currentMode = viewModel.currentVisibilityMode
+
+    DisposableEffect(Unit) {
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+        onDispose {
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -188,11 +196,23 @@ fun DebugMenuScreen(
         }
 
         Button(
-            onClick = { throw RuntimeException("Manuální pád aplikace") },
+            onClick = { throw RuntimeException("Test Crash") },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(R.string.debug_crash_app))
+        }
+
+        OutlinedButton(
+            onClick = {
+                FirebaseCrashlytics.getInstance().recordException(
+                    RuntimeException("Test non-fatal exception z Debug menu")
+                )
+            },
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(R.string.debug_nonfatal_test))
         }
 
         HorizontalDivider()
