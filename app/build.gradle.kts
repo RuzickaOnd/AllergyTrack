@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.google.services)
 }
 
 val localProperties = Properties().apply {
@@ -95,6 +96,8 @@ dependencies {
     implementation(libs.vico.m3)
     implementation(libs.mlkit.image.labeling)
     implementation(libs.mlkit.barcode.scanning)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.testing.ui.manifest)
     testImplementation(libs.testing.junit)

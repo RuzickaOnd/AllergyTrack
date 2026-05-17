@@ -23,6 +23,8 @@ playServicesLocation = "21.3.0"
 vico = "3.1.0"
 mlKitImageLabeling = "17.0.9"
 mlKitBarcodeScanning = "17.3.0"
+googleServices = "4.4.4"
+firebaseBom = "34.13.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
@@ -68,6 +70,8 @@ vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.
 vico-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 mlkit-image-labeling = { group = "com.google.mlkit", name = "image-labeling", version.ref = "mlKitImageLabeling" }
 mlkit-barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlKitBarcodeScanning" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 testing-junit = { group = "junit", name = "junit", version.ref = "junit" }
 testing-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 testing-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -80,3 +84,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }

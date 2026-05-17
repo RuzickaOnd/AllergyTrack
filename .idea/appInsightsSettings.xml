@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.allergytrack.app" />
+                  <option name="mobileSdkAppId" value="1:922282392941:android:5b597c5b19ce4e1b1eae64" />
+                  <option name="projectId" value="allergytrack-57274" />
+                  <option name="projectNumber" value="922282392941" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
