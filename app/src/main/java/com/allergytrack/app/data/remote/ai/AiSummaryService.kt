@@ -1,28 +1,37 @@
 package com.allergytrack.app.data.remote.ai
 
+import android.content.Context
+import com.allergytrack.app.data.remote.food.FoodAllergenHelper
 import com.allergytrack.app.domain.model.Correlation
+import com.allergytrack.app.domain.model.CorrelationSeverity
 import com.allergytrack.app.domain.model.TriggerType
+import com.allergytrack.app.ui.util.labelRes
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AiSummaryService @Inject constructor() {
+class AiSummaryService @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
 
     // MVP: Generování shrnutí lokálně bez API klíče
-    // V produkci nahradit voláním Claude API nebo OpenAI
+    // V produkci nahradit voláním Claude API
     fun generateSummary(correlations: List<Correlation>): String {
         if (correlations.isEmpty()) {
             return "Zatím nemám dostatek dat pro analýzu. Pokračuj v zaznamenávání jídla a symptomů."
         }
 
-        val highCorrelations = correlations.filter { it.severity == com.allergytrack.app.domain.model.CorrelationSeverity.HIGH }
+        val highCorrelations = correlations.filter { it.severity == CorrelationSeverity.HIGH }
         val topTrigger = correlations.firstOrNull()
 
         return buildString {
             if (topTrigger != null) {
                 val scorePercent = (topTrigger.score * 100).toInt()
+                val triggerName = localizedTriggerName(topTrigger)
+                val symptomName = context.getString(topTrigger.symptomType.labelRes())
                 append("Na základě tvých záznamů jsem identifikoval hlavní spouštěč: ")
-                append("**${topTrigger.trigger}** koreluje s ${topTrigger.symptomType.label} ")
+                append("**$triggerName** koreluje s $symptomName ")
                 append("v $scorePercent % případů")
                 if (topTrigger.avgDelayHours > 0) {
                     append(", typicky s odstupem ${topTrigger.avgDelayHours.toInt()}–${(topTrigger.avgDelayHours * 1.5).toInt()} hodin")
@@ -31,7 +40,8 @@ class AiSummaryService @Inject constructor() {
             }
 
             if (highCorrelations.size > 1) {
-                append(" Dalším významným faktorem je ${highCorrelations[1].trigger}.")
+                val secondName = localizedTriggerName(highCorrelations[1])
+                append(" Dalším významným faktorem je $secondName.")
             }
 
             val foodTriggers = correlations.filter { it.triggerType == TriggerType.FOOD }
@@ -44,4 +54,13 @@ class AiSummaryService @Inject constructor() {
             append(" Doporučuji tato zjištění probrat s alergologem.")
         }
     }
+
+    private fun localizedTriggerName(correlation: Correlation): String =
+        if (correlation.triggerType == TriggerType.FOOD) {
+            FoodAllergenHelper.keyToDisplayRes[correlation.trigger]
+                ?.let { context.getString(it) }
+                ?: correlation.trigger
+        } else {
+            correlation.trigger
+        }
 }

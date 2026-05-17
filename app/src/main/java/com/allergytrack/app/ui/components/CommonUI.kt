@@ -16,7 +16,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -289,7 +292,18 @@ fun AiBadge(text: String) {
             }
             Spacer(Modifier.height(4.dp))
             Text(
-                text = text,
+                text = buildAnnotatedString {
+                    val boldRegex = Regex("\\*\\*(.+?)\\*\\*")
+                    var cursor = 0
+                    boldRegex.findAll(text).forEach { match ->
+                        append(text.substring(cursor, match.range.first))
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(match.groupValues[1])
+                        }
+                        cursor = match.range.last + 1
+                    }
+                    append(text.substring(cursor))
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
