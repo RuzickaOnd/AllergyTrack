@@ -434,6 +434,18 @@
     <string name="faq_q_data_safety">Is my data safe?</string>
     <string name="faq_a_data_safety">Yes. All your data — food, symptom and environment records — is stored only on your phone. The app does not send any personal data to servers or collect any information about you. You don\'t need to register or create an account at all.</string>
 
+    <!-- Symptom detail -->
+    <string name="symptom_detail_title">Symptom Overview</string>
+    <string name="symptom_detail_most_frequent_heading">Most frequent symptom</string>
+    <string name="symptom_detail_other_heading">Other symptoms</string>
+    <string name="symptom_detail_avg_intensity">Average intensity</string>
+    <string name="symptom_detail_empty">No symptoms in this period.\nStart logging symptoms to see statistics here.</string>
+    <string name="symptom_detail_badge">Top</string>
+    <plurals name="symptom_occurrences">
+        <item quantity="one">%d occurrence</item>
+        <item quantity="other">%d occurrences</item>
+    </plurals>
+
     <!-- Notifications -->
     <string name="notification_channel_reminders_name">Logging reminders</string>
     <string name="notification_channel_reminders_desc">Evening reminder to log food and symptoms</string>

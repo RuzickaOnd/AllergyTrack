@@ -434,6 +434,20 @@
     <string name="faq_q_data_safety">Jsou moje data v bezpečí?</string>
     <string name="faq_a_data_safety">Ano. Všechna tvá data — záznamy jídla, příznaků i prostředí — jsou uložena jen v tvém telefonu. Aplikace neodesílá žádná osobní data na servery ani nesbírá žádné informace o tobě. K registraci nebo vytvoření účtu vůbec nepotřebuješ.</string>
 
+    <!-- Přehled příznaků -->
+    <string name="symptom_detail_title">Přehled příznaků</string>
+    <string name="symptom_detail_most_frequent_heading">Nejčastější příznak</string>
+    <string name="symptom_detail_other_heading">Ostatní příznaky</string>
+    <string name="symptom_detail_avg_intensity">Průměrná intenzita</string>
+    <string name="symptom_detail_empty">Žádné příznaky v tomto období.\nZačni zaznamenávat příznaky, aby se zde zobrazily statistiky.</string>
+    <string name="symptom_detail_badge">Nejčastější</string>
+    <plurals name="symptom_occurrences">
+        <item quantity="one">%d výskyt</item>
+        <item quantity="few">%d výskyty</item>
+        <item quantity="many">%d výskytů</item>
+        <item quantity="other">%d výskytů</item>
+    </plurals>
+
     <!-- Notifikace -->
     <string name="notification_channel_reminders_name">Připomínky logování</string>
     <string name="notification_channel_reminders_desc">Večerní připomínka k zalogování jídla a příznaků</string>

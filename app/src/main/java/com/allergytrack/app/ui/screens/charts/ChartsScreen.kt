@@ -25,6 +25,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.ui.navigation.Screen
@@ -63,6 +64,7 @@ fun ChartsScreen(
     val syncChartsScroll by viewModel.syncChartsScroll.collectAsStateWithLifecycle()
     val sharedScrollState = rememberVicoScrollState()
 
+    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -99,7 +101,12 @@ fun ChartsScreen(
                 }
             }
 
-            item { SummaryRow(uiState = uiState) }
+            item {
+                SummaryRow(
+                    uiState = uiState,
+                    onStatClick = { SymptomDetailActivity.start(context, uiState.selectedRange) }
+                )
+            }
 
             uiState.chartData?.let { data ->
                 val days = uiState.selectedRange.days
@@ -185,7 +192,7 @@ fun TimeRangeSelector(
 }
 
 @Composable
-fun SummaryRow(uiState: ChartsUiState) {
+fun SummaryRow(uiState: ChartsUiState, onStatClick: () -> Unit) {
     val mostFrequentLabel = uiState.mostFrequentSymptomType
         ?.let { stringResource(it.labelRes()) }
         ?: "—"
@@ -199,16 +206,16 @@ fun SummaryRow(uiState: ChartsUiState) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            StatCard(modifier = Modifier.weight(1f), value = uiState.totalSymptomEvents.toString(), label = stringResource(R.string.stat_total))
-            StatCard(modifier = Modifier.weight(1f), value = "%.1f".format(uiState.avgDailyIntensity), label = stringResource(R.string.stat_avg))
-            StatCard(modifier = Modifier.weight(1f), value = mostFrequentLabel, label = stringResource(R.string.stat_most_frequent))
+            StatCard(modifier = Modifier.weight(1f), value = uiState.totalSymptomEvents.toString(), label = stringResource(R.string.stat_total), onClick = onStatClick)
+            StatCard(modifier = Modifier.weight(1f), value = "%.1f".format(uiState.avgDailyIntensity), label = stringResource(R.string.stat_avg), onClick = onStatClick)
+            StatCard(modifier = Modifier.weight(1f), value = mostFrequentLabel, label = stringResource(R.string.stat_most_frequent), onClick = onStatClick)
         }
     }
 }
 
 @Composable
-fun StatCard(modifier: Modifier = Modifier, value: String, label: String) {
-    AppCard(modifier = modifier) {
+fun StatCard(modifier: Modifier = Modifier, value: String, label: String, onClick: (() -> Unit)? = null) {
+    AppCard(modifier = modifier, onClick = onClick) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
