@@ -421,7 +421,7 @@
     <string name="faq_q_how_correlations">Jak aplikace pozná, co způsobuje mé alergie?</string>
     <string name="faq_a_how_correlations">Aplikace sleduje, jestli po konzumaci určitého jídla nebo alergenu do 72 hodin nastane alergická reakce. Čím víckrát se to opakuje, tím vyšší je skóre korelace. Podobně porovnává tvoje příznaky se změnami kvality vzduchu a hladinami pylu pomocí matematické metody zvané Pearsonova korelace.</string>
     <string name="faq_q_correlation_percent">Co znamená procento u korelace?</string>
-    <string name="faq_a_correlation_percent">Procento říká, jak často se po výskytu daného spouštěče (jídla nebo alergenu) objevila alergická reakce. Například 75 % u mléka znamená, že ze 4 zaznamenaných konzumací mléka 3× následoval příznak. Čím vyšší číslo, tím silnější a spolehlivější je vazba.</string>
+    <string name="faq_a_correlation_percent">Procento říká, jak často se po výskytu daného spouštěče (jídla nebo alergenu) objevila alergická reakce. Například 75 %% u mléka znamená, že ze 4 zaznamenaných konzumací mléka 3× následoval příznak. Čím vyšší číslo, tím silnější a spolehlivější je vazba.</string>
     <string name="faq_q_match_badge">Co znamená štítek SHODA?</string>
     <string name="faq_a_match_badge">Štítek SHODA se zobrazí u korelací, které odpovídají tvému alergickému profilu nastavenému při prvním spuštění aplikace. Pokud jsi uvedl/a pylovou alergii a aplikace najde korelaci s pylem, označí ji jako shodu — takové výsledky se v analýze zobrazují výše.</string>
     <string name="faq_q_food_database">Odkud pocházejí informace o potravinách?</string>

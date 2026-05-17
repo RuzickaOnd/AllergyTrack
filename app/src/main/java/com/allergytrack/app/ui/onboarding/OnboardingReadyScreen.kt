@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,7 +30,6 @@ fun OnboardingReadyContent(
     uiState: OnboardingUiState,
 ) {
     val permissions = uiState.permissionsState
-    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -59,7 +57,7 @@ fun OnboardingReadyContent(
                     value = if (uiState.selectedAllergyTypes.isEmpty())
                         stringResource(R.string.ready_allergies_not_set)
                     else
-                        uiState.selectedAllergyTypes.joinToString(", ") { context.getString(it.labelRes()) }
+                        uiState.selectedAllergyTypes.map { stringResource(it.labelRes()) }.joinToString(", ")
                 )
 
                 ReadySummaryItem(
@@ -67,7 +65,7 @@ fun OnboardingReadyContent(
                     value = if (uiState.selectedSymptomTypes.isEmpty())
                         stringResource(R.string.ready_symptoms_not_set)
                     else
-                        uiState.selectedSymptomTypes.joinToString(", ") { context.getString(it.labelRes()) }
+                        uiState.selectedSymptomTypes.map { stringResource(it.labelRes()) }.joinToString(", ")
                 )
 
                 ReadyPermissionItem(

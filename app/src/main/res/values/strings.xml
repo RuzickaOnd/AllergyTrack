@@ -421,7 +421,7 @@
     <string name="faq_q_how_correlations">How does the app know what causes my allergies?</string>
     <string name="faq_a_how_correlations">The app tracks whether an allergic reaction occurs within 72 hours after consuming a certain food or allergen. The more often this repeats, the higher the correlation score. It also compares your symptoms with changes in air quality and pollen levels using a mathematical method called Pearson correlation.</string>
     <string name="faq_q_correlation_percent">What does the percentage next to a correlation mean?</string>
-    <string name="faq_a_correlation_percent">The percentage tells you how often an allergic reaction occurred after the given trigger (food or allergen). For example, 75% for milk means that out of 4 recorded milk consumptions, a symptom followed 3 times. The higher the number, the stronger and more reliable the connection.</string>
+    <string name="faq_a_correlation_percent">The percentage tells you how often an allergic reaction occurred after the given trigger (food or allergen). For example, 75%% for milk means that out of 4 recorded milk consumptions, a symptom followed 3 times. The higher the number, the stronger and more reliable the connection.</string>
     <string name="faq_q_match_badge">What does the MATCH badge mean?</string>
     <string name="faq_a_match_badge">The MATCH badge appears on correlations that correspond to your allergy profile set up when you first launched the app. If you indicated a pollen allergy and the app finds a correlation with pollen, it marks it as a match — such results appear higher in the analysis.</string>
     <string name="faq_q_food_database">Where does the food information come from?</string>
