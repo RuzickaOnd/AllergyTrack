@@ -35,6 +35,7 @@ UI jazyk:    Čeština
 | Kamera | CameraX | 1.4.1 |
 | Grafy | Vico | 2.0.1 |
 | Barcode | ML Kit Barcode Scanning | 17.3.0 |
+| Analytics | Firebase Analytics + Crashlytics | BOM 34.13.0 |
 | Build | Gradle Kotlin DSL + Version Catalog | — |
 
 ---
@@ -60,7 +61,7 @@ com.allergytrack.app/
 │   │   └── ExportUtils.kt     ← AnalysisExportHandler, sharePdfFile()
 │   ├── components/
 │   │   ├── CommonUI.kt        ← AppCard(contentPadding), AppSnackbarHost, CardTitle(icon), Pill(onClick), PrimaryButton,
-│   │   │                         SecondaryButton, SectionHeading, AiBadge
+│   │   │                         SecondaryButton, SectionHeading, AiBadge (renderuje **bold** markdown)
 │   │   ├── BottomNavBar.kt
 │   │   ├── PremiumGate.kt     ← Třístavový wrapper (hidden/upsell/content)
 │   │   ├── PremiumUpsellCard.kt
@@ -91,7 +92,10 @@ com.allergytrack.app/
 │       ├── charts/
 │       │   ├── ChartsScreen.kt
 │       │   ├── ChartsViewModel.kt
-│       │   └── ChartDataMapper.kt
+│       │   ├── ChartDataMapper.kt
+│       │   ├── SymptomDetailActivity.kt   ← vstupní bod detailu (samostatná Activity)
+│       │   ├── SymptomDetailScreen.kt     ← statistiky symptomů: count, avg/max intenzita, last occurrence
+│       │   └── SymptomDetailViewModel.kt  ← SymptomTypeStat, SymptomDetailUiState; respektuje EXTENDED_CHARTS
 │       ├── analysis/
 │       │   ├── AnalysisScreen.kt
 │       │   └── AnalysisViewModel.kt
@@ -104,7 +108,7 @@ com.allergytrack.app/
 │       │   ├── SettingsScreen.kt         ← Plně implementovaná nastavení (viz sekce 11)
 │       │   └── SettingsViewModel.kt      ← export, smazání dat, dark mode, notifikace, jazyk
 │       └── debug/
-│           ├── DebugMenuScreen.kt        ← Jen v BuildConfig.DEBUG; info chip s aktuálním visibilityMode
+│           ├── DebugMenuScreen.kt        ← Jen v BuildConfig.DEBUG; info chip + Crashlytics testovací tlačítka
 │           └── DebugMenuViewModel.kt     ← injektuje PremiumHelper pro currentVisibilityMode
 ├── domain/
 │   ├── model/
@@ -151,6 +155,8 @@ com.allergytrack.app/
 │   │       ├── UserPreferencesDataStore.kt  ← 5 klíčů: jazyk, jméno, avatar, dark mode, notifikace
 │   │       └── DebugPreferences.kt          ← debug_preferences, DebugPremiumOverride
 │   ├── remote/
+│   │   ├── ai/
+│   │   │   └── AiSummaryService.kt     ← Lokální šablona shrnutí; renderuje **bold** markdown
 │   │   ├── airquality/
 │   │   │   ├── AirQualityApiService.kt ← Open-Meteo, zdarma, bez klíče
 │   │   │   └── AirQualityDto.kt
@@ -648,6 +654,9 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 | 25 | ChartsScreen: premium UX — free uživatel vidí PremiumUpsellCard místo TimeRangeSelector; pořadí grafů: Pyl → AQI → Intenzita; SymptomFilterRow přesunuta nad grafy (uvnitř chartData bloku) | ✅ |
 | 26 | PremiumUpsellCard: redesign — ikona + nadpis v Row, pozadí warningColor 8% alpha, tlačítko v barvě okraje (tertiary/onTertiary) | ✅ |
 | 27 | DebugPremiumOverride: odstraněny redundantní FORCE_FREE a FORCE_PREMIUM; info chip s aktuálním visibilityMode v DebugMenuScreen; popisky upřesněny | ✅ |
+| 28 | Firebase + Crashlytics: integrace Firebase Analytics a Crashlytics (BOM 34.13.0); DebugMenu rozšířen o testovací tlačítka fatal crash a non-fatal exception | ✅ |
+| 29 | SymptomDetailScreen: nová obrazovka s přehledem statistik symptomů (count, průměrná/max intenzita, poslední výskyt); SymptomDetailActivity jako samostatná Activity; výběr časového rozsahu respektuje EXTENDED_CHARTS premium | ✅ |
+| 30 | AiBadge + AiSummaryService: oprava výpisu klinického vhledu — bold markdown (**text**) v AiSummaryService i AiBadge composable renderován správně | ✅ |
 
 ---
 
