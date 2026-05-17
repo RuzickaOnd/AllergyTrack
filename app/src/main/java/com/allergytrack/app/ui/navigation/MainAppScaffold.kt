@@ -36,6 +36,7 @@ fun MainAppScaffold() {
     val analysisViewModel: AnalysisViewModel = hiltViewModel()
     val analysisState by analysisViewModel.uiState.collectAsStateWithLifecycle()
     val isExportVisible by analysisViewModel.isExportVisible.collectAsStateWithLifecycle()
+    val showExportUpsell by analysisViewModel.showExportUpsell.collectAsStateWithLifecycle()
 
     val debugViewModel: DebugMenuViewModel = hiltViewModel()
 
@@ -97,7 +98,7 @@ fun MainAppScaffold() {
                     actions = {
                         when (currentRoute) {
                             Screen.Analysis.route -> {
-                                if (isExportVisible && analysisState.readiness !is AnalysisReadiness.Locked) {
+                                if (isExportVisible && !showExportUpsell && analysisState.readiness !is AnalysisReadiness.Locked) {
                                     IconButton(onClick = analysisViewModel::exportReport) {
                                         if (analysisState.isExporting) {
                                             CircularProgressIndicator(

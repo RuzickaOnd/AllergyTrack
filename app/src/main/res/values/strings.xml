@@ -324,6 +324,22 @@
     <string name="premium_feature_pdf_export">PDF export for doctor</string>
     <string name="premium_feature_unlimited_history">Unlimited history</string>
 
+    <!-- Premium page -->
+    <string name="screen_premium">Premium</string>
+    <string name="premium_page_headline">Unlock the full potential</string>
+    <string name="premium_page_subtitle">Get access to all features and uncover your allergy triggers with maximum precision.</string>
+    <string name="premium_page_features_title">What you get with Premium</string>
+    <string name="premium_page_cta">Buy Premium</string>
+    <string name="premium_feature_food_photo_desc">Simply photograph your food and AI will automatically recognise and log it.</string>
+    <string name="premium_feature_pollen_desc">Monitor pollen levels in your area in real time and anticipate reactions.</string>
+    <string name="premium_feature_extended_charts_desc">Analyse symptom and environment trends over 14 or 30 days.</string>
+    <string name="premium_feature_ai_analysis_desc">Advanced AI uncovers hidden patterns and precise allergy triggers.</string>
+    <string name="premium_feature_pdf_export_desc">Generate a clear medical report and share it directly with your doctor.</string>
+    <string name="premium_feature_unlimited_history_desc">Keep a complete history of all records without any time limit.</string>
+
+    <!-- Stats -->
+    <string name="stats_symptom_summary">Symptom overview</string>
+
     <!-- Onboarding -->
     <string name="onboarding_skip">SKIP</string>
     <string name="onboarding_title">Find your\ntriggers</string>

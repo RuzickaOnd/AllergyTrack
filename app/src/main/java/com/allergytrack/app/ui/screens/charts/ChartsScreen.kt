@@ -190,13 +190,19 @@ fun SummaryRow(uiState: ChartsUiState) {
         ?.let { stringResource(it.labelRes()) }
         ?: "—"
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        StatCard(modifier = Modifier.weight(1f), value = uiState.totalSymptomEvents.toString(), label = stringResource(R.string.stat_total))
-        StatCard(modifier = Modifier.weight(1f), value = "%.1f".format(uiState.avgDailyIntensity), label = stringResource(R.string.stat_avg))
-        StatCard(modifier = Modifier.weight(1f), value = mostFrequentLabel, label = stringResource(R.string.stat_most_frequent))
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        CardTitle(
+            text = stringResource(R.string.stats_symptom_summary),
+            icon = Icons.Outlined.BarChart
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            StatCard(modifier = Modifier.weight(1f), value = uiState.totalSymptomEvents.toString(), label = stringResource(R.string.stat_total))
+            StatCard(modifier = Modifier.weight(1f), value = "%.1f".format(uiState.avgDailyIntensity), label = stringResource(R.string.stat_avg))
+            StatCard(modifier = Modifier.weight(1f), value = mostFrequentLabel, label = stringResource(R.string.stat_most_frequent))
+        }
     }
 }
 

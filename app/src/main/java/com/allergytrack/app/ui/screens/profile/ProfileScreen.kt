@@ -65,6 +65,7 @@ fun ProfileScreen(
 ) {
     val userName by viewModel.userName.collectAsStateWithLifecycle()
     val avatarSelection by viewModel.avatarSelection.collectAsStateWithLifecycle()
+    val isPremiumUser by viewModel.isPremiumUser.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     var isEditingName by remember { mutableStateOf(false) }
@@ -171,15 +172,17 @@ fun ProfileScreen(
         // Options list
         item {
             AppCard(contentPadding = PaddingValues(0.dp)) {
-                SettingsActionItem(
-                    icon = Icons.Default.Star,
-                    label = stringResource(R.string.profile_option_premium),
-                    onClick = {}
-                )
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                    thickness = 0.5.dp
-                )
+                if (!isPremiumUser) {
+                    SettingsActionItem(
+                        icon = Icons.Default.Star,
+                        label = stringResource(R.string.profile_option_premium),
+                        onClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
+                    )
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        thickness = 0.5.dp
+                    )
+                }
                 SettingsActionItem(
                     icon = Icons.Default.Settings,
                     label = stringResource(R.string.screen_settings),

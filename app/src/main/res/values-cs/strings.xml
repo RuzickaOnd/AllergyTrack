@@ -321,6 +321,22 @@
     <string name="premium_feature_pdf_export">Export PDF pro lékaře</string>
     <string name="premium_feature_unlimited_history">Neomezená historie</string>
 
+    <!-- Premium stránka -->
+    <string name="screen_premium">Premium</string>
+    <string name="premium_page_headline">Odemkněte plný potenciál</string>
+    <string name="premium_page_subtitle">Získejte přístup ke všem funkcím a odhalte své alergické spouštěče s maximální přesností.</string>
+    <string name="premium_page_features_title">Co získáte s Premium</string>
+    <string name="premium_page_cta">Koupit Premium</string>
+    <string name="premium_feature_food_photo_desc">Jednoduše zafoťte jídlo a AI ho automaticky rozpozná a zaznamená.</string>
+    <string name="premium_feature_pollen_desc">Sledujte pylovou situaci ve vašem okolí v reálném čase a předvídejte reakce.</string>
+    <string name="premium_feature_extended_charts_desc">Analyzujte trendy příznaků a prostředí za 14 nebo 30 dní zpětně.</string>
+    <string name="premium_feature_ai_analysis_desc">Pokročilá AI odhalí skryté vzorce a přesné spouštěče vašich alergií.</string>
+    <string name="premium_feature_pdf_export_desc">Vygenerujte přehledný lékařský report a sdílejte ho přímo s vaším lékařem.</string>
+    <string name="premium_feature_unlimited_history_desc">Uchovejte kompletní historii všech záznamů bez časového omezení.</string>
+
+    <!-- Stats -->
+    <string name="stats_symptom_summary">Přehled příznaků</string>
+
     <!-- Onboarding -->
     <string name="onboarding_skip">PŘESKOČIT</string>
     <string name="onboarding_title">Najdi své\nspouštěče</string>

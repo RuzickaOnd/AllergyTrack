@@ -3,6 +3,8 @@ package com.allergytrack.app.ui.screens.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
+import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.app.domain.premium.PremiumHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userPreferencesDataStore: UserPreferencesDataStore
+    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val premiumHelper: PremiumHelper
 ) : ViewModel() {
 
     val userName: StateFlow<String> = userPreferencesDataStore.userName
@@ -20,6 +23,10 @@ class ProfileViewModel @Inject constructor(
 
     val avatarSelection: StateFlow<String> = userPreferencesDataStore.avatarSelection
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "person")
+
+    val isPremiumUser: StateFlow<Boolean> = premiumHelper
+        .observeAccess(PremiumFeature.AI_CORRELATION_ANALYSIS)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     fun setUserName(name: String) {
         viewModelScope.launch { userPreferencesDataStore.setUserName(name.trim()) }
