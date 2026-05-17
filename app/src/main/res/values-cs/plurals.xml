@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Přehled příznaků -->
+    <plurals name="symptom_occurrences">
+        <item quantity="one">%d výskyt</item>
+        <item quantity="few">%d výskyty</item>
+        <item quantity="many">%d výskytů</item>
+        <item quantity="other">%d výskytů</item>
+    </plurals>
+
+</resources>

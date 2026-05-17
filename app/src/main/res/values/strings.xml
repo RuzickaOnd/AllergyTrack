@@ -441,10 +441,6 @@
     <string name="symptom_detail_avg_intensity">Average intensity</string>
     <string name="symptom_detail_empty">No symptoms in this period.\nStart logging symptoms to see statistics here.</string>
     <string name="symptom_detail_badge">Top</string>
-    <plurals name="symptom_occurrences">
-        <item quantity="one">%d occurrence</item>
-        <item quantity="other">%d occurrences</item>
-    </plurals>
 
     <!-- Notifications -->
     <string name="notification_channel_reminders_name">Logging reminders</string>

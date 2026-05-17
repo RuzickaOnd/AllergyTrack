@@ -441,12 +441,6 @@
     <string name="symptom_detail_avg_intensity">Průměrná intenzita</string>
     <string name="symptom_detail_empty">Žádné příznaky v tomto období.\nZačni zaznamenávat příznaky, aby se zde zobrazily statistiky.</string>
     <string name="symptom_detail_badge">Nejčastější</string>
-    <plurals name="symptom_occurrences">
-        <item quantity="one">%d výskyt</item>
-        <item quantity="few">%d výskyty</item>
-        <item quantity="many">%d výskytů</item>
-        <item quantity="other">%d výskytů</item>
-    </plurals>
 
     <!-- Notifikace -->
     <string name="notification_channel_reminders_name">Připomínky logování</string>
