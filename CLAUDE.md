@@ -691,7 +691,7 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 - Vlastní čas připomínky (aktuálně fixní 20:00)
 
 **Technický dluh:**
-- `AiSummaryService.generateSummary()` je lokální šablona → napojit na Claude API
+- `AiSummaryService.generateSummary()` - integrován on-device Gemini Nano přes ML Kit GenAI Prompt API s lokálním šablonovým fallbackem
 - `recognizeFoodFromImage()` je placeholder → napojit na FatSecret nebo Passio API
 - `FoodAllergenHelper.suggestFromName()` — varianta C (Claude API) pro přesnější návrhy alergenů (naplánováno po spuštění monetizace)
 - `CameraScreen.kt` — navigace na `FoodConfirmScreen` bez `Uri.encode()` (drobná chyba pro produkty s mezerami v názvu)
@@ -754,3 +754,11 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 3. DebugMenuScreen.kt → přidat UI prvek obalený if (BuildConfig.DEBUG)
 4. Příslušný Helper/ViewModel → číst override s if (!BuildConfig.DEBUG) guard
 ```
+
+### Lokální AI asistent (Gemini Nano):
+- Knihovna: `com.google.mlkit:genai-prompt` (ML Kit GenAI Prompt API)
+- Služba: Google AICore (Android 14+, API 26+ min SDK podpora)
+- Třída: `AiSummaryService`
+- Metoda: `suspend fun generateSummary(correlations: List<Correlation>): String` (musí běžet v coroutine/suspend kontextu)
+- Správa stavu: Ověřováno přes `checkStatus()` z `FeatureStatus` (`com.google.mlkit.genai.common.FeatureStatus`)
+- Fallback: Při chybě či nedostupnosti (`status != AVAILABLE`) se vrací statické rule-based textové shrnutí (100% offline bezpečnost).

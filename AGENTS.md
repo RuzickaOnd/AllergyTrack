@@ -501,3 +501,51 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 
 ### Globální Context
 - Pro případy, kdy je vyžadován `Application Context` a není k dispozici DI (např. statické helpery), lze použít **`AllergyTrackApplication.instance`**. V rámci Hilt modulů a ViewModelů však vždy preferuj `@ApplicationContext context: Context`.
+
+---
+
+## 16. AI KLINICKÝ INTERPRET (GEMINI NANO)
+
+Do aplikace je pro prémiové uživatele integrován lokální velký jazykový model **Gemini Nano** spouštěný přímo na NPU telefonu.
+
+### Technologický stack AI
+- **Knihovna**: Google ML Kit GenAI Prompt API (`com.google.mlkit:genai-prompt` verze `1.0.0-beta2`).
+- **Běhové prostředí**: Využívá systémovou službu **Google AICore** v Androidu (vyžaduje API level 26+, reálně dostupné na vlajkových modelech jako Pixel 8+, Samsung S24+ atd.).
+- **Asynchronní model**: Veškeré volání API (`checkStatus`, `generateContent`) je asynchronní a využívá Kotlin **Coroutines** (`suspend` funkce).
+
+### Správa stavu a dostupnosti
+Stav modelu na zařízení se ověřuje pomocí `generativeModel.checkStatus()`, který vrací kód odpovídající konstantám v `com.google.mlkit.genai.common.FeatureStatus`:
+- `AVAILABLE` (3) — Model je připraven, lze okamžitě generovat obsah.
+- `DOWNLOADABLE` (1) — Zařízení model podporuje, ale není stažen. Lze jej stáhnout přes `generativeModel.download()`.
+- `DOWNLOADING` (2) — Stahování modelu na pozadí právě probíhá.
+- `UNAVAILABLE` (0) — Zařízení nepodporuje běh lokálního LLM (např. nepodporovaný hardware).
+
+### Graceful Fallback (Bezpečný offline fallback)
+Pokud je status jakýkoliv jiný než `AVAILABLE`, nebo pokud během inicializace a inference dojde k chybě (výjimce), `AiSummaryService` automaticky a bez jakéhokoliv pádu přepne na **lokální šablonový generátor** (`generateRuleBasedSummary`). Tím je zajištěna 100% offline funkčnost za všech podmínek a na všech zařízeních.
+
+### Sestavení promptu a textový výstup
+- **Jazyk**: Všechny prompty a generované výstupy jsou výhradně v **češtině**.
+- **Role**: Model vystupuje jako klinický asistent aplikace AllergyTrack interpretující zjištěné statistické korelace.
+- **Formát promptu**: Do promptu se serializují naměřená data o korelaci v tomto formátu:
+  `- [Název spouštěče] + [Příznak]: korelace [X]% ([závažnost] významnost) [reakce za Y hodin] [shoda s alergickým profilem]`
+- **Instrukce pro model**:
+  - Výstup musí mít délku maximálně **4 až 5 vět**.
+  - Důležité spouštěče a symptomy musí být zvýrazněny tučně markdownem (**text**).
+  - Výstup nesmí obsahovat úvodní prázdné fráze typu *"Zde je shrnutí:"*.
+  - Na konci musí model doporučit konzultaci s lékařem/alergologem.
+- **Zpracování odpovědi**: Text se extrahuje z `response.candidates.firstOrNull()?.text` a po očištění bílých znaků (`trim()`) se předává dál do UI.
+
+### Příklad integrace v AiSummaryService
+```kotlin
+val status = generativeModel.checkStatus()
+if (status == FeatureStatus.AVAILABLE) {
+    val prompt = buildPrompt(correlations)
+    val request = GenerateContentRequest.Builder(TextPart(prompt)).build()
+    val response = generativeModel.generateContent(request)
+    val text = response.candidates.firstOrNull()?.text
+    if (!text.isNullOrBlank()) {
+        return text.trim()
+    }
+}
+```
+
