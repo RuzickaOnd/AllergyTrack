@@ -90,6 +90,7 @@ fun SettingsScreen(
     val isExportVisible by viewModel.isExportVisible.collectAsStateWithLifecycle()
     val canUseExport by viewModel.canUseExport.collectAsStateWithLifecycle()
     val showExportBadge by viewModel.showExportBadge.collectAsStateWithLifecycle()
+    val canUseExtendedCharts by viewModel.canUseExtendedCharts.collectAsStateWithLifecycle()
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -192,14 +193,16 @@ fun SettingsScreen(
                 )
             }
 
-            SettingsHeader(title = stringResource(R.string.settings_section_charts))
+            if (canUseExtendedCharts) {
+                SettingsHeader(title = stringResource(R.string.settings_section_charts))
 
-            AppCard(contentPadding = PaddingValues(0.dp)) {
-                SettingsSwitchItem(
-                    label = stringResource(R.string.settings_sync_charts_scroll),
-                    checked = syncChartsScroll,
-                    onCheckedChange = { viewModel.setSyncChartsScroll(it) }
-                )
+                AppCard(contentPadding = PaddingValues(0.dp)) {
+                    SettingsSwitchItem(
+                        label = stringResource(R.string.settings_sync_charts_scroll),
+                        checked = syncChartsScroll,
+                        onCheckedChange = { viewModel.setSyncChartsScroll(it) }
+                    )
+                }
             }
 
             SettingsHeader(title = stringResource(R.string.settings_section_food_search))

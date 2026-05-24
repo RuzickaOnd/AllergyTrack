@@ -77,6 +77,10 @@ class SettingsViewModel @Inject constructor(
         premiumHelper.observeShowBadge(PremiumFeature.PDF_EXPORT)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
+    val canUseExtendedCharts: StateFlow<Boolean> =
+        premiumHelper.observeAccess(PremiumFeature.EXTENDED_CHARTS)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
     // --- OPRÁVNĚNÍ ---
 
     private val _permissionsState = MutableStateFlow(permissionsHelper.getPermissionsState())
