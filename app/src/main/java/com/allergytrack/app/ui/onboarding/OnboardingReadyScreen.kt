@@ -73,10 +73,12 @@ fun OnboardingReadyContent(
                     isGranted = permissions.location
                 )
 
-                ReadyPermissionItem(
-                    label = stringResource(R.string.ready_camera_label),
-                    isGranted = permissions.camera
-                )
+                if (uiState.isCameraPermissionVisible) {
+                    ReadyPermissionItem(
+                        label = stringResource(R.string.ready_camera_label),
+                        isGranted = permissions.camera
+                    )
+                }
 
                 ReadyPermissionItem(
                     label = stringResource(R.string.ready_notifications_label),
