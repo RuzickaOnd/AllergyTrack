@@ -42,9 +42,22 @@ class EnvironmentRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchAndSaveCurrentEnvironment(): EnvironmentLog? {
-        val location = locationProvider.getCurrentLocation() ?: return null
-        val lat = location.latitude
-        val lon = location.longitude
+        val location = try {
+            locationProvider.getCurrentLocation()
+        } catch (e: SecurityException) {
+            null
+        }
+
+        val lat: Double
+        val lon: Double
+        if (location != null) {
+            lat = location.latitude
+            lon = location.longitude
+        } else {
+            val lastLog = environmentLogDao.getLatest() ?: return null
+            lat = lastLog.latitude
+            lon = lastLog.longitude
+        }
         val region = if (isEurope(lat, lon)) EnvironmentRegion.EUROPE else EnvironmentRegion.GLOBAL
 
         // Vždy voláme API — AQI je globální
