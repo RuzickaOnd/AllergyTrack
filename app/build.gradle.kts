@@ -104,6 +104,7 @@ dependencies {
     implementation(libs.vico.m3)
     implementation(libs.mlkit.image.labeling)
     implementation(libs.mlkit.barcode.scanning)
+    implementation(libs.mlkit.genai.prompt)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)

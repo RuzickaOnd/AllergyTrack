@@ -23,6 +23,7 @@ playServicesLocation = "21.3.0"
 vico = "3.1.0"
 mlKitImageLabeling = "17.0.9"
 mlKitBarcodeScanning = "17.3.0"
+mlKitGenAi = "1.0.0-beta2"
 googleServices = "4.4.4"
 firebaseBom = "34.13.0"
 firebaseCrashlyticsPlugin = "3.0.7"
@@ -71,6 +72,7 @@ vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.
 vico-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 mlkit-image-labeling = { group = "com.google.mlkit", name = "image-labeling", version.ref = "mlKitImageLabeling" }
 mlkit-barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlKitBarcodeScanning" }
+mlkit-genai-prompt = { group = "com.google.mlkit", name = "genai-prompt", version.ref = "mlKitGenAi" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
