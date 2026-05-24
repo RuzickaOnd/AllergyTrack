@@ -8,6 +8,8 @@ import com.allergytrack.app.data.permissions.PermissionsState
 import com.allergytrack.app.domain.model.AllergyType
 import com.allergytrack.app.domain.model.OnboardingStep
 import com.allergytrack.app.domain.model.SymptomTypeOnboarding
+import com.allergytrack.app.domain.premium.PremiumHelper
+import com.allergytrack.app.domain.model.PremiumFeature
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,13 +28,15 @@ data class OnboardingUiState(
         notifications = false
     ),
     val isCompleting: Boolean = false,
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+    val isCameraPermissionVisible: Boolean = false
 )
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
     private val onboardingDataStore: OnboardingDataStore,
-    private val permissionsHelper: PermissionsHelper
+    private val permissionsHelper: PermissionsHelper,
+    private val premiumHelper: PremiumHelper
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OnboardingUiState())
@@ -40,6 +44,10 @@ class OnboardingViewModel @Inject constructor(
 
     init {
         refreshPermissions()
+        viewModelScope.launch {
+            val hasPhotoAccess = premiumHelper.hasAccess(PremiumFeature.FOOD_PHOTO_RECOGNITION)
+            _uiState.update { it.copy(isCameraPermissionVisible = hasPhotoAccess) }
+        }
     }
 
     fun onAllergyTypeToggled(type: AllergyType) {

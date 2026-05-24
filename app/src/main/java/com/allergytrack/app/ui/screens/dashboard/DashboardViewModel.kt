@@ -12,6 +12,8 @@ import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.domain.model.EnvironmentLog
 import com.allergytrack.app.domain.model.EnvironmentRegion
 import com.allergytrack.app.domain.repository.EnvironmentRepository
+import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.app.domain.premium.PremiumHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -43,7 +45,8 @@ class DashboardViewModel @Inject constructor(
     private val foodLogDao: FoodLogDao,
     private val symptomLogDao: SymptomLogDao,
     private val environmentRepository: EnvironmentRepository,
-    private val permissionsHelper: PermissionsHelper
+    private val permissionsHelper: PermissionsHelper,
+    private val premiumHelper: PremiumHelper
 ) : ViewModel() {
 
     // Začíná jako false — loading se zobrazí až po potvrzení EU regionu v refreshEnvironment()
@@ -66,8 +69,12 @@ class DashboardViewModel @Inject constructor(
         symptomLogDao.getTodayLogs(startOfDay),
         environmentRepository.getAllLogs(),
         _isRefreshingEnv,
-        _locationGranted
-    ) { foodLogs, symptomLogs, envLogs, isRefreshing, locationGranted ->
+        combine(
+            _locationGranted,
+            premiumHelper.observeAccess(PremiumFeature.POLLEN_DATA)
+        ) { location, pollen -> location to pollen }
+    ) { foodLogs, symptomLogs, envLogs, isRefreshing, locationAndPollen ->
+        val (locationGranted, canSeePollen) = locationAndPollen
         val latest = envLogs.maxByOrNull { it.timestamp }
         // DŮLEŽITÉ: Sekce prostředí se zobrazuje POUZE pro uživatele v Evropě.
         // Používáme Open-Meteo Air Quality API s modelem CAMS (Copernicus), který
@@ -76,18 +83,32 @@ class DashboardViewModel @Inject constructor(
         // Pyl je také EU-only a sezónní (únor–říjen). Pro globální podporu by bylo
         // nutné integrovat jiný datový zdroj (např. IQAir, AirVisual nebo WAQI API).
         val isEurope = latest?.region == EnvironmentRegion.EUROPE
+        val filteredEnv = latest?.let {
+            if (isEurope) {
+                if (canSeePollen) {
+                    it
+                } else {
+                    it.copy(
+                        pollenAvailable = false,
+                        pollenGrassIndex = null,
+                        pollenTreeIndex = null,
+                        pollenWeedIndex = null
+                    )
+                }
+            } else null
+        }
         DashboardUiState(
             isLoading = false,
             todayFoodLogs = foodLogs,
             todaySymptomLogs = symptomLogs,
             // Null pro non-EU: AQI by byl uložen jako 0 (chybějící data, ne skutečná hodnota).
-            latestEnvironment = if (isEurope) latest else null,
+            latestEnvironment = filteredEnv,
             isRefreshingEnvironment = isRefreshing,
             locationGranted = locationGranted,
             // Zobrazit sekci: chybějící oprávnění (zobrazíme kartu s výzvou) NEBO načítáme/EU.
             showEnvironmentSection = !locationGranted || (latest == null && isRefreshing) || isEurope,
             greetingRes = getGreeting(),
-            insight = computeInsight(if (isEurope) latest else null)
+            insight = computeInsight(filteredEnv)
         )
     }.stateIn(
         scope = viewModelScope,

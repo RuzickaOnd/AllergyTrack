@@ -46,8 +46,10 @@ class SymptomDetailViewModel @Inject constructor(
 
     val uiState: StateFlow<SymptomDetailUiState> = combine(
         _selectedRange,
+        canUseExtendedCharts,
         symptomLogDao.getAllLogs()
-    ) { range, logs ->
+    ) { requestedRange, canUse, logs ->
+        val range = if (canUse) requestedRange else TimeRange.WEEK
         val from = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(range.days.toLong())
         val filtered = logs.filter { it.timestamp >= from }
 

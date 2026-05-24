@@ -66,6 +66,7 @@ fun ProfileScreen(
     val userName by viewModel.userName.collectAsStateWithLifecycle()
     val avatarSelection by viewModel.avatarSelection.collectAsStateWithLifecycle()
     val isPremiumUser by viewModel.isPremiumUser.collectAsStateWithLifecycle()
+    val isPremiumVisible by viewModel.isPremiumVisible.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     var isEditingName by remember { mutableStateOf(false) }
@@ -172,7 +173,7 @@ fun ProfileScreen(
         // Options list
         item {
             AppCard(contentPadding = PaddingValues(0.dp)) {
-                if (!isPremiumUser) {
+                if (isPremiumVisible && !isPremiumUser) {
                     SettingsActionItem(
                         icon = Icons.Default.Star,
                         label = stringResource(R.string.profile_option_premium),

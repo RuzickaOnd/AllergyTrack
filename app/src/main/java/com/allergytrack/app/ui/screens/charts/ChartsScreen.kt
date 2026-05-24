@@ -26,6 +26,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import com.allergytrack.app.ui.screens.profile.PremiumActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.ui.navigation.Screen
@@ -97,7 +99,10 @@ fun ChartsScreen(
                     )
                 }
                 showExtendedChartsUpsell -> item {
-                    PremiumUpsellCard(feature = PremiumFeature.EXTENDED_CHARTS)
+                    PremiumUpsellCard(
+                        feature = PremiumFeature.EXTENDED_CHARTS,
+                        onUpgradeClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
+                    )
                 }
             }
 
@@ -132,7 +137,8 @@ fun ChartsScreen(
                         PremiumGate(
                             isVisible = isPollenVisible,
                             showUpsell = showPollenUpsell,
-                            feature = PremiumFeature.POLLEN_DATA
+                            feature = PremiumFeature.POLLEN_DATA,
+                            onUpgradeClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
                         ) {
                             ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
                                 PollenVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)

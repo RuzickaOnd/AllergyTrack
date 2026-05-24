@@ -64,6 +64,8 @@ import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.R
 import com.allergytrack.app.ui.components.AppCard
 import com.allergytrack.app.ui.components.AppSnackbarHost
+import com.allergytrack.app.ui.components.PremiumBadge
+import com.allergytrack.app.ui.screens.profile.PremiumActivity
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.MonoFontFamily
 import com.allergytrack.app.ui.util.sharePdfFile
@@ -85,6 +87,9 @@ fun SettingsScreen(
     val syncChartsScroll by viewModel.syncChartsScroll.collectAsStateWithLifecycle()
     val isExporting by viewModel.isExporting.collectAsStateWithLifecycle()
     val exportedFile by viewModel.exportedFile.collectAsStateWithLifecycle()
+    val isExportVisible by viewModel.isExportVisible.collectAsStateWithLifecycle()
+    val canUseExport by viewModel.canUseExport.collectAsStateWithLifecycle()
+    val showExportBadge by viewModel.showExportBadge.collectAsStateWithLifecycle()
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -278,17 +283,33 @@ fun SettingsScreen(
 
             SettingsHeader(title = stringResource(R.string.settings_section_data_privacy))
 
-            AppCard(contentPadding = PaddingValues(0.dp)) {
-                SettingsActionItem(
-                    label = stringResource(R.string.settings_export_data),
-                    sublabel = if (isExporting) stringResource(R.string.settings_exporting) else null,
-                    onClick = { if (!isExporting) viewModel.exportData() }
-                )
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
-                SettingsActionItem(
-                    label = stringResource(R.string.settings_delete_data),
-                    onClick = { showDeleteConfirmDialog = true }
-                )
+            if (isExportVisible) {
+                AppCard(contentPadding = PaddingValues(0.dp)) {
+                    SettingsActionItem(
+                        label = stringResource(R.string.settings_export_data),
+                        sublabel = if (isExporting) stringResource(R.string.settings_exporting) else null,
+                        badge = if (showExportBadge) { { PremiumBadge() } } else null,
+                        onClick = {
+                            if (canUseExport) {
+                                if (!isExporting) viewModel.exportData()
+                            } else {
+                                context.startActivity(Intent(context, PremiumActivity::class.java))
+                            }
+                        }
+                    )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
+                    SettingsActionItem(
+                        label = stringResource(R.string.settings_delete_data),
+                        onClick = { showDeleteConfirmDialog = true }
+                    )
+                }
+            } else {
+                AppCard(contentPadding = PaddingValues(0.dp)) {
+                    SettingsActionItem(
+                        label = stringResource(R.string.settings_delete_data),
+                        onClick = { showDeleteConfirmDialog = true }
+                    )
+                }
             }
 
             if (showDeleteConfirmDialog) {
@@ -445,6 +466,7 @@ fun SettingsActionItem(
     label: String,
     icon: ImageVector? = null,
     sublabel: String? = null,
+    badge: @Composable (() -> Unit)? = null,
     onClick: () -> Unit
 ) {
     Row(
@@ -459,7 +481,13 @@ fun SettingsActionItem(
             Icon(icon, null, tint = MaterialTheme.colorScheme.secondary)
         }
         Column(Modifier.weight(1f)) {
-            Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                badge?.invoke()
+            }
             if (sublabel != null) {
                 Text(
                     sublabel,

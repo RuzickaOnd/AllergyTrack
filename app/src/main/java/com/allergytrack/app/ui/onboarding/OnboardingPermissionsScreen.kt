@@ -80,15 +80,17 @@ fun OnboardingPermissionsContent(
         )
 
         // Camera — Optional (for photo logging)
-        PermissionCard(
-            icon = Icons.Default.CameraAlt,
-            title = stringResource(R.string.permission_camera_title),
-            description = stringResource(R.string.permission_camera_desc),
-            isGranted = permissions.camera,
-            onRequest = {
-                cameraLauncher.launch(Manifest.permission.CAMERA)
-            }
-        )
+        if (uiState.isCameraPermissionVisible) {
+            PermissionCard(
+                icon = Icons.Default.CameraAlt,
+                title = stringResource(R.string.permission_camera_title),
+                description = stringResource(R.string.permission_camera_desc),
+                isGranted = permissions.camera,
+                onRequest = {
+                    cameraLauncher.launch(Manifest.permission.CAMERA)
+                }
+            )
+        }
 
         // Notifications — Optional (reminders)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

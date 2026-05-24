@@ -35,6 +35,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,6 +70,7 @@ private val premiumFeatureItems = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PremiumScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -96,7 +99,13 @@ fun PremiumScreen(onBack: () -> Unit) {
             ) {
                 PrimaryButton(
                     text = stringResource(R.string.premium_page_cta),
-                    onClick = {}
+                    onClick = {
+                        Toast.makeText(
+                            context,
+                            "Tato funkce bude dostupná v příští verzi aplikace.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 )
             }
         }

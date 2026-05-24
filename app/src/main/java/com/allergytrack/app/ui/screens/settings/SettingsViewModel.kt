@@ -17,6 +17,8 @@ import com.allergytrack.app.data.remote.ai.AiSummaryService
 import com.allergytrack.app.domain.analysis.CorrelationEngine
 import com.allergytrack.app.domain.export.MedicalReportExporter
 import com.allergytrack.app.ui.util.AppLocaleHelper
+import com.allergytrack.app.domain.premium.PremiumHelper
+import com.allergytrack.app.domain.model.PremiumFeature
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -60,7 +62,20 @@ class SettingsViewModel @Inject constructor(
     private val correlationEngine: CorrelationEngine,
     private val aiSummaryService: AiSummaryService,
     private val medicalReportExporter: MedicalReportExporter,
+    private val premiumHelper: PremiumHelper
 ) : ViewModel() {
+
+    val isExportVisible: StateFlow<Boolean> =
+        premiumHelper.observeVisible(PremiumFeature.PDF_EXPORT)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val canUseExport: StateFlow<Boolean> =
+        premiumHelper.observeAccess(PremiumFeature.PDF_EXPORT)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val showExportBadge: StateFlow<Boolean> =
+        premiumHelper.observeShowBadge(PremiumFeature.PDF_EXPORT)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     // --- OPRÁVNĚNÍ ---
 

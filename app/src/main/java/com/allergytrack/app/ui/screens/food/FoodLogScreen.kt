@@ -36,6 +36,7 @@ import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
+import com.allergytrack.app.ui.screens.profile.PremiumActivity
 import com.allergytrack.app.ui.theme.*
 import java.util.Locale
 
@@ -163,7 +164,8 @@ fun FoodLogScreen(
             PremiumGate(
                 isVisible = isPhotoVisible,
                 showUpsell = showPhotoUpsell,
-                feature = PremiumFeature.FOOD_PHOTO_RECOGNITION
+                feature = PremiumFeature.FOOD_PHOTO_RECOGNITION,
+                onUpgradeClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
             ) {
                 AppCard(
                     modifier = Modifier

@@ -28,6 +28,10 @@ class ProfileViewModel @Inject constructor(
         .observeAccess(PremiumFeature.AI_CORRELATION_ANALYSIS)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    val isPremiumVisible: StateFlow<Boolean> = premiumHelper
+        .observeVisible(PremiumFeature.AI_CORRELATION_ANALYSIS)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     fun setUserName(name: String) {
         viewModelScope.launch { userPreferencesDataStore.setUserName(name.trim()) }
     }
