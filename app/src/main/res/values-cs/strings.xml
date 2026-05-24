@@ -176,6 +176,11 @@
 
     <!-- Analýza -->
     <string name="feature_unavailable">Tato funkce je momentálně nedostupná.</string>
+    <string name="analysis_coming_soon_title">AI Analýza</string>
+    <string name="analysis_coming_soon_subtitle">Pracujeme na chytré analýze vašich dat. Brzy vám pomůžeme odhalit skryté spouštěče alergií.</string>
+    <string name="analysis_coming_feature_1">Korelace potravin a alergických reakcí</string>
+    <string name="analysis_coming_feature_2">Automatická identifikace spouštěčů</string>
+    <string name="analysis_coming_feature_3">AI shrnutí pro sdílení s lékařem</string>
     <string name="analysis_top_triggers">Hlavní spouštěče</string>
     <string name="analysis_no_patterns">Zatím nebyly nalezeny žádné výrazné vzory. Pokračuj v logování.</string>
     <string name="analysis_food_triggers_title">Spouštěče z jídla</string>

@@ -1,5 +1,11 @@
 package com.allergytrack.app.ui.screens.analysis
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,9 +24,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.automirrored.outlined.Article
+import androidx.compose.material.icons.automirrored.outlined.ManageSearch
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -39,6 +51,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -87,9 +100,7 @@ fun AnalysisScreen(
     AnalysisExportHandler(viewModel = viewModel)
 
     if (!isAnalysisVisible) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(stringResource(R.string.feature_unavailable), style = MaterialTheme.typography.bodyMedium)
-        }
+        AnalysisComingSoonScreen()
         return
     }
 
@@ -456,6 +467,136 @@ fun AnalysisDisclaimerBanner(disclaimer: String) {
                 lineHeight = MaterialTheme.typography.bodySmall.lineHeight
             )
         }
+    }
+}
+
+@Composable
+fun AnalysisComingSoonScreen() {
+    val infiniteTransition = rememberInfiniteTransition(label = "coming_soon")
+
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.08f,
+        targetValue = 0.26f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "glow"
+    )
+    val iconScale by infiniteTransition.animateFloat(
+        initialValue = 0.92f,
+        targetValue = 1.08f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2600, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier.size(160.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(160.dp)
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = glowAlpha),
+                                Color.Transparent
+                            )
+                        )
+                    )
+            )
+            Box(
+                modifier = Modifier
+                    .size(84.dp)
+                    .scale(iconScale)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.AutoAwesome,
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
+
+        Spacer(Modifier.height(28.dp))
+
+        Text(
+            stringResource(R.string.analysis_coming_soon_title),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(Modifier.height(10.dp))
+
+        Text(
+            stringResource(R.string.analysis_coming_soon_subtitle),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            lineHeight = 22.sp
+        )
+
+        Spacer(Modifier.height(32.dp))
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ComingSoonFeatureRow(
+                icon = Icons.AutoMirrored.Outlined.ShowChart,
+                text = stringResource(R.string.analysis_coming_feature_1)
+            )
+            ComingSoonFeatureRow(
+                icon = Icons.AutoMirrored.Outlined.ManageSearch,
+                text = stringResource(R.string.analysis_coming_feature_2)
+            )
+            ComingSoonFeatureRow(
+                icon = Icons.AutoMirrored.Outlined.Article,
+                text = stringResource(R.string.analysis_coming_feature_3)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ComingSoonFeatureRow(icon: ImageVector, text: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 

@@ -176,6 +176,11 @@
 
     <!-- Analysis -->
     <string name="feature_unavailable">This feature is currently unavailable.</string>
+    <string name="analysis_coming_soon_title">AI Analysis</string>
+    <string name="analysis_coming_soon_subtitle">We\'re building smart data analysis to help you discover hidden allergy triggers.</string>
+    <string name="analysis_coming_feature_1">Food and allergic reaction correlations</string>
+    <string name="analysis_coming_feature_2">Automatic trigger identification</string>
+    <string name="analysis_coming_feature_3">AI summary for sharing with your doctor</string>
     <string name="analysis_top_triggers">Main triggers</string>
     <string name="analysis_no_patterns">No significant patterns found yet. Keep logging.</string>
     <string name="analysis_food_triggers_title">Food Triggers</string>
