@@ -188,11 +188,45 @@ fun DebugMenuScreen(
             fontWeight = FontWeight.Bold
         )
 
-        Button(
-            onClick = { viewModel.seedTestData() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.debug_seed_test_data))
+        Text(
+            stringResource(R.string.debug_seed_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        val seedingInProgress by viewModel.seedingInProgress.collectAsState()
+
+        if (seedingInProgress) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    stringResource(R.string.debug_seed_in_progress),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = { viewModel.seedTestData(czech = true) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(stringResource(R.string.debug_seed_cz))
+                }
+                OutlinedButton(
+                    onClick = { viewModel.seedTestData(czech = false) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(stringResource(R.string.debug_seed_en))
+                }
+            }
         }
 
         Button(

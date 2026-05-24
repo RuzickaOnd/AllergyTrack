@@ -282,6 +282,9 @@
     <string name="settings_push_notifications">Push notifikace</string>
     <string name="settings_notifications_permission_required">Pro notifikace je nejprve potřeba udělit oprávnění v sekci Oprávnění níže.</string>
     <string name="settings_section_charts">GRAFY</string>
+    <string name="settings_app_language">Jazyk aplikace</string>
+    <string name="settings_app_language_auto">Systémový (auto)</string>
+    <string name="settings_app_language_dialog_title">Jazyk aplikace</string>
     <string name="settings_sync_charts_scroll">Synchronní posun grafů</string>
     <string name="settings_section_food_search">VYHLEDÁVÁNÍ JÍDLA</string>
     <string name="settings_food_language">Jazyk vyhledávání jídla</string>
@@ -303,6 +306,10 @@
     <string name="debug_premium_override_title">Nastavení přepsání Premium</string>
     <string name="debug_other_options">Ostatní možnosti</string>
     <string name="debug_seed_test_data">Vložit testovací data (Jídlo a Příznaky)</string>
+    <string name="debug_seed_hint">Vloží 21 dní dat (jídlo, příznaky, prostředí). Existující záznamy budou smazány.</string>
+    <string name="debug_seed_cz">Seed CZ data</string>
+    <string name="debug_seed_en">Seed EN data</string>
+    <string name="debug_seed_in_progress">Vkládám data…</string>
     <string name="debug_crash_app">Crashlytics: testovací pád</string>
     <string name="debug_nonfatal_test">Crashlytics: testovací non-fatal</string>
     <string name="debug_onboarding_section">Onboarding</string>

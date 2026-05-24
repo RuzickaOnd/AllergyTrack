@@ -1,5 +1,8 @@
 package com.allergytrack.app.ui.screens.settings
 
+import android.content.Context
+import android.os.Build
+import dagger.hilt.android.qualifiers.ApplicationContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
@@ -13,6 +16,7 @@ import com.allergytrack.app.data.worker.WorkManagerScheduler
 import com.allergytrack.app.data.remote.ai.AiSummaryService
 import com.allergytrack.app.domain.analysis.CorrelationEngine
 import com.allergytrack.app.domain.export.MedicalReportExporter
+import com.allergytrack.app.ui.util.AppLocaleHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -45,6 +49,7 @@ val FOOD_LANGUAGE_OPTIONS = listOf(
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    @ApplicationContext private val appContext: Context,
     private val permissionsHelper: PermissionsHelper,
     private val userPreferencesDataStore: UserPreferencesDataStore,
     private val workManagerScheduler: WorkManagerScheduler,
@@ -68,6 +73,26 @@ class SettingsViewModel @Inject constructor(
     }
 
     // --- OBECNÉ ---
+
+    // Jazyk aplikace — čte aktuální stav z LocaleManager (API 33+) nebo SharedPreferences (starší)
+    private val _appLanguage = MutableStateFlow(AppLocaleHelper.getLanguage(appContext))
+    val appLanguage: StateFlow<String> = _appLanguage.asStateFlow()
+
+    // API 33+ spustí recreate automaticky přes LocaleManager; pre-33 signalizuje Screen
+    private val _restartAppRequired = MutableStateFlow(false)
+    val restartAppRequired: StateFlow<Boolean> = _restartAppRequired.asStateFlow()
+
+    fun setAppLanguage(code: String) {
+        AppLocaleHelper.setLanguage(appContext, code)
+        _appLanguage.value = code
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            _restartAppRequired.value = true
+        }
+    }
+
+    fun onRestartHandled() {
+        _restartAppRequired.value = false
+    }
 
     /**
      * Tmavý/světlý režim aplikace. Výchozí hodnota = true (tmavý).

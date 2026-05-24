@@ -1,6 +1,7 @@
 package com.allergytrack.app.ui.screens.settings
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -77,12 +78,15 @@ fun SettingsScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val permissions by viewModel.permissionsState.collectAsStateWithLifecycle()
     val foodLanguage by viewModel.foodSearchLanguage.collectAsStateWithLifecycle()
+    val appLanguage by viewModel.appLanguage.collectAsStateWithLifecycle()
+    val restartAppRequired by viewModel.restartAppRequired.collectAsStateWithLifecycle()
     val darkMode by viewModel.darkMode.collectAsStateWithLifecycle()
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsStateWithLifecycle()
     val syncChartsScroll by viewModel.syncChartsScroll.collectAsStateWithLifecycle()
     val isExporting by viewModel.isExporting.collectAsStateWithLifecycle()
     val exportedFile by viewModel.exportedFile.collectAsStateWithLifecycle()
     var showLanguageDialog by remember { mutableStateOf(false) }
+    var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -91,6 +95,14 @@ fun SettingsScreen(
         exportedFile?.let { file ->
             context.sharePdfFile(file)
             viewModel.dismissExport()
+        }
+    }
+
+    // Pre-API 33: LocaleManager není dostupný — musíme recreate spustit ručně
+    LaunchedEffect(restartAppRequired) {
+        if (restartAppRequired) {
+            (context as? Activity)?.recreate()
+            viewModel.onRestartHandled()
         }
     }
 
@@ -146,6 +158,17 @@ fun SettingsScreen(
             SettingsHeader(title = stringResource(R.string.settings_section_general))
 
             AppCard(contentPadding = PaddingValues(0.dp)) {
+                val appLangLabel = when (appLanguage) {
+                    "cs" -> "Čeština"
+                    "en" -> "English"
+                    else -> stringResource(R.string.settings_app_language_auto)
+                }
+                SettingsActionItem(
+                    label = stringResource(R.string.settings_app_language),
+                    sublabel = appLangLabel,
+                    onClick = { showAppLanguageDialog = true }
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
                 SettingsSwitchItem(
                     label = stringResource(R.string.settings_dark_mode),
                     checked = darkMode,
@@ -198,6 +221,17 @@ fun SettingsScreen(
                         showLanguageDialog = false
                     },
                     onDismiss = { showLanguageDialog = false }
+                )
+            }
+
+            if (showAppLanguageDialog) {
+                AppLanguageDialog(
+                    current = appLanguage,
+                    onSelect = { code ->
+                        viewModel.setAppLanguage(code)
+                        showAppLanguageDialog = false
+                    },
+                    onDismiss = { showAppLanguageDialog = false }
                 )
             }
 
@@ -436,6 +470,52 @@ fun SettingsActionItem(
         }
         Text("›", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+@Composable
+fun AppLanguageDialog(
+    current: String,
+    onSelect: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val options = listOf(
+        Triple("", stringResource(R.string.settings_app_language_auto), false),
+        Triple("cs", "Čeština", false),
+        Triple("en", "English", false),
+    )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_app_language_dialog_title)) },
+        text = {
+            Column {
+                options.forEach { (code, label, _) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(code) }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = code == current,
+                            onClick = { onSelect(code) }
+                        )
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.btn_close))
+            }
+        }
+    )
 }
 
 @Composable

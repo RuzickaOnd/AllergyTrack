@@ -1,5 +1,6 @@
 package com.allergytrack.app
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +15,7 @@ import com.allergytrack.app.data.worker.WorkManagerScheduler
 import com.allergytrack.app.ui.navigation.MainAppScaffold
 import com.allergytrack.app.ui.onboarding.OnboardingFlow
 import com.allergytrack.app.ui.theme.AllergyTrackTheme
+import com.allergytrack.app.ui.util.AppLocaleHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -25,6 +27,10 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var workManagerScheduler: WorkManagerScheduler
     @Inject lateinit var onboardingDataStore: OnboardingDataStore
     @Inject lateinit var userPreferencesDataStore: UserPreferencesDataStore
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLocaleHelper.wrapContext(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

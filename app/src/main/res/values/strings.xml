@@ -285,6 +285,9 @@
     <string name="permission_required_location_body">To display air quality and pollen data, grant Location permission in Settings → Permissions.</string>
     <string name="permission_required_go_to_settings">Set permissions</string>
     <string name="settings_section_charts">CHARTS</string>
+    <string name="settings_app_language">App language</string>
+    <string name="settings_app_language_auto">System (auto)</string>
+    <string name="settings_app_language_dialog_title">App language</string>
     <string name="settings_sync_charts_scroll">Synchronised chart scrolling</string>
     <string name="settings_section_food_search">FOOD SEARCH</string>
     <string name="settings_food_language">Food search language</string>
@@ -306,6 +309,10 @@
     <string name="debug_premium_override_title">Premium Override Settings</string>
     <string name="debug_other_options">Other options</string>
     <string name="debug_seed_test_data">Insert test data (Food and Symptoms)</string>
+    <string name="debug_seed_hint">Inserts 21 days of data (food, symptoms, environment). Existing records will be deleted.</string>
+    <string name="debug_seed_cz">Seed CZ data</string>
+    <string name="debug_seed_en">Seed EN data</string>
+    <string name="debug_seed_in_progress">Inserting data…</string>
     <string name="debug_crash_app">Crashlytics: test crash</string>
     <string name="debug_nonfatal_test">Crashlytics: test non-fatal</string>
     <string name="debug_onboarding_section">Onboarding</string>
