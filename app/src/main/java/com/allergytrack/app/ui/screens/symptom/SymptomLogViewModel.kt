@@ -15,6 +15,7 @@ data class SymptomLogUiState(
     val intensity: Int = 3,
     val selectedBodyParts: Set<String> = emptySet(),
     val notes: String = "",
+    val timestamp: Long = System.currentTimeMillis(),
     val isSaving: Boolean = false,
     val isSaved: Boolean = false,
     val error: String? = null
@@ -48,6 +49,10 @@ class SymptomLogViewModel @Inject constructor(
         _uiState.update { it.copy(notes = notes) }
     }
 
+    fun onTimestampChanged(timestamp: Long) {
+        _uiState.update { it.copy(timestamp = timestamp) }
+    }
+
     fun saveSymptom() {
         val state = _uiState.value
         val type = state.selectedType ?: return
@@ -60,7 +65,8 @@ class SymptomLogViewModel @Inject constructor(
                         type = type,
                         intensity = state.intensity,
                         bodyParts = state.selectedBodyParts.toList(),
-                        notes = state.notes
+                        notes = state.notes,
+                        timestamp = state.timestamp
                     )
                 )
                 _uiState.update { it.copy(isSaving = false, isSaved = true) }

@@ -34,6 +34,7 @@ fun FoodConfirmScreen(
     viewModel: FoodLogViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val customTimestamp by viewModel.customTimestamp.collectAsStateWithLifecycle()
     var notes by remember { mutableStateOf("") }
 
     val parsedAllergens = allergens
@@ -136,6 +137,14 @@ fun FoodConfirmScreen(
                     }
                 }
             }
+        }
+
+        item {
+            DateTimePickerRow(
+                timestamp = customTimestamp,
+                onTimestampChanged = viewModel::onTimestampChanged,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
         item {

@@ -13,6 +13,10 @@
     <string name="btn_save_record">ULOŽIT ZÁZNAM</string>
     <string name="btn_upgrade_premium">Upgradovat na Premium</string>
     <string name="btn_saving">UKLÁDÁM…</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_cancel">ZRUŠIT</string>
+    <string name="datetime_picker_title">Datum a čas záznamu</string>
+    <string name="time_picker_title">Zadejte čas</string>
 
     <!-- Popisky pro čtečky obrazovky -->
     <string name="nav_back">Zpět</string>

@@ -13,6 +13,10 @@
     <string name="btn_save_record">SAVE RECORD</string>
     <string name="btn_upgrade_premium">Upgrade to Premium</string>
     <string name="btn_saving">SAVING…</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_cancel">CANCEL</string>
+    <string name="datetime_picker_title">Log date and time</string>
+    <string name="time_picker_title">Enter time</string>
 
     <!-- Content descriptions -->
     <string name="nav_back">Back</string>

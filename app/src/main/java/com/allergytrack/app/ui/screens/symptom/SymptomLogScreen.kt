@@ -76,6 +76,12 @@ fun SymptomLogScreen(
                 onPartToggled = viewModel::onBodyPartToggled
             )
 
+            DateTimePickerRow(
+                timestamp = uiState.timestamp,
+                onTimestampChanged = viewModel::onTimestampChanged,
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     stringResource(R.string.label_notes),

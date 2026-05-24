@@ -63,6 +63,7 @@ com.allergytrack.app/
 │   │   ├── CommonUI.kt        ← AppCard(contentPadding), AppSnackbarHost, CardTitle(icon), Pill(onClick), PrimaryButton,
 │   │   │                         SecondaryButton, SectionHeading, AiBadge (renderuje **bold** markdown)
 │   │   ├── BottomNavBar.kt
+│   │   ├── DateTimePickerRow.kt ← Výběr data a času pro logování jídla a příznaků
 │   │   ├── PremiumGate.kt     ← Třístavový wrapper (hidden/upsell/content)
 │   │   ├── PremiumUpsellCard.kt
 │   │   ├── PremiumBadge.kt
@@ -329,6 +330,10 @@ https://air-quality-api.open-meteo.com/v1/air-quality
 `EnvironmentLog.region` — `EUROPE` nebo `GLOBAL`. Pyl pouze v Evropě (únor–říjen).
 UI zobrazuje `PollenUnavailableBanner` místo prázdného stavu.
 
+#### Získávání polohy na pozadí (bez background location):
+- Aplikace nedeklaruje `ACCESS_BACKGROUND_LOCATION`.
+- Pokud `EnvironmentWorker` spuštěný na pozadí vyvolá `SecurityException`, `EnvironmentRepositoryImpl` zachytí chybu a použije souřadnice z posledního uloženého záznamu jídla nebo příznaku z databáze jako fallback pro stažení dat.
+
 ### 5. Onboarding a Alergický profil
 
 ```
@@ -466,6 +471,11 @@ scope.launch { snackbarHostState.showSnackbar(message) }
 | Text (light) | `onSecondaryContainer = Forest700 #2D5A3D` |
 | Akce | `secondary` (Sage400 / Forest400) |
 | Padding od okrajů | `horizontal 16 dp, vertical 12 dp` |
+
+### 12. Volba data a času (DateTimePickerRow)
+- Umožňuje uživateli změnit datum a čas při potvrzení jídla (`FoodConfirmScreen`) a zaznamenání příznaku (`SymptomLogScreen`).
+- Využívá `DateTimePickerRow` (`ui/components/DateTimePickerRow.kt`), která otevírá standardní dialogy `DatePicker` a custom `TimePicker` lokalizované do češtiny.
+- Stavy zvoleného timestampu spravují příslušné ViewModely (`FoodLogViewModel` a `SymptomLogViewModel`) a ukládají je do databáze.
 
 ---
 
@@ -657,6 +667,8 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 | 28 | Firebase + Crashlytics: integrace Firebase Analytics a Crashlytics (BOM 34.13.0); DebugMenu rozšířen o testovací tlačítka fatal crash a non-fatal exception | ✅ |
 | 29 | SymptomDetailScreen: nová obrazovka s přehledem statistik symptomů (count, průměrná/max intenzita, poslední výskyt); SymptomDetailActivity jako samostatná Activity; výběr časového rozsahu respektuje EXTENDED_CHARTS premium | ✅ |
 | 30 | AiBadge + AiSummaryService: oprava výpisu klinického vhledu — bold markdown (**text**) v AiSummaryService i AiBadge composable renderován správně | ✅ |
+| 31 | Volba data a času: DateTimePickerRow pro vlastní datum/čas u logování jídla a příznaků | ✅ |
+| 32 | Bezpečnost: odstraněno ACCESS_BACKGROUND_LOCATION oprávnění, implementován fallback na poslední GPS souřadnice při chybě na pozadí | ✅ |
 
 ---
 

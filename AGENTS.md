@@ -181,6 +181,12 @@ Pro Switch položky s podmíněnou dostupností:
 - `Switch(onCheckedChange = null)` — Switch je pouze vizuální; klik řídí Row
 - `Modifier.clickable(indication = null)` na Row — bez ripple efektu
 
+### Volba data a času — DateTimePickerRow
+Pro zadávání vlastního data a času u logování jídla a příznaků:
+- Používej `DateTimePickerRow` z `ui/components/DateTimePickerRow.kt`
+- Otevírá dialogy `DatePicker` a custom `TimePicker` lokalizované do češtiny
+- Vrací vybraný timestamp v milisekundách, který se předává do ViewModelu
+
 ---
 
 ## 5. SPRÁVA API KLÍČŮ
@@ -458,6 +464,11 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 2. V analytice použij `knownAllergies` a `knownSymptoms`.
 3. Vždy prioritizuj nálezy, které jsou v profilu označeny jako `isExpected`.
 
+**Q: Jak umožnit uživateli zadat vlastní datum a čas při logování?**
+1. Použij `DateTimePickerRow` z `ui/components/DateTimePickerRow.kt`.
+2. Do ViewModelu přidej stav držící vybraný timestamp (např. `StateFlow<Long>`).
+3. Tento timestamp předej při uložení do use case a Room databáze.
+
 ---
 
 ## 14. ENVIRONMENTÁLNÍ DATA (Open-Meteo)
@@ -471,6 +482,7 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 - **Data Log:** Pole pro pyly v `EnvironmentLog` musí být nullable.
 - **UI:** Pokud jsou data nedostupná (`pollenAvailable == false`), UI musí zobrazit informativní banner/badge místo prázdných grafů nebo chyb (platí pro Dashboard i Grafy).
 - **Analýza:** `CorrelationEngine` musí ignorovat záznamy s `pollenAvailable == false` při výpočtu korelací pylů, aby nedocházelo ke zkreslení výsledků nulami tam, kde data jen chyběla.
+- **Získávání polohy na pozadí:** Aplikace **nesmí** vyžadovat ani deklarovat oprávnění na pozadí `ACCESS_BACKGROUND_LOCATION` v manifestu. `EnvironmentRepositoryImpl` musí odchytávat `SecurityException` při pokusu o čtení GPS na pozadí a jako fallback použít GPS souřadnice z posledního známého záznamu (jídla či příznaku) v databázi.
 
 ---
 

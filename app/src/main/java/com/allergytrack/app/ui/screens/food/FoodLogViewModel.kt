@@ -84,6 +84,13 @@ class FoodLogViewModel @Inject constructor(
     private val _navigateToSearch = MutableStateFlow(false)
     val navigateToSearch: StateFlow<Boolean> = _navigateToSearch.asStateFlow()
 
+    private val _customTimestamp = MutableStateFlow(System.currentTimeMillis())
+    val customTimestamp: StateFlow<Long> = _customTimestamp.asStateFlow()
+
+    fun onTimestampChanged(timestamp: Long) {
+        _customTimestamp.value = timestamp
+    }
+
     fun startVoiceInput() { _voiceState.value = VoiceInputState.Listening }
 
     fun onVoiceResult(text: String) {
@@ -211,7 +218,8 @@ class FoodLogViewModel @Inject constructor(
                     allergens = food.allergens,
                     ingredients = food.ingredients,
                     imageUri = _capturedImageUri.value?.toString(),
-                    notes = notes
+                    notes = notes,
+                    timestamp = _customTimestamp.value
                 )
                 saveFoodLogUseCase(log)
                 _uiState.value = FoodLogUiState.Saved
@@ -225,5 +233,6 @@ class FoodLogViewModel @Inject constructor(
         _uiState.value = FoodLogUiState.Idle
         _capturedImageUri.value = null
         _searchState.value = FoodSearchState()
+        _customTimestamp.value = System.currentTimeMillis()
     }
 }
