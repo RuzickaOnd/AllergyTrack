@@ -22,7 +22,7 @@ android {
     defaultConfig {
         applicationId = "com.allergytrack.app"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 37
         versionCode = 1000101
         versionName = "1.0.1"
 
