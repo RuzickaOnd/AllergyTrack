@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -22,7 +23,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import android.widget.Toast
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -67,8 +67,8 @@ import com.allergytrack.app.R
 import com.allergytrack.app.ui.components.AppCard
 import com.allergytrack.app.ui.components.AppSnackbarHost
 import com.allergytrack.app.ui.components.PremiumBadge
-import com.allergytrack.app.ui.screens.profile.PremiumActivity
 import com.allergytrack.app.ui.navigation.Screen
+import com.allergytrack.app.ui.screens.profile.PremiumActivity
 import com.allergytrack.app.ui.theme.MonoFontFamily
 import com.allergytrack.app.ui.util.sharePdfFile
 import kotlinx.coroutines.launch
@@ -294,7 +294,9 @@ fun SettingsScreen(
                     SettingsActionItem(
                         label = stringResource(R.string.settings_export_data),
                         sublabel = if (isExporting) stringResource(R.string.settings_exporting) else null,
-                        badge = if (showExportBadge) { { PremiumBadge() } } else null,
+                        badge = if (showExportBadge) {
+                            { PremiumBadge() }
+                        } else null,
                         onClick = {
                             if (canUseExport) {
                                 if (!isExporting) viewModel.exportData()
@@ -360,6 +362,7 @@ fun SettingsScreen(
                 "" -> stringResource(R.string.settings_fcm_token_unavailable)
                 else -> token
             }
+            val fcmTokenCopiedMessage = stringResource(R.string.settings_fcm_token_copied_toast)
 
             SettingsHeader(title = stringResource(R.string.settings_section_diagnostics))
             AppCard(contentPadding = PaddingValues(0.dp)) {
@@ -386,13 +389,19 @@ fun SettingsScreen(
                             overflow = androidx.compose.ui.text.style.TextOverflow.MiddleEllipsis
                         )
                     }
-                    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+                    val clipboard = androidx.compose.ui.platform.LocalClipboard.current
                     androidx.compose.material3.IconButton(
                         onClick = {
                             val token = fcmToken
                             if (!token.isNullOrEmpty()) {
-                                clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(token))
-                                Toast.makeText(context, context.getString(R.string.settings_fcm_token_copied_toast), Toast.LENGTH_SHORT).show()
+                                scope.launch {
+                                    clipboard.setClipEntry(
+                                        androidx.compose.ui.platform.ClipEntry(
+                                            android.content.ClipData.newPlainText("FCM Token", token)
+                                        )
+                                    )
+                                }
+                                Toast.makeText(context, fcmTokenCopiedMessage, Toast.LENGTH_SHORT).show()
                             }
                         }
                     ) {
