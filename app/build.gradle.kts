@@ -23,8 +23,8 @@ android {
         applicationId = "com.allergytrack.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1000102
-        versionName = "1.0.1"
+        versionCode = 1000200
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
