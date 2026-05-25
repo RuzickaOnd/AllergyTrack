@@ -27,6 +27,9 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var workManagerScheduler: WorkManagerScheduler
     @Inject lateinit var onboardingDataStore: OnboardingDataStore
     @Inject lateinit var userPreferencesDataStore: UserPreferencesDataStore
+    @Inject lateinit var appUpdateRepository: com.allergytrack.app.domain.repository.AppUpdateRepository
+
+    private lateinit var appUpdateHelper: com.allergytrack.app.ui.util.AppUpdateHelper
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(AppLocaleHelper.wrapContext(newBase))
@@ -35,6 +38,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        appUpdateHelper = com.allergytrack.app.ui.util.AppUpdateHelper(this, appUpdateRepository)
+        appUpdateHelper.checkForUpdates()
 
         // Synchronní čtení stavu před prvním sestavením UI — záměrné, trvá < 5ms.
         val onboardingCompleted = runBlocking { onboardingDataStore.isCompleted.first() }
@@ -52,7 +58,10 @@ class MainActivity : ComponentActivity() {
 
             AllergyTrackTheme(darkTheme = darkMode) {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    AppRoot(initialOnboardingCompleted = onboardingCompleted)
+                    AppRoot(
+                        initialOnboardingCompleted = onboardingCompleted,
+                        appUpdateRepository = appUpdateRepository
+                    )
                 }
             }
         }
@@ -62,7 +71,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppRoot(initialOnboardingCompleted: Boolean) {
+fun AppRoot(
+    initialOnboardingCompleted: Boolean,
+    appUpdateRepository: com.allergytrack.app.domain.repository.AppUpdateRepository
+) {
     var onboardingCompleted by remember { mutableStateOf(initialOnboardingCompleted) }
 
     if (!onboardingCompleted) {
@@ -70,6 +82,6 @@ fun AppRoot(initialOnboardingCompleted: Boolean) {
             onCompleted = { onboardingCompleted = true }
         )
     } else {
-        MainAppScaffold()
+        MainAppScaffold(appUpdateRepository = appUpdateRepository)
     }
 }

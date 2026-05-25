@@ -485,4 +485,6 @@
     <string name="settings_fcm_token_copy_desc">Copy Firebase Token</string>
     <string name="settings_fcm_token_loading">Loading…</string>
     <string name="settings_fcm_token_unavailable">Token unavailable</string>
+    <string name="update_downloaded_message">A new update has been downloaded. Restart the app to apply it.</string>
+    <string name="update_action_restart">RESTART</string>
 </resources>

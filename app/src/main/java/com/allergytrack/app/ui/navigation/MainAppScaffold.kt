@@ -32,7 +32,7 @@ import com.allergytrack.app.ui.util.AnalysisExportHandler
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainAppScaffold() {
+fun MainAppScaffold(appUpdateRepository: com.allergytrack.app.domain.repository.AppUpdateRepository) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -101,9 +101,32 @@ fun MainAppScaffold() {
             }
         }
     ) {
+        val snackbarHostState = remember { SnackbarHostState() }
+        val isUpdateDownloaded by appUpdateRepository.isUpdateDownloaded.collectAsStateWithLifecycle(initialValue = false)
+        val updateMessage = stringResource(R.string.update_downloaded_message)
+        val updateActionLabel = stringResource(R.string.update_action_restart)
+
+        LaunchedEffect(isUpdateDownloaded) {
+            if (isUpdateDownloaded) {
+                val result = snackbarHostState.showSnackbar(
+                    message = updateMessage,
+                    actionLabel = updateActionLabel,
+                    duration = SnackbarDuration.Indefinite
+                )
+                if (result == SnackbarResult.ActionPerformed) {
+                    appUpdateRepository.completeUpdate()
+                }
+            }
+        }
+
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = MaterialTheme.colorScheme.background,
+            snackbarHost = {
+                com.allergytrack.app.ui.components.AppSnackbarHost(
+                    hostState = snackbarHostState
+                )
+            },
             topBar = {
                 if (showTopBar) {
                     TopAppBar(

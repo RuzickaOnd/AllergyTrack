@@ -30,6 +30,7 @@ firebaseCrashlyticsPlugin = "3.0.7"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
+playAppUpdate = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -82,6 +83,8 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
+play-app-update = { group = "com.google.android.play", name = "app-update", version.ref = "playAppUpdate" }
+play-app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "playAppUpdate" }
 testing-junit = { group = "junit", name = "junit", version.ref = "junit" }
 testing-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 testing-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

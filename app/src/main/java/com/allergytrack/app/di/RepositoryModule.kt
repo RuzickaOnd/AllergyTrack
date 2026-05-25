@@ -39,4 +39,10 @@ abstract class RepositoryModule {
     abstract fun bindPremiumRepository(
         impl: com.allergytrack.app.data.repository.PremiumRepositoryImpl
     ): com.allergytrack.app.domain.repository.PremiumRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAppUpdateRepository(
+        impl: com.allergytrack.app.data.repository.AppUpdateRepositoryImpl
+    ): com.allergytrack.app.domain.repository.AppUpdateRepository
 }

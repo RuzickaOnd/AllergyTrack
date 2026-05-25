@@ -485,4 +485,6 @@
     <string name="settings_fcm_token_copy_desc">Kopírovat Firebase Token</string>
     <string name="settings_fcm_token_loading">Načítám…</string>
     <string name="settings_fcm_token_unavailable">Token není k dispozici</string>
+    <string name="update_downloaded_message">Nová verze byla stažena. Restartujte aplikaci pro dokončení instalace.</string>
+    <string name="update_action_restart">RESTARTOVAT</string>
 </resources>

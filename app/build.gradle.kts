@@ -117,6 +117,8 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)
+    implementation(libs.play.app.update)
+    implementation(libs.play.app.update.ktx)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.testing.ui.manifest)
     testImplementation(libs.testing.junit)
