@@ -1,11 +1,6 @@
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+/.idea/
 /build
 /captures
 .externalNativeBuild
@@ -43,19 +38,7 @@ app/build/
 # =============================================
 # ANDROID STUDIO / INTELLIJ
 # =============================================
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/gradle.xml
-.idea/assetWizardSettings.xml
-.idea/planningMode.xml
-.idea/dictionaries
-.idea/libraries
-.idea/caches
-.idea/modules.xml
-.idea/.gitignore
-.idea/navEditor.xml
-.idea/usage.statistics.xml
-.idea/firebender/
+.idea/
 *.db-shm
 *.db-wal
 *.iml
