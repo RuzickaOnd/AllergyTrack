@@ -476,5 +476,13 @@
     <string name="notification_channel_reminders_desc">Evening reminder to log food and symptoms</string>
     <string name="notification_reminder_title">AllergyTrack</string>
     <string name="notification_reminder_body">Don\'t forget to log today\'s food and symptoms.</string>
+    <string name="notification_channel_fcm_name">Alerts and news</string>
+    <string name="notification_channel_fcm_desc">Push notifications for air quality warnings, pollen alerts, and app news</string>
 
+    <string name="settings_section_diagnostics">Diagnostics</string>
+    <string name="settings_fcm_token_title">Firebase Token</string>
+    <string name="settings_fcm_token_copied_toast">Token copied to clipboard</string>
+    <string name="settings_fcm_token_copy_desc">Copy Firebase Token</string>
+    <string name="settings_fcm_token_loading">Loading…</string>
+    <string name="settings_fcm_token_unavailable">Token unavailable</string>
 </resources>

@@ -772,3 +772,8 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 - Třída: `AnalyticsManager` (`com.allergytrack.app.data.analytics.AnalyticsManager`), spravovaná Hilt (@Singleton).
 - Inicializace: Lazy delegace inicializovaná asynchronně na pozadí (`Dispatchers.Default`) v `AllergyTrackApplication.onCreate()`.
 - Metody: Interní `private fun logEvent(eventName: String, params: Bundle? = null)` a typově bezpečné veřejné metody (`logScreenView`, `logFoodLogged`, `logSymptomLogged` atd.).
+
+### Firebase Cloud Messaging (FCM) & NotificationManager:
+- Služba: `AppFirebaseMessagingService` (`com.allergytrack.app.data.notifications.AppFirebaseMessagingService`), registrovaná v manifestu.
+- Manažer: `NotificationManager` (`com.allergytrack.app.data.notifications.NotificationManager`), spravuje kanály (`reminder_channel` a `fcm_push_channel`), respektuje nastavení `notificationsEnabled` v DataStore a zobrazuje push notifikace s `PendingIntent`.
+- Inicializace kanálů: `appNotificationManager.createNotificationChannels()` spouštěno v `AllergyTrackApplication.onCreate()`.

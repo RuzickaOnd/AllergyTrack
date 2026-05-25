@@ -476,5 +476,13 @@
     <string name="notification_channel_reminders_desc">Večerní připomínka k zalogování jídla a příznaků</string>
     <string name="notification_reminder_title">AllergyTrack</string>
     <string name="notification_reminder_body">Nezapomeň zalogovat dnešní jídlo a příznaky.</string>
+    <string name="notification_channel_fcm_name">Upozornění a novinky</string>
+    <string name="notification_channel_fcm_desc">Push notifikace s varováním o zhoršené kvalitě vzduchu, pylu a novinkách</string>
 
+    <string name="settings_section_diagnostics">Diagnostika</string>
+    <string name="settings_fcm_token_title">Firebase Token</string>
+    <string name="settings_fcm_token_copied_toast">Token byl zkopírován do schránky</string>
+    <string name="settings_fcm_token_copy_desc">Kopírovat Firebase Token</string>
+    <string name="settings_fcm_token_loading">Načítám…</string>
+    <string name="settings_fcm_token_unavailable">Token není k dispozici</string>
 </resources>

@@ -81,6 +81,7 @@ androidx-compose-material3-adaptive-navigation-suite = { group = "androidx.compo
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 testing-junit = { group = "junit", name = "junit", version.ref = "junit" }
 testing-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 testing-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

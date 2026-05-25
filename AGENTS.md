@@ -606,5 +606,20 @@ Pro unifikaci logování událostí slouží **`AnalyticsManager`** (`com.allerg
    }
    ```
 
+---
 
+## 19. FIREBASE CLOUD MESSAGING (FCM) A NOTIFICATIONMANAGER
 
+Pro centralizaci a zjednodušení práce s push notifikacemi i lokálními připomínkami slouží **`NotificationManager`** (`com.allergytrack.app.data.notifications.NotificationManager`) spravovaný přes Hilt jako `@Singleton`.
+
+### Hlavní funkce NotificationManager:
+1. **Správa notifikačních kanálů**: Vytváří kanály pro lokální večerní připomínky logování (`"reminder_channel"`) a push notifikace z Firebase (`"fcm_push_channel"` s vysokou prioritou). Inicializuje se v `AllergyTrackApplication.onCreate()`.
+2. **Respektování nastavení uživatele**: Před zobrazením push notifikace ověří stav `UserPreferencesDataStore.notificationsEnabled`. Pokud je uživatel vypnul, push notifikaci nezobrazí.
+3. **Typově bezpečná konstrukce notifikací**: Automaticky spravuje oprávnění (`POST_NOTIFICATIONS` pro Android 13+) a sestavuje `PendingIntent` pro otevření `MainActivity` s případným předáním dat z data payloadu.
+4. **Získání FCM tokenu**: Poskytuje metodu `getFcmToken() { token -> ... }` pro asynchronní vyčtení a případný zápis tokenu.
+
+### Služba AppFirebaseMessagingService:
+Rozšiřuje standardní `FirebaseMessagingService` a zpracovává příchozí události:
+- V `onMessageReceived(remoteMessage)` parsuje zprávu (notification i data payload) a předává ji asynchronně do `NotificationManager.showPushNotification()`.
+- V `onNewToken(token)` přijímá nově vygenerovaný FCM token (připraveno pro registraci na backendu).
+- Je správně registrována v `AndroidManifest.xml` s filtrem pro akci `com.google.firebase.MESSAGING_EVENT`.

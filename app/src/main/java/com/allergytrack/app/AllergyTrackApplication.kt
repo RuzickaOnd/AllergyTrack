@@ -8,6 +8,7 @@ import androidx.work.Configuration
 import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.data.analytics.AnalyticsManager
 import com.allergytrack.app.data.local.datastore.DebugPreferences
+import com.allergytrack.app.data.notifications.NotificationManager as AppNotificationManager
 import com.allergytrack.app.data.worker.ReminderWorker
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.MainScope
@@ -31,10 +32,13 @@ class AllergyTrackApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var analyticsManager: AnalyticsManager
 
+    @Inject
+    lateinit var appNotificationManager: AppNotificationManager
+
     override fun onCreate() {
         super.onCreate()
         instance = this
-        createNotificationChannels()
+        appNotificationManager.createNotificationChannels()
         
         // Inicializace analytiky na pozadí, aby se neblokovalo hlavní vlákno při startu aplikace
         kotlinx.coroutines.MainScope().launch(kotlinx.coroutines.Dispatchers.Default) {
@@ -60,19 +64,6 @@ class AllergyTrackApplication : Application(), Configuration.Provider {
                     .setCrashlyticsCollectionEnabled(enabled)
             }
         }
-    }
-
-    private fun createNotificationChannels() {
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(
-            NotificationChannel(
-                ReminderWorker.CHANNEL_ID,
-                getString(R.string.notification_channel_reminders_name),
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description = getString(R.string.notification_channel_reminders_desc)
-            }
-        )
     }
 
     override val workManagerConfiguration: Configuration

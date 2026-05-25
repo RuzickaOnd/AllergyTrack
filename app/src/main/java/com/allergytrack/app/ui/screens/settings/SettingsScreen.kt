@@ -22,11 +22,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import android.widget.Toast
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -91,6 +93,7 @@ fun SettingsScreen(
     val canUseExport by viewModel.canUseExport.collectAsStateWithLifecycle()
     val showExportBadge by viewModel.showExportBadge.collectAsStateWithLifecycle()
     val canUseExtendedCharts by viewModel.canUseExtendedCharts.collectAsStateWithLifecycle()
+    val fcmToken by viewModel.fcmToken.collectAsStateWithLifecycle()
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -349,6 +352,56 @@ fun SettingsScreen(
                         icon = Icons.Default.Build,
                         onClick = { navController.navigate(Screen.DebugMenu.route) }
                     )
+                }
+            }
+
+            val fcmTokenText = when (val token = fcmToken) {
+                null -> stringResource(R.string.settings_fcm_token_loading)
+                "" -> stringResource(R.string.settings_fcm_token_unavailable)
+                else -> token
+            }
+
+            SettingsHeader(title = stringResource(R.string.settings_section_diagnostics))
+            AppCard(contentPadding = PaddingValues(0.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.settings_fcm_token_title),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = fcmTokenText,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontFamily = MonoFontFamily,
+                            maxLines = 2,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.MiddleEllipsis
+                        )
+                    }
+                    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+                    androidx.compose.material3.IconButton(
+                        onClick = {
+                            val token = fcmToken
+                            if (!token.isNullOrEmpty()) {
+                                clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(token))
+                                Toast.makeText(context, context.getString(R.string.settings_fcm_token_copied_toast), Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = stringResource(R.string.settings_fcm_token_copy_desc),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
 

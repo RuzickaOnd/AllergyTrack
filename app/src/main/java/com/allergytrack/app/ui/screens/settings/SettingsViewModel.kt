@@ -19,6 +19,7 @@ import com.allergytrack.app.domain.export.MedicalReportExporter
 import com.allergytrack.app.ui.util.AppLocaleHelper
 import com.allergytrack.app.domain.premium.PremiumHelper
 import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.app.data.notifications.NotificationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -63,11 +64,22 @@ class SettingsViewModel @Inject constructor(
     private val aiSummaryService: AiSummaryService,
     private val medicalReportExporter: MedicalReportExporter,
     private val premiumHelper: PremiumHelper,
-    private val analyticsManager: com.allergytrack.app.data.analytics.AnalyticsManager
+    private val analyticsManager: com.allergytrack.app.data.analytics.AnalyticsManager,
+    private val notificationManager: NotificationManager
 ) : ViewModel() {
+
+    private val _fcmToken = MutableStateFlow<String?>(null)
+    val fcmToken: StateFlow<String?> = _fcmToken.asStateFlow()
 
     init {
         analyticsManager.logScreenView("settings", this::class.java.simpleName)
+        fetchFcmToken()
+    }
+
+    private fun fetchFcmToken() {
+        notificationManager.getFcmToken { token ->
+            _fcmToken.value = token ?: ""
+        }
     }
 
     val isExportVisible: StateFlow<Boolean> =
