@@ -43,6 +43,9 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
             isDebuggable = true
+            configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
+                mappingFileUploadEnabled = false
+            }
         }
         release {
             isMinifyEnabled = true

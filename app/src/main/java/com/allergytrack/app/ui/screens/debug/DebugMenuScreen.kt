@@ -16,6 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
@@ -30,12 +32,9 @@ fun DebugMenuScreen(
     val premiumOverride by viewModel.premiumOverride.collectAsState()
     val currentMode = viewModel.currentVisibilityMode
 
-    DisposableEffect(Unit) {
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
-        onDispose {
-            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
-        }
-    }
+    val context = LocalContext.current
+    val analyticsEnabled by viewModel.analyticsEnabled.collectAsState()
+    val crashlyticsEnabled by viewModel.crashlyticsEnabled.collectAsState()
 
     Column(
         modifier = Modifier
@@ -229,9 +228,58 @@ fun DebugMenuScreen(
             }
         }
 
+        HorizontalDivider()
+
+        Text(
+            stringResource(R.string.debug_firebase_section),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.debug_firebase_analytics_title), style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.debug_firebase_analytics_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Switch(
+                checked = analyticsEnabled,
+                onCheckedChange = { viewModel.setAnalyticsEnabled(it) }
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.debug_firebase_crashlytics_title), style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.debug_firebase_crashlytics_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Switch(
+                checked = crashlyticsEnabled,
+                onCheckedChange = { viewModel.setCrashlyticsEnabled(it) }
+            )
+        }
+
+        Spacer(Modifier.height(4.dp))
+
         Button(
-            onClick = { throw RuntimeException("Test Crash") },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+            onClick = {
+                if (!crashlyticsEnabled) {
+                    Toast.makeText(context, context.getString(R.string.debug_enable_crashlytics_toast), Toast.LENGTH_SHORT).show()
+                } else {
+                    throw RuntimeException("Test Crash")
+                }
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (crashlyticsEnabled) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.error.copy(alpha = 0.38f),
+                contentColor = if (crashlyticsEnabled) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onError.copy(alpha = 0.38f)
+            ),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(R.string.debug_crash_app))
@@ -239,11 +287,17 @@ fun DebugMenuScreen(
 
         OutlinedButton(
             onClick = {
-                FirebaseCrashlytics.getInstance().recordException(
-                    RuntimeException("Test non-fatal exception z Debug menu")
-                )
+                if (!crashlyticsEnabled) {
+                    Toast.makeText(context, context.getString(R.string.debug_enable_crashlytics_toast), Toast.LENGTH_SHORT).show()
+                } else {
+                    FirebaseCrashlytics.getInstance().recordException(
+                        RuntimeException("Test non-fatal exception z Debug menu")
+                    )
+                }
             },
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = if (crashlyticsEnabled) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.error.copy(alpha = 0.38f)
+            ),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(R.string.debug_nonfatal_test))

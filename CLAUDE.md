@@ -762,3 +762,8 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 - Metoda: `suspend fun generateSummary(correlations: List<Correlation>): String` (musí běžet v coroutine/suspend kontextu)
 - Správa stavu: Ověřováno přes `checkStatus()` z `FeatureStatus` (`com.google.mlkit.genai.common.FeatureStatus`)
 - Fallback: Při chybě či nedostupnosti (`status != AVAILABLE`) se vrací statické rule-based textové shrnutí (100% offline bezpečnost).
+
+### Deaktivace Firebase v debug sestavení a testování:
+- Default: Analytics a Crashlytics jsou v debug verzi vypnuté přes `app/src/debug/AndroidManifest.xml`.
+- Toggles: Lze je zapnout trvale v Debug menu (ukládá se do `DebugPreferences`).
+- Adb příkaz pro testování Analytics (DebugView): `adb shell setprop debug.firebase.analytics.app com.allergytrack.app` (vypnutí přes `.none.`).

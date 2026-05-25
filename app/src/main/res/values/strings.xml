@@ -329,6 +329,13 @@
     <string name="debug_reset_onboarding_btn">Reset onboarding (restarts app)</string>
     <string name="debug_reset_onboarding_note">After reset, onboarding will appear on next app launch.</string>
 
+    <string name="debug_firebase_section">Firebase settings</string>
+    <string name="debug_firebase_analytics_title">Enable Firebase Analytics</string>
+    <string name="debug_firebase_analytics_desc">Enable event logging and screen tracking in debug</string>
+    <string name="debug_firebase_crashlytics_title">Enable Firebase Crashlytics</string>
+    <string name="debug_firebase_crashlytics_desc">Enable crash and exception reporting in debug</string>
+    <string name="debug_enable_crashlytics_toast">You must enable Firebase Crashlytics first.</string>
+
     <!-- Premium -->
     <string name="premium_upsell_desc">This feature is available in the Premium version.</string>
     <string name="premium_badge_label">PREMIUM</string>

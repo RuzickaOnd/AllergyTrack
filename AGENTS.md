@@ -549,3 +549,36 @@ if (status == FeatureStatus.AVAILABLE) {
 }
 ```
 
+---
+
+## 17. DEAKTIVACE FIREBASE V DEBUG VERZI A TESTOVÁNÍ
+
+### Konfigurace v debug sestavení
+V debug verzi aplikace jsou Firebase Analytics a Firebase Crashlytics standardně **vypnuté**, aby nedocházelo ke zkreslování produkčních statistik během vývoje a testování:
+1. **Debug Manifest**: V souboru `app/src/debug/AndroidManifest.xml` jsou nastaveny meta-data příznaky `firebase_analytics_collection_enabled` a `firebase_crashlytics_collection_enabled` na `false`.
+2. **Optimalizace kompilace**: V souboru `app/build.gradle.kts` je pro debug verzi vypnuto nahrávání deobfuskačních mapping souborů do Crashlytics (`mappingFileUploadEnabled = false`), což urychluje sestavení aplikace.
+
+### Dynamické přepínače v Debug menu
+V **Debug menu** jsou k dispozici dva přepínače (Switches), které se persistují přes `DebugPreferences` a umožňují vývojáři dynamicky aktivovat nebo deaktivovat Firebase služby:
+- **Povolit Firebase Analytics**
+- **Povolit Firebase Crashlytics**
+
+Při startu aplikace v debug verzi (`AllergyTrackApplication.onCreate()`) se tyto hodnoty reaktivně načtou a aplikují na Firebase instance. Změny se projeví okamžitě i za běhu aplikace.
+U Crashlytics se doporučuje po změně na `true` aplikaci restartovat a nasimulovat pád, aby se po dalším spuštění mohl odeslat uložený report o pádu na server.
+
+### Jak testovat Firebase Analytics (DebugView)
+Pro sledování eventů z vývojářského zařízení v reálném čase bez znečištění produkčních dat slouží **Firebase DebugView** v Google Analytics konzoli. Pro jeho aktivaci spusťte příkaz:
+
+```bash
+# Aktivace DebugView pro vývojářské zařízení
+adb shell setprop debug.firebase.analytics.app com.allergytrack.app
+```
+
+Po dokončení testování můžete DebugView opět deaktivovat:
+
+```bash
+# Deaktivace DebugView
+adb shell setprop debug.firebase.analytics.app .none.
+```
+
+

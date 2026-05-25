@@ -57,6 +57,20 @@ class DebugMenuViewModel @Inject constructor(
             initialValue = -1
         )
 
+    val analyticsEnabled: StateFlow<Boolean> = debugPreferences.analyticsEnabled
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
+    val crashlyticsEnabled: StateFlow<Boolean> = debugPreferences.crashlyticsEnabled
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
     private val _seedingInProgress = MutableStateFlow(false)
     val seedingInProgress: StateFlow<Boolean> = _seedingInProgress.asStateFlow()
 
@@ -69,6 +83,18 @@ class DebugMenuViewModel @Inject constructor(
     fun setSymptomCountOverride(count: Int) {
         viewModelScope.launch {
             debugPreferences.setSymptomCountOverride(count)
+        }
+    }
+
+    fun setAnalyticsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            debugPreferences.setAnalyticsEnabled(enabled)
+        }
+    }
+
+    fun setCrashlyticsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            debugPreferences.setCrashlyticsEnabled(enabled)
         }
     }
 

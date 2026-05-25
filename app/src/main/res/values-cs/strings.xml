@@ -326,6 +326,13 @@
     <string name="debug_reset_onboarding_btn">Resetovat onboarding (restartuje app)</string>
     <string name="debug_reset_onboarding_note">Po resetu se onboarding zobrazí při dalším spuštění aplikace.</string>
 
+    <string name="debug_firebase_section">Nastavení Firebase</string>
+    <string name="debug_firebase_analytics_title">Povolit Firebase Analytics</string>
+    <string name="debug_firebase_analytics_desc">Povolí logování událostí a sledování obrazovek v debugu</string>
+    <string name="debug_firebase_crashlytics_title">Povolit Firebase Crashlytics</string>
+    <string name="debug_firebase_crashlytics_desc">Povolí hlášení pádů a výjimek v debugu</string>
+    <string name="debug_enable_crashlytics_toast">Nejprve musíte zapnout Firebase Crashlytics.</string>
+
     <!-- Premium -->
     <string name="premium_upsell_desc">Tato funkce je dostupná v Premium verzi.</string>
     <string name="premium_badge_label">PREMIUM</string>

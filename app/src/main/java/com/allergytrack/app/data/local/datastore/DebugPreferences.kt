@@ -3,6 +3,7 @@ package com.allergytrack.app.data.local.datastore
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -30,6 +31,8 @@ class DebugPreferences @Inject constructor(
     companion object {
         private val KEY_PREMIUM_OVERRIDE = stringPreferencesKey("debug_premium_override")
         private val KEY_SYMPTOM_COUNT_OVERRIDE = intPreferencesKey("debug_symptom_count_override")
+        private val KEY_ANALYTICS_ENABLED = booleanPreferencesKey("debug_analytics_enabled")
+        private val KEY_CRASHLYTICS_ENABLED = booleanPreferencesKey("debug_crashlytics_enabled")
     }
 
     /** -1 = použít skutečná data, jinak override */
@@ -41,6 +44,30 @@ class DebugPreferences @Inject constructor(
     suspend fun setSymptomCountOverride(count: Int) {
         context.debugDataStore.edit { prefs ->
             prefs[KEY_SYMPTOM_COUNT_OVERRIDE] = count
+        }
+    }
+
+    /** Výslovné povolení Firebase Analytics v debug verzi */
+    val analyticsEnabled: Flow<Boolean> =
+        context.debugDataStore.data.map { prefs ->
+            prefs[KEY_ANALYTICS_ENABLED] ?: false
+        }
+
+    suspend fun setAnalyticsEnabled(enabled: Boolean) {
+        context.debugDataStore.edit { prefs ->
+            prefs[KEY_ANALYTICS_ENABLED] = enabled
+        }
+    }
+
+    /** Výslovné povolení Firebase Crashlytics v debug verzi */
+    val crashlyticsEnabled: Flow<Boolean> =
+        context.debugDataStore.data.map { prefs ->
+            prefs[KEY_CRASHLYTICS_ENABLED] ?: false
+        }
+
+    suspend fun setCrashlyticsEnabled(enabled: Boolean) {
+        context.debugDataStore.edit { prefs ->
+            prefs[KEY_CRASHLYTICS_ENABLED] = enabled
         }
     }
 
