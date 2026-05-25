@@ -459,6 +459,11 @@
     <string name="symptom_detail_empty">Žádné příznaky v tomto období.\nZačni zaznamenávat příznaky, aby se zde zobrazily statistiky.</string>
     <string name="symptom_detail_badge">Nejčastější</string>
 
+    <!-- Dashboard — banner s výzvou k zapnutí notifikací -->
+    <string name="dashboard_notification_banner_title">Zapni si večerní notifikace</string>
+    <string name="dashboard_notification_banner_body">Každý večer po 19:00 tě upozorníme, abys nezapomněl zaznamenat jídlo a příznaky.</string>
+    <string name="dashboard_notification_banner_dismiss">Skrýt trvale</string>
+
     <!-- Notifikace -->
     <string name="notification_channel_reminders_name">Připomínky logování</string>
     <string name="notification_channel_reminders_desc">Večerní připomínka k zalogování jídla a příznaků</string>

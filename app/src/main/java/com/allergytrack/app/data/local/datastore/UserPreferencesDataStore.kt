@@ -27,6 +27,7 @@ class UserPreferencesDataStore @Inject constructor(
         private val KEY_DARK_MODE = booleanPreferencesKey("dark_mode")
         private val KEY_NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
         private val KEY_SYNC_CHARTS_SCROLL = booleanPreferencesKey("sync_charts_scroll")
+        private val KEY_NOTIFICATION_BANNER_DISMISSED = booleanPreferencesKey("notification_banner_dismissed")
     }
 
     /** Uložený kód jazyka pro vyhledávání jídla. Prázdný string = auto (dle zařízení). */
@@ -74,5 +75,13 @@ class UserPreferencesDataStore @Inject constructor(
 
     suspend fun setSyncChartsScroll(enabled: Boolean) {
         context.userPreferencesDataStore.edit { it[KEY_SYNC_CHARTS_SCROLL] = enabled }
+    }
+
+    /** Banner s výzvou k zapnutí notifikací na dashboardu. Výchozí = false (zobrazit). */
+    val notificationBannerDismissed: Flow<Boolean> = context.userPreferencesDataStore.data
+        .map { prefs -> prefs[KEY_NOTIFICATION_BANNER_DISMISSED] ?: false }
+
+    suspend fun setNotificationBannerDismissed() {
+        context.userPreferencesDataStore.edit { it[KEY_NOTIFICATION_BANNER_DISMISSED] = true }
     }
 }

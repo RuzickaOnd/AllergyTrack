@@ -8,6 +8,7 @@ import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
+import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.domain.model.EnvironmentLog
 import com.allergytrack.app.domain.model.EnvironmentRegion
@@ -46,13 +47,24 @@ class DashboardViewModel @Inject constructor(
     private val symptomLogDao: SymptomLogDao,
     private val environmentRepository: EnvironmentRepository,
     private val permissionsHelper: PermissionsHelper,
-    private val premiumHelper: PremiumHelper
+    private val premiumHelper: PremiumHelper,
+    private val userPreferences: UserPreferencesDataStore
 ) : ViewModel() {
 
     // Začíná jako false — loading se zobrazí až po potvrzení EU regionu v refreshEnvironment()
     private val _isRefreshingEnv = MutableStateFlow(false)
     private val isFetchingEnv = AtomicBoolean(false)
     private val _locationGranted = MutableStateFlow(permissionsHelper.hasLocationPermission())
+
+    val showNotificationBanner: StateFlow<Boolean> = combine(
+        userPreferences.notificationsEnabled,
+        userPreferences.notificationBannerDismissed
+    ) { enabled, dismissed -> !enabled && !dismissed }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    fun dismissNotificationBanner() {
+        viewModelScope.launch { userPreferences.setNotificationBannerDismissed() }
+    }
 
     private val startOfDay: Long
         get() {

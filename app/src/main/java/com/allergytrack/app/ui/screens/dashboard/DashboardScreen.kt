@@ -1,13 +1,19 @@
 package com.allergytrack.app.ui.screens.dashboard
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,10 +25,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -69,6 +79,7 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val showNotificationBanner by viewModel.showNotificationBanner.collectAsStateWithLifecycle()
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     LaunchedEffect(lifecycle) {
@@ -112,6 +123,13 @@ fun DashboardScreen(
                         )
                     }
 
+                    if (showNotificationBanner) {
+                        NotificationReminderBanner(
+                            onDismiss = { viewModel.dismissNotificationBanner() },
+                            onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
+                        )
+                    }
+
                     if (uiState.showEnvironmentSection) {
                         CardTitle(text = stringResource(R.string.env_section_title), icon = Icons.Outlined.Air)
                         when {
@@ -121,9 +139,11 @@ fun DashboardScreen(
                                 actionLabel = stringResource(R.string.permission_required_go_to_settings),
                                 onAction = { navController.navigate(Screen.Settings.route) }
                             )
+
                             uiState.latestEnvironment != null -> uiState.latestEnvironment?.let {
                                 EnvironmentCard(env = it)
                             } ?: run { NoEnvironmentCard() }
+
                             else -> NoEnvironmentCard()
                         }
                     }
@@ -164,6 +184,7 @@ fun DashboardScreen(
                                         when (type) {
                                             "food" if item is FoodLogEntity ->
                                                 TimelineFoodItem(item)
+
                                             "symptom" if item is SymptomLogEntity ->
                                                 TimelineSymptomItem(item)
                                         }
@@ -199,6 +220,15 @@ fun DashboardScreen(
                             text = stringResource(R.string.btn_add_symptom),
                             onClick = { navController.navigate(Screen.SymptomLog.route) },
                             modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+
+                if (showNotificationBanner) {
+                    item {
+                        NotificationReminderBanner(
+                            onDismiss = { viewModel.dismissNotificationBanner() },
+                            onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
                         )
                     }
                 }
@@ -263,6 +293,87 @@ fun DashboardScreen(
                 }
 
                 item { InsightBadge(uiState.insight) }
+            }
+        }
+    }
+}
+
+@Composable
+fun NotificationReminderBanner(
+    onDismiss: () -> Unit,
+    onNavigateToSettings: () -> Unit
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "bell")
+    val bellRotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 3200
+                0f at 0 using LinearEasing
+                -14f at 150 using LinearEasing
+                14f at 300 using LinearEasing
+                -10f at 450 using LinearEasing
+                10f at 600 using LinearEasing
+                0f at 750 using LinearEasing
+                0f at 3200 using LinearEasing
+            },
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "bellRotation"
+    )
+
+    AppCard(
+        borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+        onClick = onNavigateToSettings
+    ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 32.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.NotificationsActive,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .rotate(bellRotation),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+
+                Column(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.dashboard_notification_banner_title),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = stringResource(R.string.dashboard_notification_banner_body),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Close,
+                    contentDescription = stringResource(R.string.dashboard_notification_banner_dismiss),
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
@@ -405,7 +516,9 @@ fun TimelineFoodItem(log: FoodLogEntity) {
                 Icon(
                     imageVector = Icons.Outlined.Warning,
                     contentDescription = null,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp).size(14.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp, vertical = 3.dp)
+                        .size(14.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
             }

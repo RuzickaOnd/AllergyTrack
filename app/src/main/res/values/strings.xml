@@ -459,6 +459,11 @@
     <string name="symptom_detail_empty">No symptoms in this period.\nStart logging symptoms to see statistics here.</string>
     <string name="symptom_detail_badge">Top</string>
 
+    <!-- Dashboard — notification banner -->
+    <string name="dashboard_notification_banner_title">Enable evening reminders</string>
+    <string name="dashboard_notification_banner_body">We\'ll remind you every evening after 7 PM to log your food and symptoms.</string>
+    <string name="dashboard_notification_banner_dismiss">Dismiss permanently</string>
+
     <!-- Notifications -->
     <string name="notification_channel_reminders_name">Logging reminders</string>
     <string name="notification_channel_reminders_desc">Evening reminder to log food and symptoms</string>
