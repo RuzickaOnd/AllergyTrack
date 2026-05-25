@@ -13,6 +13,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.allergytrack.app.MainActivity
+import java.util.Calendar
 import com.allergytrack.app.R
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -22,10 +23,11 @@ import dagger.assisted.AssistedInject
  *
  * ## Kdy se notifikace zobrazí
  * Worker je naplánován jako periodická úloha s intervalem 24 hodin.
- * Při prvním zapnutí se spustí s initial delay na nejbližší 20:00 místního času
- * (viz [WorkManagerScheduler.scheduleReminder]). Každý další den přibližně ve 20:00.
+ * Při prvním zapnutí se spustí s initial delay na nejbližší 19:00 místního času
+ * (viz [WorkManagerScheduler.scheduleReminder]). Každý další den přibližně ve 19:00.
  * WorkManager nezaručuje přesný čas — může se zpozdit o desítky minut podle
- * stavu baterie a Doze režimu Androidu.
+ * stavu baterie a Doze režimu Androidu. Jako pojistka před driftem worker
+ * notifikaci odešle jen pokud je aktuální čas mezi 19:00 a 22:59.
  *
  * ## Co notifikace zobrazuje
  * - **Ikona:** launcher ikona aplikace
@@ -44,6 +46,9 @@ class ReminderWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        if (hour !in 19..22) return Result.success()
+
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }

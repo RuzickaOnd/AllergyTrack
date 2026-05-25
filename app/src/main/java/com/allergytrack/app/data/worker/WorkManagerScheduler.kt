@@ -44,21 +44,22 @@ class WorkManagerScheduler @Inject constructor(
     /**
      * Naplánuje večerní připomínku k logování jako periodickou WorkManager úlohu.
      *
-     * Initial delay se počítá na nejbližší 20:00 místního času — pokud je aktuální čas
-     * po 20:00, naplánuje se na 20:00 následujícího dne. Poté se opakuje každých 24 hodin.
+     * Initial delay se počítá na nejbližší 19:00 místního času — pokud je aktuální čas
+     * po 19:00, naplánuje se na 19:00 následujícího dne. Poté se opakuje každých 24 hodin.
      *
      * Používá [ExistingPeriodicWorkPolicy.REPLACE]: při opakovaném zapnutí notifikací
-     * se timing resetuje na nejbližší 20:00 (zabraňuje driftu z předchozích plánování).
+     * se timing resetuje na nejbližší 19:00 (zabraňuje driftu z předchozích plánování).
      */
     fun scheduleReminder() {
         val now = Calendar.getInstance()
-        val next8pm = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 20)
+        val next7pm = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 19)
             set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
-            if (before(now)) add(Calendar.DAY_OF_YEAR, 1)
+            set(Calendar.MILLISECOND, 0)
+            if (!after(now)) add(Calendar.DAY_OF_YEAR, 1)
         }
-        val initialDelay = next8pm.timeInMillis - now.timeInMillis
+        val initialDelay = next7pm.timeInMillis - now.timeInMillis
 
         val request = PeriodicWorkRequestBuilder<ReminderWorker>(24, TimeUnit.HOURS)
             .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
