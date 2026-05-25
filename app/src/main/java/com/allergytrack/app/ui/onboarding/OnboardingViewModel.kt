@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.allergytrack.app.data.analytics.AnalyticsManager
 
 data class OnboardingUiState(
     val currentStep: OnboardingStep = OnboardingStep.WELCOME,
@@ -36,7 +37,8 @@ data class OnboardingUiState(
 class OnboardingViewModel @Inject constructor(
     private val onboardingDataStore: OnboardingDataStore,
     private val permissionsHelper: PermissionsHelper,
-    private val premiumHelper: PremiumHelper
+    private val premiumHelper: PremiumHelper,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OnboardingUiState())
@@ -48,6 +50,8 @@ class OnboardingViewModel @Inject constructor(
             val hasPhotoAccess = premiumHelper.hasAccess(PremiumFeature.FOOD_PHOTO_RECOGNITION)
             _uiState.update { it.copy(isCameraPermissionVisible = hasPhotoAccess) }
         }
+        analyticsManager.logScreenView("onboarding_welcome", this::class.java.simpleName)
+        analyticsManager.logOnboardingStep(1, "welcome")
     }
 
     fun onAllergyTypeToggled(type: AllergyType) {
@@ -80,6 +84,14 @@ class OnboardingViewModel @Inject constructor(
         }
         if (next != null) {
             _uiState.update { it.copy(currentStep = next) }
+            val stepNum = when (next) {
+                OnboardingStep.ALLERGY_PROFILE -> 2
+                OnboardingStep.PERMISSIONS -> 3
+                OnboardingStep.READY -> 4
+                else -> 1
+            }
+            analyticsManager.logScreenView("onboarding_" + next.name.lowercase(), this::class.java.simpleName)
+            analyticsManager.logOnboardingStep(stepNum, next.name.lowercase())
         }
     }
 
@@ -93,6 +105,14 @@ class OnboardingViewModel @Inject constructor(
         }
         if (previous != null) {
             _uiState.update { it.copy(currentStep = previous) }
+            val stepNum = when (previous) {
+                OnboardingStep.WELCOME -> 1
+                OnboardingStep.ALLERGY_PROFILE -> 2
+                OnboardingStep.PERMISSIONS -> 3
+                OnboardingStep.READY -> 4
+            }
+            analyticsManager.logScreenView("onboarding_" + previous.name.lowercase(), this::class.java.simpleName)
+            analyticsManager.logOnboardingStep(stepNum, previous.name.lowercase())
         }
     }
 
@@ -105,6 +125,7 @@ class OnboardingViewModel @Inject constructor(
                 symptomTypes = state.selectedSymptomTypes.map { it.name }.toSet()
             )
             onboardingDataStore.setCompleted()
+            analyticsManager.logOnboardingStep(5, "completed")
             _uiState.update { it.copy(isCompleting = false, isCompleted = true) }
         }
     }
@@ -112,6 +133,7 @@ class OnboardingViewModel @Inject constructor(
     fun skipOnboarding() {
         viewModelScope.launch {
             onboardingDataStore.setCompleted()
+            analyticsManager.logOnboardingStep(0, "skipped")
             _uiState.update { it.copy(isCompleted = true) }
         }
     }

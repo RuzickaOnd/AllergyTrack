@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.domain.model.SymptomLog
 import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.domain.usecase.SaveSymptomLogUseCase
+import com.allergytrack.app.data.analytics.AnalyticsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -23,8 +24,13 @@ data class SymptomLogUiState(
 
 @HiltViewModel
 class SymptomLogViewModel @Inject constructor(
-    private val saveSymptomLogUseCase: SaveSymptomLogUseCase
+    private val saveSymptomLogUseCase: SaveSymptomLogUseCase,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
+
+    init {
+        analyticsManager.logScreenView("symptom_log", this::class.java.simpleName)
+    }
 
     private val _uiState = MutableStateFlow(SymptomLogUiState())
     val uiState: StateFlow<SymptomLogUiState> = _uiState.asStateFlow()
@@ -69,6 +75,7 @@ class SymptomLogViewModel @Inject constructor(
                         timestamp = state.timestamp
                     )
                 )
+                analyticsManager.logSymptomLogged(type.name, state.intensity)
                 _uiState.update { it.copy(isSaving = false, isSaved = true) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isSaving = false, error = e.message) }

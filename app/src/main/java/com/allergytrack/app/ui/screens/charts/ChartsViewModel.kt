@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import com.allergytrack.app.data.analytics.AnalyticsManager
 
 enum class TimeRange(val days: Int, @StringRes val labelRes: Int) {
     WEEK(7, R.string.time_range_week),
@@ -36,8 +37,13 @@ class ChartsViewModel @Inject constructor(
     private val environmentLogDao: EnvironmentLogDao,
     private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper,
     private val permissionsHelper: PermissionsHelper,
-    private val userPreferencesDataStore: UserPreferencesDataStore
+    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
+
+    init {
+        analyticsManager.logScreenView("charts", this::class.java.simpleName)
+    }
 
     private val _selectedRange = MutableStateFlow(TimeRange.WEEK)
     private val _selectedFilter = MutableStateFlow<SymptomType?>(null)

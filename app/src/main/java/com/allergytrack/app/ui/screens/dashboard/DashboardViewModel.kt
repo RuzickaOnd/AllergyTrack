@@ -15,6 +15,7 @@ import com.allergytrack.app.domain.model.EnvironmentRegion
 import com.allergytrack.app.domain.repository.EnvironmentRepository
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.domain.premium.PremiumHelper
+import com.allergytrack.app.data.analytics.AnalyticsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -48,8 +49,13 @@ class DashboardViewModel @Inject constructor(
     private val environmentRepository: EnvironmentRepository,
     private val permissionsHelper: PermissionsHelper,
     private val premiumHelper: PremiumHelper,
-    private val userPreferences: UserPreferencesDataStore
+    private val userPreferences: UserPreferencesDataStore,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
+
+    init {
+        analyticsManager.logScreenView("dashboard", this::class.java.simpleName)
+    }
 
     // Začíná jako false — loading se zobrazí až po potvrzení EU regionu v refreshEnvironment()
     private val _isRefreshingEnv = MutableStateFlow(false)

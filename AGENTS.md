@@ -581,4 +581,30 @@ Po dokončení testování můžete DebugView opět deaktivovat:
 adb shell setprop debug.firebase.analytics.app .none.
 ```
 
+---
+
+## 18. ANALYTICSMANAGER — KLASICKÝ ANALYTICKÝ SYSTÉM
+
+Pro unifikaci logování událostí slouží **`AnalyticsManager`** (`com.allergytrack.app.data.analytics.AnalyticsManager`), který je plně spravován DI (Hilt) jako `@Singleton`.
+
+### Hlavní přednosti a implementace:
+1. **Efektivní inicializace**: Firebase Analytics SDK je inicializováno **lazy** a při startu aplikace v `AllergyTrackApplication.onCreate()` se jeho inicializace spouští **asynchronně na pozadí** přes `Dispatchers.Default` v coroutině. Tím se kompletně eliminuje blokování hlavního vlákna (disk/shared preferences I/O) a optimalizuje se App Startup latency.
+2. **Čistá API vrstva**: Třída obsahuje interní, privátní generickou metodu:
+   ```kotlin
+   private fun logEvent(eventName: String, params: Bundle? = null)
+   ```
+   Veškeré veřejné metody (např. `logScreenView`, `logFoodLogged`, `logSymptomLogged`) jsou silně typované, sestavují parametry do `Bundle` a delegují je do této privátní metody.
+3. **Příklad použití ve ViewModelech**:
+   ```kotlin
+   @HiltViewModel
+   class MyViewModel @Inject constructor(
+       private val analyticsManager: AnalyticsManager
+   ) : ViewModel() {
+       fun trackInteraction() {
+           analyticsManager.logPremiumInteraction("food_detail", "click_buy")
+       }
+   }
+   ```
+
+
 

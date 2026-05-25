@@ -62,8 +62,13 @@ class SettingsViewModel @Inject constructor(
     private val correlationEngine: CorrelationEngine,
     private val aiSummaryService: AiSummaryService,
     private val medicalReportExporter: MedicalReportExporter,
-    private val premiumHelper: PremiumHelper
+    private val premiumHelper: PremiumHelper,
+    private val analyticsManager: com.allergytrack.app.data.analytics.AnalyticsManager
 ) : ViewModel() {
+
+    init {
+        analyticsManager.logScreenView("settings", this::class.java.simpleName)
+    }
 
     val isExportVisible: StateFlow<Boolean> =
         premiumHelper.observeVisible(PremiumFeature.PDF_EXPORT)

@@ -18,6 +18,7 @@ import com.allergytrack.app.domain.model.AnalysisReadiness
 import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.FoodTrigger
 import com.allergytrack.app.domain.premium.PremiumHelper
+import com.allergytrack.app.data.analytics.AnalyticsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -48,8 +49,13 @@ class AnalysisViewModel @Inject constructor(
     private val onboardingDataStore: OnboardingDataStore,
     private val medicalReportExporter: MedicalReportExporter,
     private val premiumHelper: PremiumHelper,
-    private val debugPreferences: DebugPreferences
+    private val debugPreferences: DebugPreferences,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
+
+    init {
+        analyticsManager.logScreenView("analysis", this::class.java.simpleName)
+    }
 
     private val _uiState = MutableStateFlow(AnalysisUiState())
     val uiState: StateFlow<AnalysisUiState> = _uiState.asStateFlow()

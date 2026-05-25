@@ -69,7 +69,10 @@ private val premiumFeatureItems = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PremiumScreen(onBack: () -> Unit) {
+fun PremiumScreen(
+    onBack: () -> Unit,
+    onBuyClick: () -> Unit
+) {
     val context = LocalContext.current
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -100,6 +103,7 @@ fun PremiumScreen(onBack: () -> Unit) {
                 PrimaryButton(
                     text = stringResource(R.string.premium_page_cta),
                     onClick = {
+                        onBuyClick()
                         Toast.makeText(
                             context,
                             "Tato funkce bude dostupná v příští verzi aplikace.",

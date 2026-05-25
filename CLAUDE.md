@@ -767,3 +767,8 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 - Default: Analytics a Crashlytics jsou v debug verzi vypnuté přes `app/src/debug/AndroidManifest.xml`.
 - Toggles: Lze je zapnout trvale v Debug menu (ukládá se do `DebugPreferences`).
 - Adb příkaz pro testování Analytics (DebugView): `adb shell setprop debug.firebase.analytics.app com.allergytrack.app` (vypnutí přes `.none.`).
+
+### AnalyticsManager:
+- Třída: `AnalyticsManager` (`com.allergytrack.app.data.analytics.AnalyticsManager`), spravovaná Hilt (@Singleton).
+- Inicializace: Lazy delegace inicializovaná asynchronně na pozadí (`Dispatchers.Default`) v `AllergyTrackApplication.onCreate()`.
+- Metody: Interní `private fun logEvent(eventName: String, params: Bundle? = null)` a typově bezpečné veřejné metody (`logScreenView`, `logFoodLogged`, `logSymptomLogged` atd.).

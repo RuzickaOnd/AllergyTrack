@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.domain.premium.PremiumHelper
+import com.allergytrack.app.data.analytics.AnalyticsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +16,13 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userPreferencesDataStore: UserPreferencesDataStore,
-    private val premiumHelper: PremiumHelper
+    private val premiumHelper: PremiumHelper,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
+
+    init {
+        analyticsManager.logScreenView("profile", this::class.java.simpleName)
+    }
 
     val userName: StateFlow<String> = userPreferencesDataStore.userName
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Anonym")

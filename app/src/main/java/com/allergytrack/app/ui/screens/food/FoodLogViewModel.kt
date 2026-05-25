@@ -16,6 +16,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.allergytrack.app.data.analytics.AnalyticsManager
 
 // ---- UI State ----
 
@@ -49,8 +50,13 @@ class FoodLogViewModel @Inject constructor(
     private val searchFoodUseCase: SearchFoodUseCase,
     private val recognizeFoodFromImageUseCase: RecognizeFoodFromImageUseCase,
     private val foodRepository: FoodRepository,
-    private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper
+    private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
+
+    init {
+        analyticsManager.logScreenView("food_log", this::class.java.simpleName)
+    }
 
     private val _uiState = MutableStateFlow<FoodLogUiState>(FoodLogUiState.Idle)
     val uiState: StateFlow<FoodLogUiState> = _uiState.asStateFlow()
@@ -222,6 +228,7 @@ class FoodLogViewModel @Inject constructor(
                     timestamp = _customTimestamp.value
                 )
                 saveFoodLogUseCase(log)
+                analyticsManager.logFoodLogged(food.name, food.allergens.size)
                 _uiState.value = FoodLogUiState.Saved
             } catch (e: Exception) {
                 _uiState.value = FoodLogUiState.Error("Uložení selhalo: ${e.message}")

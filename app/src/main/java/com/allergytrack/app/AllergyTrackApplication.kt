@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.allergytrack.app.BuildConfig
+import com.allergytrack.app.data.analytics.AnalyticsManager
 import com.allergytrack.app.data.local.datastore.DebugPreferences
 import com.allergytrack.app.data.worker.ReminderWorker
 import dagger.hilt.android.HiltAndroidApp
@@ -27,11 +28,19 @@ class AllergyTrackApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var debugPreferences: DebugPreferences
 
+    @Inject
+    lateinit var analyticsManager: AnalyticsManager
+
     override fun onCreate() {
         super.onCreate()
         instance = this
         createNotificationChannels()
         
+        // Inicializace analytiky na pozadí, aby se neblokovalo hlavní vlákno při startu aplikace
+        kotlinx.coroutines.MainScope().launch(kotlinx.coroutines.Dispatchers.Default) {
+            analyticsManager.initialize()
+        }
+
         if (BuildConfig.DEBUG) {
             setupDebugFirebaseToggles()
         }
