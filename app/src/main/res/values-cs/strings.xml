@@ -137,6 +137,7 @@
 
     <!-- Logování příznaků -->
     <string name="section_symptom_type">TYP PŘÍZNAKU</string>
+    <string name="select_symptom_type_prompt">Zvolte typ příznaku vlevo pro upřesnění detailů.</string>
     <string name="section_intensity">INTENZITA</string>
     <string name="section_body_area">ZASAŽENÁ OBLAST</string>
     <string name="notes_placeholder_symptom">Specifické spouštěče nebo detaily…</string>

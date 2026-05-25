@@ -153,7 +153,7 @@ fun CorrelationDetailScreen(
 }
 
 @Composable
-private fun localizedTriggerName(correlation: Correlation): String =
+fun localizedTriggerName(correlation: Correlation): String =
     if (correlation.triggerType == TriggerType.FOOD) {
         FoodAllergenHelper.keyToDisplayRes[correlation.trigger]
             ?.let { stringResource(it) }
@@ -163,7 +163,7 @@ private fun localizedTriggerName(correlation: Correlation): String =
     }
 
 @Composable
-private fun getRecommendation(correlation: Correlation): String {
+fun getRecommendation(correlation: Correlation): String {
     val trigger = localizedTriggerName(correlation)
     return when (correlation.triggerType) {
         TriggerType.FOOD        -> stringResource(R.string.recommendation_food, trigger)
@@ -173,7 +173,7 @@ private fun getRecommendation(correlation: Correlation): String {
 }
 
 @Composable
-private fun generateInterpretation(correlation: Correlation): String {
+fun generateInterpretation(correlation: Correlation): String {
     val scorePercent = (correlation.score * 100).toInt()
     val symptomLabel = stringResource(correlation.symptomType.labelRes())
     val trigger = localizedTriggerName(correlation)

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -81,87 +82,188 @@ fun DashboardScreen(
             CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         }
     } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            item {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    PrimaryButton(
-                        text = stringResource(R.string.btn_add_food),
-                        onClick = { navController.navigate(Screen.FoodLog.route) },
-                        modifier = Modifier.weight(1f)
-                    )
-                    PrimaryButton(
-                        text = stringResource(R.string.btn_add_symptom),
-                        onClick = { navController.navigate(Screen.SymptomLog.route) },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
+        val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+        val isTablet = configuration.screenWidthDp >= 600
 
-            if (uiState.showEnvironmentSection) {
-                item {
-                    when {
-                        !uiState.locationGranted -> PermissionRequiredCard(
-                            title = stringResource(R.string.permission_required_location_title),
-                            description = stringResource(R.string.permission_required_location_body),
-                            actionLabel = stringResource(R.string.permission_required_go_to_settings),
-                            onAction = { navController.navigate(Screen.Settings.route) }
+        if (isTablet) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                // Levý sloupec: tlačítka zápisu + karta ovzduší + doporučení AI
+                Column(
+                    modifier = Modifier
+                        .weight(1.1f)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        PrimaryButton(
+                            text = stringResource(R.string.btn_add_food),
+                            onClick = { navController.navigate(Screen.FoodLog.route) },
+                            modifier = Modifier.weight(1f)
                         )
-
-                        uiState.latestEnvironment != null -> uiState.latestEnvironment?.let {
-                            EnvironmentCard(env = it)
-                        } ?: run { NoEnvironmentCard() }
-
-                        else -> NoEnvironmentCard()
+                        PrimaryButton(
+                            text = stringResource(R.string.btn_add_symptom),
+                            onClick = { navController.navigate(Screen.SymptomLog.route) },
+                            modifier = Modifier.weight(1f)
+                        )
                     }
+
+                    if (uiState.showEnvironmentSection) {
+                        CardTitle(text = stringResource(R.string.env_section_title), icon = Icons.Outlined.Air)
+                        when {
+                            !uiState.locationGranted -> PermissionRequiredCard(
+                                title = stringResource(R.string.permission_required_location_title),
+                                description = stringResource(R.string.permission_required_location_body),
+                                actionLabel = stringResource(R.string.permission_required_go_to_settings),
+                                onAction = { navController.navigate(Screen.Settings.route) }
+                            )
+                            uiState.latestEnvironment != null -> uiState.latestEnvironment?.let {
+                                EnvironmentCard(env = it)
+                            } ?: run { NoEnvironmentCard() }
+                            else -> NoEnvironmentCard()
+                        }
+                    }
+
+                    InsightBadge(uiState.insight)
                 }
-            }
 
-            item {
-                CardTitle(text = stringResource(R.string.section_today_records), icon = Icons.Outlined.CalendarToday)
-            }
+                // Pravý sloupec: Dnešní záznamy (timeline)
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    CardTitle(text = stringResource(R.string.section_today_records), icon = Icons.Outlined.CalendarToday)
 
-            val allItems = buildList {
-                uiState.todayFoodLogs.forEach { add(Pair("food", it)) }
-                uiState.todaySymptomLogs.forEach { add(Pair("symptom", it)) }
-            }.sortedByDescending {
-                when (val item = it.second) {
-                    is FoodLogEntity -> item.timestamp
-                    is SymptomLogEntity -> item.timestamp
-                    else -> 0L
-                }
-            }
+                    val allItems = buildList {
+                        uiState.todayFoodLogs.forEach { add(Pair("food", it)) }
+                        uiState.todaySymptomLogs.forEach { add(Pair("symptom", it)) }
+                    }.sortedByDescending {
+                        when (val item = it.second) {
+                            is FoodLogEntity -> item.timestamp
+                            is SymptomLogEntity -> item.timestamp
+                            else -> 0L
+                        }
+                    }
 
-            if (allItems.isEmpty()) {
-                item { EmptyDayCard() }
-            } else {
-                item {
-                    AppCard {
-                        allItems.forEachIndexed { index, (type, item) ->
-                            when (type) {
-                                "food" if item is FoodLogEntity ->
-                                    TimelineFoodItem(item)
-
-                                "symptom" if item is SymptomLogEntity ->
-                                    TimelineSymptomItem(item)
-                            }
-                            if (index < allItems.lastIndex) {
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(vertical = 12.dp),
-                                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                                    thickness = 0.5.dp
-                                )
+                    if (allItems.isEmpty()) {
+                        EmptyDayCard()
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            item {
+                                AppCard {
+                                    allItems.forEachIndexed { index, (type, item) ->
+                                        when (type) {
+                                            "food" if item is FoodLogEntity ->
+                                                TimelineFoodItem(item)
+                                            "symptom" if item is SymptomLogEntity ->
+                                                TimelineSymptomItem(item)
+                                        }
+                                        if (index < allItems.lastIndex) {
+                                            HorizontalDivider(
+                                                modifier = Modifier.padding(vertical = 12.dp),
+                                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                                                thickness = 0.5.dp
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        PrimaryButton(
+                            text = stringResource(R.string.btn_add_food),
+                            onClick = { navController.navigate(Screen.FoodLog.route) },
+                            modifier = Modifier.weight(1f)
+                        )
+                        PrimaryButton(
+                            text = stringResource(R.string.btn_add_symptom),
+                            onClick = { navController.navigate(Screen.SymptomLog.route) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
 
-            item { InsightBadge(uiState.insight) }
+                if (uiState.showEnvironmentSection) {
+                    item {
+                        when {
+                            !uiState.locationGranted -> PermissionRequiredCard(
+                                title = stringResource(R.string.permission_required_location_title),
+                                description = stringResource(R.string.permission_required_location_body),
+                                actionLabel = stringResource(R.string.permission_required_go_to_settings),
+                                onAction = { navController.navigate(Screen.Settings.route) }
+                            )
+
+                            uiState.latestEnvironment != null -> uiState.latestEnvironment?.let {
+                                EnvironmentCard(env = it)
+                            } ?: run { NoEnvironmentCard() }
+
+                            else -> NoEnvironmentCard()
+                        }
+                    }
+                }
+
+                item {
+                    CardTitle(text = stringResource(R.string.section_today_records), icon = Icons.Outlined.CalendarToday)
+                }
+
+                val allItems = buildList {
+                    uiState.todayFoodLogs.forEach { add(Pair("food", it)) }
+                    uiState.todaySymptomLogs.forEach { add(Pair("symptom", it)) }
+                }.sortedByDescending {
+                    when (val item = it.second) {
+                        is FoodLogEntity -> item.timestamp
+                        is SymptomLogEntity -> item.timestamp
+                        else -> 0L
+                    }
+                }
+
+                if (allItems.isEmpty()) {
+                    item { EmptyDayCard() }
+                } else {
+                    item {
+                        AppCard {
+                            allItems.forEachIndexed { index, (type, item) ->
+                                when (type) {
+                                    "food" if item is FoodLogEntity ->
+                                        TimelineFoodItem(item)
+
+                                    "symptom" if item is SymptomLogEntity ->
+                                        TimelineSymptomItem(item)
+                                }
+                                if (index < allItems.lastIndex) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(vertical = 12.dp),
+                                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                                        thickness = 0.5.dp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                item { InsightBadge(uiState.insight) }
+            }
         }
     }
 }

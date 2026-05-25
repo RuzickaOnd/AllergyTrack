@@ -51,74 +51,178 @@ fun SymptomLogScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        Spacer(Modifier.height(8.dp))
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+    val isTablet = configuration.screenWidthDp >= 600
 
-        SymptomTypeSection(
-            selectedType = uiState.selectedType,
-            onTypeSelected = viewModel::onTypeSelected
-        )
-
-        if (uiState.selectedType != null) {
-            IntensitySection(
-                intensity = uiState.intensity,
-                onIntensityChanged = viewModel::onIntensityChanged
-            )
-
-            BodyPartSection(
-                selectedParts = uiState.selectedBodyParts,
-                onPartToggled = viewModel::onBodyPartToggled
-            )
-
-            DateTimePickerRow(
-                timestamp = uiState.timestamp,
-                onTimestampChanged = viewModel::onTimestampChanged,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    stringResource(R.string.label_notes),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontFamily = MonoFontFamily
-                )
-                OutlinedTextField(
-                    value = uiState.notes,
-                    onValueChange = viewModel::onNotesChanged,
-                    placeholder = { Text(stringResource(R.string.notes_placeholder_symptom), color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    maxLines = 3,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                        focusedBorderColor = MaterialTheme.colorScheme.primary
-                    )
+    if (isTablet) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            // Levý sloupec: výběr typu příznaku
+            Column(
+                modifier = Modifier
+                    .weight(1.1f)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Spacer(Modifier.height(8.dp))
+                SymptomTypeSection(
+                    selectedType = uiState.selectedType,
+                    onTypeSelected = viewModel::onTypeSelected
                 )
             }
 
-            val savingLabel = if (uiState.isSaving)
-                stringResource(R.string.btn_saving)
-            else
-                stringResource(R.string.btn_save_symptom)
+            // Pravý sloupec: detaily příznaku
+            Column(
+                modifier = Modifier
+                    .weight(1.3f)
+                    .fillMaxHeight()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                Spacer(Modifier.height(8.dp))
+                if (uiState.selectedType != null) {
+                    IntensitySection(
+                        intensity = uiState.intensity,
+                        onIntensityChanged = viewModel::onIntensityChanged
+                    )
 
-            PrimaryButton(
-                text = savingLabel,
-                onClick = viewModel::saveSymptom,
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !uiState.isSaving
-            )
+                    BodyPartSection(
+                        selectedParts = uiState.selectedBodyParts,
+                        onPartToggled = viewModel::onBodyPartToggled
+                    )
+
+                    DateTimePickerRow(
+                        timestamp = uiState.timestamp,
+                        onTimestampChanged = viewModel::onTimestampChanged,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            stringResource(R.string.label_notes),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontFamily = MonoFontFamily
+                        )
+                        OutlinedTextField(
+                            value = uiState.notes,
+                            onValueChange = viewModel::onNotesChanged,
+                            placeholder = { Text(stringResource(R.string.notes_placeholder_symptom), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            maxLines = 3,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary
+                            )
+                        )
+                    }
+
+                    val savingLabel = if (uiState.isSaving)
+                        stringResource(R.string.btn_saving)
+                    else
+                        stringResource(R.string.btn_save_symptom)
+
+                    PrimaryButton(
+                        text = savingLabel,
+                        onClick = viewModel::saveSymptom,
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !uiState.isSaving
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 48.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.select_symptom_type_prompt),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                Spacer(Modifier.height(80.dp))
+            }
         }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            Spacer(Modifier.height(8.dp))
 
-        Spacer(Modifier.height(80.dp))
+            SymptomTypeSection(
+                selectedType = uiState.selectedType,
+                onTypeSelected = viewModel::onTypeSelected
+            )
+
+            if (uiState.selectedType != null) {
+                IntensitySection(
+                    intensity = uiState.intensity,
+                    onIntensityChanged = viewModel::onIntensityChanged
+                )
+
+                BodyPartSection(
+                    selectedParts = uiState.selectedBodyParts,
+                    onPartToggled = viewModel::onBodyPartToggled
+                )
+
+                DateTimePickerRow(
+                    timestamp = uiState.timestamp,
+                    onTimestampChanged = viewModel::onTimestampChanged,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        stringResource(R.string.label_notes),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontFamily = MonoFontFamily
+                    )
+                    OutlinedTextField(
+                        value = uiState.notes,
+                        onValueChange = viewModel::onNotesChanged,
+                        placeholder = { Text(stringResource(R.string.notes_placeholder_symptom), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        maxLines = 3,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                }
+
+                val savingLabel = if (uiState.isSaving)
+                    stringResource(R.string.btn_saving)
+                else
+                    stringResource(R.string.btn_save_symptom)
+
+                PrimaryButton(
+                    text = savingLabel,
+                    onClick = viewModel::saveSymptom,
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !uiState.isSaving
+                )
+            }
+
+            Spacer(Modifier.height(80.dp))
+        }
     }
 }
 

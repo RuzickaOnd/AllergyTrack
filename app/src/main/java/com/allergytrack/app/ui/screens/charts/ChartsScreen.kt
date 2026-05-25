@@ -50,6 +50,9 @@ import com.allergytrack.app.ui.theme.*
 import com.allergytrack.app.ui.util.icon
 import com.allergytrack.app.ui.util.labelRes
 import com.allergytrack.app.domain.model.PremiumFeature
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 
 @Composable
 fun ChartsScreen(
@@ -81,88 +84,193 @@ fun ChartsScreen(
             CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         }
     } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            item { Spacer(Modifier.height(8.dp)) }
+        val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+        val isTablet = configuration.screenWidthDp >= 600
 
-            when {
-                isExtendedChartsVisible && canUseExtendedCharts -> item {
-                    TimeRangeSelector(
-                        selected = uiState.selectedRange,
-                        canUseExtendedCharts = true,
-                        showBadge = false,
-                        onSelected = viewModel::onRangeSelected
+        if (isTablet) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                // Levý sloupec: voliče a statistiky
+                Column(
+                    modifier = Modifier
+                        .weight(1.2f)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    when {
+                        isExtendedChartsVisible && canUseExtendedCharts -> {
+                            TimeRangeSelector(
+                                selected = uiState.selectedRange,
+                                canUseExtendedCharts = true,
+                                showBadge = false,
+                                onSelected = viewModel::onRangeSelected
+                            )
+                        }
+                        showExtendedChartsUpsell -> {
+                            PremiumUpsellCard(
+                                feature = PremiumFeature.EXTENDED_CHARTS,
+                                onUpgradeClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
+                            )
+                        }
+                    }
+
+                    SummaryRow(
+                        uiState = uiState,
+                        onStatClick = { SymptomDetailActivity.start(context, uiState.selectedRange) }
                     )
-                }
-                showExtendedChartsUpsell -> item {
-                    PremiumUpsellCard(
-                        feature = PremiumFeature.EXTENDED_CHARTS,
-                        onUpgradeClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
-                    )
-                }
-            }
 
-            item {
-                SummaryRow(
-                    uiState = uiState,
-                    onStatClick = { SymptomDetailActivity.start(context, uiState.selectedRange) }
-                )
-            }
-
-            uiState.chartData?.let { data ->
-                val days = uiState.selectedRange.days
-
-                item {
-                    SymptomFilterRow(
-                        selected = uiState.selectedSymptomFilter,
-                        onSelected = viewModel::onFilterSelected
-                    )
-                }
-
-                if (!locationGranted) {
-                    item {
-                        PermissionRequiredCard(
-                            title = stringResource(R.string.permission_required_location_title),
-                            description = stringResource(R.string.permission_required_location_body),
-                            actionLabel = stringResource(R.string.permission_required_go_to_settings),
-                            onAction = { navController.navigate(Screen.Settings.route) }
+                    if (uiState.chartData != null) {
+                        SymptomFilterRow(
+                            selected = uiState.selectedSymptomFilter,
+                            onSelected = viewModel::onFilterSelected
                         )
                     }
-                } else {
-                    item {
-                        PremiumGate(
-                            isVisible = isPollenVisible,
-                            showUpsell = showPollenUpsell,
-                            feature = PremiumFeature.POLLEN_DATA,
-                            onUpgradeClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
+                }
+
+                // Pravý sloupec: adaptivní mřížka s grafy
+                Box(
+                    modifier = Modifier
+                        .weight(2f)
+                        .fillMaxHeight()
+                ) {
+                    uiState.chartData?.let { data ->
+                        val days = uiState.selectedRange.days
+
+                        LazyVerticalGrid(
+                            columns = GridCells.Adaptive(minSize = 340.dp),
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
-                                PollenVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
+                            if (!locationGranted) {
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    PermissionRequiredCard(
+                                        title = stringResource(R.string.permission_required_location_title),
+                                        description = stringResource(R.string.permission_required_location_body),
+                                        actionLabel = stringResource(R.string.permission_required_go_to_settings),
+                                        onAction = { navController.navigate(Screen.Settings.route) }
+                                    )
+                                }
+                            } else {
+                                item {
+                                    PremiumGate(
+                                        isVisible = isPollenVisible,
+                                        showUpsell = showPollenUpsell,
+                                        feature = PremiumFeature.POLLEN_DATA,
+                                        onUpgradeClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
+                                    ) {
+                                        ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
+                                            PollenVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
+                                        }
+                                    }
+                                }
+
+                                item {
+                                    ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
+                                        AqiVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
+                                    }
+                                }
+                            }
+
+                            item {
+                                ChartCard(title = stringResource(R.string.chart_symptom_intensity), icon = Icons.AutoMirrored.Outlined.ShowChart) {
+                                    SymptomIntensityChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
+                                }
+                            }
+                        }
+                    } ?: run {
+                        EmptyChartsCard()
+                    }
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                item { Spacer(Modifier.height(8.dp)) }
+
+                when {
+                    isExtendedChartsVisible && canUseExtendedCharts -> item {
+                        TimeRangeSelector(
+                            selected = uiState.selectedRange,
+                            canUseExtendedCharts = true,
+                            showBadge = false,
+                            onSelected = viewModel::onRangeSelected
+                        )
+                    }
+                    showExtendedChartsUpsell -> item {
+                        PremiumUpsellCard(
+                            feature = PremiumFeature.EXTENDED_CHARTS,
+                            onUpgradeClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
+                        )
+                    }
+                }
+
+                item {
+                    SummaryRow(
+                        uiState = uiState,
+                        onStatClick = { SymptomDetailActivity.start(context, uiState.selectedRange) }
+                    )
+                }
+
+                uiState.chartData?.let { data ->
+                    val days = uiState.selectedRange.days
+
+                    item {
+                        SymptomFilterRow(
+                            selected = uiState.selectedSymptomFilter,
+                            onSelected = viewModel::onFilterSelected
+                        )
+                    }
+
+                    if (!locationGranted) {
+                        item {
+                            PermissionRequiredCard(
+                                title = stringResource(R.string.permission_required_location_title),
+                                description = stringResource(R.string.permission_required_location_body),
+                                actionLabel = stringResource(R.string.permission_required_go_to_settings),
+                                onAction = { navController.navigate(Screen.Settings.route) }
+                            )
+                        }
+                    } else {
+                        item {
+                            PremiumGate(
+                                isVisible = isPollenVisible,
+                                showUpsell = showPollenUpsell,
+                                feature = PremiumFeature.POLLEN_DATA,
+                                onUpgradeClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
+                            ) {
+                                ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
+                                    PollenVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
+                                }
                             }
                         }
                     }
-                }
-                if (locationGranted) {
-                    item {
-                        ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
-                            AqiVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
+                    if (locationGranted) {
+                        item {
+                            ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
+                                AqiVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
+                            }
                         }
                     }
-                }
-                item {
-                    ChartCard(title = stringResource(R.string.chart_symptom_intensity), icon = Icons.AutoMirrored.Outlined.ShowChart) {
-                        SymptomIntensityChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
+                    item {
+                        ChartCard(title = stringResource(R.string.chart_symptom_intensity), icon = Icons.AutoMirrored.Outlined.ShowChart) {
+                            SymptomIntensityChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
+                        }
                     }
+                } ?: run {
+                    item { EmptyChartsCard() }
                 }
-            } ?: run {
-                item { EmptyChartsCard() }
-            }
 
-            item { Spacer(Modifier.height(24.dp)) }
+                item { Spacer(Modifier.height(24.dp)) }
+            }
         }
     }
 }

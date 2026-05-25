@@ -137,6 +137,7 @@
 
     <!-- Symptom Log -->
     <string name="section_symptom_type">SYMPTOM TYPE</string>
+    <string name="select_symptom_type_prompt">Select a symptom type on the left to customize details.</string>
     <string name="section_intensity">INTENSITY</string>
     <string name="section_body_area">AFFECTED AREA</string>
     <string name="notes_placeholder_symptom">Specific triggers or details…</string>

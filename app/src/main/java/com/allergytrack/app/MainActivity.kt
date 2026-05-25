@@ -42,6 +42,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val darkMode by userPreferencesDataStore.darkMode.collectAsState(initial = initialDarkMode)
+            
+            // Dynamicky uzamknout orientaci na portrét pro kompaktní šířku (telefony)
+            @OptIn(androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi::class)
+            val windowSize = androidx.compose.material3.windowsizeclass.calculateWindowSizeClass(this)
+            if (windowSize.widthSizeClass == androidx.compose.material3.windowsizeclass.WindowWidthSizeClass.Compact) {
+                requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+
             AllergyTrackTheme(darkTheme = darkMode) {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     AppRoot(initialOnboardingCompleted = onboardingCompleted)
