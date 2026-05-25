@@ -385,8 +385,8 @@ fun SettingsScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontFamily = MonoFontFamily,
-                            maxLines = 2,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.MiddleEllipsis
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.MiddleEllipsis,
                         )
                     }
                     val clipboard = androidx.compose.ui.platform.LocalClipboard.current
