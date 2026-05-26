@@ -69,8 +69,11 @@ fun SymptomDetailScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
                 .padding(horizontal = 16.dp),
+            contentPadding = PaddingValues(
+                top = padding.calculateTopPadding(),
+                bottom = padding.calculateBottomPadding()
+            ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item { Spacer(Modifier.height(4.dp)) }

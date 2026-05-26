@@ -150,7 +150,7 @@ fun SymptomLogScreen(
                         )
                     }
                 }
-                Spacer(Modifier.height(80.dp))
+                Spacer(Modifier.height(32.dp))
             }
         }
     } else {
@@ -221,7 +221,7 @@ fun SymptomLogScreen(
                 )
             }
 
-            Spacer(Modifier.height(80.dp))
+            Spacer(Modifier.height(32.dp))
         }
     }
 }

@@ -123,7 +123,7 @@ fun FoodManualSearchScreen(
                     .fillMaxWidth()
                     .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 100.dp)
+                contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
             ) {
                 if (searchState.isSearching) {
                     item {

@@ -119,9 +119,16 @@ fun MainAppScaffold(appUpdateRepository: com.allergytrack.app.domain.repository.
             }
         }
 
+        val contentWindowInsets = if (showBottomBar) {
+            WindowInsets.safeDrawing.exclude(WindowInsets.navigationBars)
+        } else {
+            WindowInsets.safeDrawing
+        }
+
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = MaterialTheme.colorScheme.background,
+            contentWindowInsets = contentWindowInsets,
             snackbarHost = {
                 com.allergytrack.app.ui.components.AppSnackbarHost(
                     hostState = snackbarHostState

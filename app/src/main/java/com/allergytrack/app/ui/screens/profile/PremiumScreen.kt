@@ -117,9 +117,11 @@ fun PremiumScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(bottom = 8.dp),
+            contentPadding = PaddingValues(
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding() + 8.dp
+            ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item { Spacer(Modifier.height(4.dp)) }
