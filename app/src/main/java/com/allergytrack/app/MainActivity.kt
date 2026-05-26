@@ -57,6 +57,8 @@ class MainActivity : ComponentActivity() {
             val windowSize = androidx.compose.material3.windowsizeclass.calculateWindowSizeClass(this)
             if (windowSize.widthSizeClass == androidx.compose.material3.windowsizeclass.WindowWidthSizeClass.Compact) {
                 requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            } else {
+                requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
             }
 
             AllergyTrackTheme(darkTheme = darkMode) {

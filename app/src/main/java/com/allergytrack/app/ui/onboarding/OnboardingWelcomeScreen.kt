@@ -1,5 +1,7 @@
 package com.allergytrack.app.ui.onboarding
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,10 +22,12 @@ fun OnboardingWelcomeContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Spacer(Modifier.weight(0.4f))
+        Spacer(Modifier.height(32.dp))
 
         // Large Decorative Icon
         Surface(
@@ -64,6 +68,6 @@ fun OnboardingWelcomeContent() {
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 
-        Spacer(Modifier.weight(0.6f))
+        Spacer(Modifier.height(32.dp))
     }
 }
