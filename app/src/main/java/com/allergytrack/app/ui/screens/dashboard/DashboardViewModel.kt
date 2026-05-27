@@ -97,6 +97,10 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch { userPreferences.setNotificationBannerDismissed() }
     }
 
+    fun logAiAnalysisCardClicked() {
+        analyticsManager.logAiAnalysisCardClicked(potentialTriggerCount.value)
+    }
+
     private val startOfDay: Long
         get() {
             val cal = Calendar.getInstance()

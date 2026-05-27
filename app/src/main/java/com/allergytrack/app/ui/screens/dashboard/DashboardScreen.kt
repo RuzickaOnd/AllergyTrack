@@ -137,7 +137,10 @@ fun DashboardScreen(
                     if (isAnalysisHidden && triggerCount > 0) {
                         AnalysisTeaserCard(
                             count = triggerCount,
-                            onClick = { navController.navigate(Screen.Analysis.route) }
+                            onClick = {
+                                viewModel.logAiAnalysisCardClicked()
+                                navController.navigate(Screen.Analysis.route)
+                            }
                         )
                     }
 
@@ -248,7 +251,10 @@ fun DashboardScreen(
                     item {
                         AnalysisTeaserCard(
                             count = triggerCount,
-                            onClick = { navController.navigate(Screen.Analysis.route) }
+                            onClick = {
+                                viewModel.logAiAnalysisCardClicked()
+                                navController.navigate(Screen.Analysis.route)
+                            }
                         )
                     }
                 }

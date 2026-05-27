@@ -105,4 +105,14 @@ class AnalyticsManager @Inject constructor(
         }
         logEvent("onboarding_step", bundle)
     }
+
+    /**
+     * Záznam kliknutí na kartu AI analýzy.
+     */
+    fun logAiAnalysisCardClicked(triggerCount: Int) {
+        val bundle = Bundle().apply {
+            putInt("trigger_count", triggerCount)
+        }
+        logEvent("ai_analysis_card_clicked", bundle)
+    }
 }
