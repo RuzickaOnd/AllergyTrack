@@ -487,4 +487,12 @@
     <string name="settings_fcm_token_unavailable">Token není k dispozici</string>
     <string name="update_downloaded_message">Nová verze byla stažena. Restartujte aplikaci pro dokončení instalace.</string>
     <string name="update_action_restart">RESTARTOVAT</string>
+
+    <!-- Dashboard — AI Analýza teaser (mode HIDDEN) -->
+    <string name="dashboard_analysis_teaser_title">Možné spouštěče nalezeny</string>
+    <string name="dashboard_analysis_teaser_body">Analýza tvých záznamů odhalila %d možných spouštěčů. Odemkni AI Analýzu pro podrobný přehled.</string>
+
+    <!-- Analýza — glimpse &amp; lock (mode VISIBLE + FREE) -->
+    <string name="analysis_free_ai_locked">Kompletní AI přehled v Premium</string>
+    <string name="analysis_free_more_triggers">+ %d dalších spouštěčů za Premium</string>
 </resources>

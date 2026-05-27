@@ -8,8 +8,10 @@ import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
+import com.allergytrack.app.data.local.datastore.OnboardingDataStore
 import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.permissions.PermissionsHelper
+import com.allergytrack.app.domain.analysis.CorrelationEngine
 import com.allergytrack.app.domain.model.EnvironmentLog
 import com.allergytrack.app.domain.model.EnvironmentRegion
 import com.allergytrack.app.domain.repository.EnvironmentRepository
@@ -50,7 +52,9 @@ class DashboardViewModel @Inject constructor(
     private val permissionsHelper: PermissionsHelper,
     private val premiumHelper: PremiumHelper,
     private val userPreferences: UserPreferencesDataStore,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: AnalyticsManager,
+    private val correlationEngine: CorrelationEngine,
+    private val onboardingDataStore: OnboardingDataStore
 ) : ViewModel() {
 
     init {
@@ -67,6 +71,27 @@ class DashboardViewModel @Inject constructor(
         userPreferences.notificationBannerDismissed
     ) { enabled, dismissed -> !enabled && !dismissed }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    // True pouze v HIDDEN mode — zobrazí teaser widget na Dashboardu
+    val isAnalysisHidden: StateFlow<Boolean> = combine(
+        premiumHelper.observeVisible(PremiumFeature.AI_CORRELATION_ANALYSIS),
+        premiumHelper.observeShowUpsell(PremiumFeature.AI_CORRELATION_ANALYSIS)
+    ) { visible, upsell -> !visible && !upsell }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    // Počet potenciálních spouštěčů — zobrazí se v teaser widgetu
+    val potentialTriggerCount: StateFlow<Int> = combine(
+        foodLogDao.getAllLogs(),
+        symptomLogDao.getAllLogs(),
+        onboardingDataStore.selectedAllergyTypes
+    ) { foods, symptoms, allergyTypesRaw ->
+        val knownAllergens = allergyTypesRaw
+            .split(",")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .toSet()
+        correlationEngine.analyzeFoodTriggers(foods, symptoms, knownAllergens).size
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
 
     fun dismissNotificationBanner() {
         viewModelScope.launch { userPreferences.setNotificationBannerDismissed() }

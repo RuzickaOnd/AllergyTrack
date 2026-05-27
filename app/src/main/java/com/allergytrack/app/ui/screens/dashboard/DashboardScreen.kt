@@ -23,7 +23,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.outlined.Air
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.NotificationsActive
@@ -80,6 +82,8 @@ fun DashboardScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val showNotificationBanner by viewModel.showNotificationBanner.collectAsStateWithLifecycle()
+    val isAnalysisHidden by viewModel.isAnalysisHidden.collectAsStateWithLifecycle()
+    val triggerCount by viewModel.potentialTriggerCount.collectAsStateWithLifecycle()
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     LaunchedEffect(lifecycle) {
@@ -127,6 +131,13 @@ fun DashboardScreen(
                         NotificationReminderBanner(
                             onDismiss = { viewModel.dismissNotificationBanner() },
                             onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
+                        )
+                    }
+
+                    if (isAnalysisHidden && triggerCount > 0) {
+                        AnalysisTeaserCard(
+                            count = triggerCount,
+                            onClick = { navController.navigate(Screen.Analysis.route) }
                         )
                     }
 
@@ -229,6 +240,15 @@ fun DashboardScreen(
                         NotificationReminderBanner(
                             onDismiss = { viewModel.dismissNotificationBanner() },
                             onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
+                        )
+                    }
+                }
+
+                if (isAnalysisHidden && triggerCount > 0) {
+                    item {
+                        AnalysisTeaserCard(
+                            count = triggerCount,
+                            onClick = { navController.navigate(Screen.Analysis.route) }
                         )
                     }
                 }
@@ -620,6 +640,55 @@ fun EmptyDayCard() {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun AnalysisTeaserCard(count: Int, onClick: () -> Unit) {
+    AppCard(
+        onClick = onClick,
+        borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.AutoAwesome,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.dashboard_analysis_teaser_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = stringResource(R.string.dashboard_analysis_teaser_body, count),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }

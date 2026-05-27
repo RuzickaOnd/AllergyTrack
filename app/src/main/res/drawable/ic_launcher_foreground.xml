@@ -22,9 +22,7 @@
       android:scaleY="0.6111111"
       android:translateX="99.55556"
       android:translateY="99.55556">
-    <path
-        android:pathData="M114,0L398,0A114,114 0,0 1,512 114L512,398A114,114 0,0 1,398 512L114,512A114,114 0,0 1,0 398L0,114A114,114 0,0 1,114 0z"
-        android:fillColor="#4A7C59"/>
+
     <path
         android:fillColor="#FF000000"
         android:pathData="M256,66L256,130"

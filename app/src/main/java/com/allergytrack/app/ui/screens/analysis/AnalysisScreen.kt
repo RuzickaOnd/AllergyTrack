@@ -84,6 +84,7 @@ import com.allergytrack.app.ui.components.SecondaryButton
 import com.allergytrack.app.ui.theme.okColor
 import com.allergytrack.app.ui.theme.symptomColor
 import com.allergytrack.app.ui.theme.warningColor
+import com.allergytrack.app.ui.theme.MonoFontFamily
 import com.allergytrack.app.ui.theme.SerifFontFamily
 import com.allergytrack.app.ui.util.AnalysisExportHandler
 import com.allergytrack.app.ui.util.foodTriggerIcon
@@ -108,7 +109,8 @@ fun AnalysisScreen(
 
     AnalysisExportHandler(viewModel = viewModel)
 
-    if (!isAnalysisVisible) {
+    // HIDDEN mode → ComingSoonScreen; VISIBLE+FREE → glimpse & lock (pokračuj dál)
+    if (!isAnalysisVisible && !showAnalysisUpsell) {
         AnalysisComingSoonScreen()
         return
     }
@@ -140,7 +142,7 @@ fun AnalysisScreen(
     var selectedReactionEvent by remember { mutableStateOf<FoodReactionEvent?>(null) }
 
     LaunchedEffect(uiState.correlations, uiState.foodTriggers) {
-        if (isTablet && selectedCorrelation == null && selectedFoodTrigger == null) {
+        if (isTablet && !showAnalysisUpsell && selectedCorrelation == null && selectedFoodTrigger == null) {
             uiState.correlations.firstOrNull()?.let {
                 selectedCorrelation = it
                 selectedFoodTrigger = null
@@ -174,8 +176,49 @@ fun AnalysisScreen(
                 }
 
                 if (showAnalysisUpsell) {
+                    // ── GLIMPSE & LOCK (VISIBLE + FREE) ─────────────────────────
+                    if (uiState.aiSummary.isNotEmpty()) {
+                        item { AiBadgeGlimpse(text = uiState.aiSummary) }
+                    }
+                    if (uiState.foodTriggers.isNotEmpty()) {
+                        item {
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                stringResource(R.string.analysis_food_triggers_title),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                stringResource(R.string.analysis_food_triggers_subtitle),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(Modifier.height(8.dp))
+                        }
+                        item {
+                            FoodTriggerCard(trigger = uiState.foodTriggers.first(), onClick = {})
+                            Spacer(Modifier.height(8.dp))
+                        }
+                        val lockedTriggers = uiState.foodTriggers.drop(1).take(3)
+                        items(lockedTriggers, key = { "locked_${it.allergenKey}" }) { trigger ->
+                            LockedFoodTriggerCard(trigger = trigger)
+                            Spacer(Modifier.height(8.dp))
+                        }
+                        val hiddenCount = uiState.foodTriggers.size - 1 - lockedTriggers.size
+                        if (hiddenCount > 0) {
+                            item {
+                                Text(
+                                    stringResource(R.string.analysis_free_more_triggers, hiddenCount),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(horizontal = 4.dp)
+                                )
+                            }
+                        }
+                    }
                     item { PremiumUpsellCard(feature = PremiumFeature.AI_CORRELATION_ANALYSIS) }
                 } else {
+                    // ── PLNÁ ANALÝZA (PREMIUM) ───────────────────────────────────
                     item { AiBadge(text = uiState.aiSummary) }
 
                     item { CardTitle(text = stringResource(R.string.analysis_top_triggers), icon = Icons.Outlined.Insights) }
@@ -211,96 +254,92 @@ fun AnalysisScreen(
                             }
                         }
                     }
-                }
 
-                // ── Sekce: Spouštěče jídla ──────────────────────────────────────
-                if (uiState.foodTriggers.isNotEmpty()) {
-                    item {
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            stringResource(R.string.analysis_food_triggers_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            stringResource(R.string.analysis_food_triggers_subtitle),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(Modifier.height(8.dp))
-                    }
-
-                    items(
-                        items = uiState.foodTriggers.take(6),  // max 6 karet
-                        key = { it.allergenKey }
-                    ) { trigger ->
-                        val isSelected = selectedFoodTrigger?.allergenKey == trigger.allergenKey
-                        val highlightColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f) else Color.Transparent
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(highlightColor)
-                        ) {
-                            FoodTriggerCard(
-                                trigger = trigger,
-                                onClick = {
-                                    selectedFoodTrigger = trigger
-                                    selectedCorrelation = null
-                                    selectedReactionEvent = null
-                                }
-                            )
-                        }
-                        Spacer(Modifier.height(8.dp))
-                    }
-
-                    // Tlačítko "zobrazit vše" pokud je více než 6
-                    if (uiState.foodTriggers.size > 6) {
+                    // ── Sekce: Spouštěče jídla ──────────────────────────────────
+                    if (uiState.foodTriggers.isNotEmpty()) {
                         item {
-                            TextButton(
-                                onClick = { /* TODO: rozbalit / zobrazit všechny */ },
-                                modifier = Modifier.fillMaxWidth()
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                stringResource(R.string.analysis_food_triggers_title),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                stringResource(R.string.analysis_food_triggers_subtitle),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(Modifier.height(8.dp))
+                        }
+                        items(
+                            items = uiState.foodTriggers.take(6),
+                            key = { it.allergenKey }
+                        ) { trigger ->
+                            val isSelected = selectedFoodTrigger?.allergenKey == trigger.allergenKey
+                            val highlightColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f) else Color.Transparent
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(highlightColor)
                             ) {
-                                Text(stringResource(R.string.analysis_show_all_triggers, uiState.foodTriggers.size))
+                                FoodTriggerCard(
+                                    trigger = trigger,
+                                    onClick = {
+                                        selectedFoodTrigger = trigger
+                                        selectedCorrelation = null
+                                        selectedReactionEvent = null
+                                    }
+                                )
+                            }
+                            Spacer(Modifier.height(8.dp))
+                        }
+                        if (uiState.foodTriggers.size > 6) {
+                            item {
+                                TextButton(
+                                    onClick = { /* TODO: rozbalit / zobrazit všechny */ },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(stringResource(R.string.analysis_show_all_triggers, uiState.foodTriggers.size))
+                                }
+                            }
+                        }
+                    } else if (uiState.foodTriggersLoading) {
+                        item {
+                            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                            }
+                        }
+                    } else if (!uiState.foodTriggersLoading && uiState.readiness !is AnalysisReadiness.Locked) {
+                        item {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            ) {
+                                Text(
+                                    stringResource(R.string.analysis_no_food_patterns),
+                                    modifier = Modifier.padding(16.dp),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
                         }
                     }
 
-                } else if (uiState.foodTriggersLoading) {
                     item {
-                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(modifier = Modifier.padding(8.dp))
-                        }
-                    }
-                } else if (!uiState.foodTriggersLoading && uiState.readiness !is AnalysisReadiness.Locked) {
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
+                        PremiumGate(
+                            isVisible = isExportVisible,
+                            showUpsell = showExportUpsell,
+                            feature = PremiumFeature.PDF_EXPORT
                         ) {
-                            Text(
-                                stringResource(R.string.analysis_no_food_patterns),
-                                modifier = Modifier.padding(16.dp),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            SecondaryButton(
+                                text = stringResource(R.string.btn_export_pdf),
+                                onClick = viewModel::exportReport
                             )
                         }
-                    }
-                }
-
-                item {
-                    PremiumGate(
-                        isVisible = isExportVisible,
-                        showUpsell = showExportUpsell,
-                        feature = PremiumFeature.PDF_EXPORT
-                    ) {
-                        SecondaryButton(
-                            text = stringResource(R.string.btn_export_pdf),
-                            onClick = viewModel::exportReport
-                        )
                     }
                 }
             }
@@ -313,7 +352,10 @@ fun AnalysisScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (selectedCorrelation != null) {
+                if (showAnalysisUpsell) {
+                    Spacer(Modifier.height(8.dp))
+                    PremiumUpsellCard(feature = PremiumFeature.AI_CORRELATION_ANALYSIS)
+                } else if (selectedCorrelation != null) {
                     val corr = selectedCorrelation!!
                     val scorePercent = (corr.score * 100).toInt()
                     val severityColor = when (corr.severity) {
@@ -455,8 +497,48 @@ fun AnalysisScreen(
             }
 
             if (showAnalysisUpsell) {
+                // ── GLIMPSE & LOCK (VISIBLE + FREE) ─────────────────────────
+                if (uiState.aiSummary.isNotEmpty()) {
+                    item { AiBadgeGlimpse(text = uiState.aiSummary) }
+                }
+                if (uiState.foodTriggers.isNotEmpty()) {
+                    item {
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            stringResource(R.string.analysis_food_triggers_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            stringResource(R.string.analysis_food_triggers_subtitle),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    item {
+                        FoodTriggerCard(trigger = uiState.foodTriggers.first(), onClick = {})
+                    }
+                    val lockedTriggers = uiState.foodTriggers.drop(1).take(3)
+                    items(lockedTriggers, key = { "locked_${it.allergenKey}" }) { trigger ->
+                        Spacer(Modifier.height(8.dp))
+                        LockedFoodTriggerCard(trigger = trigger)
+                    }
+                    val hiddenCount = uiState.foodTriggers.size - 1 - lockedTriggers.size
+                    if (hiddenCount > 0) {
+                        item {
+                            Text(
+                                stringResource(R.string.analysis_free_more_triggers, hiddenCount),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 4.dp)
+                            )
+                        }
+                    }
+                }
                 item { PremiumUpsellCard(feature = PremiumFeature.AI_CORRELATION_ANALYSIS) }
             } else {
+                // ── PLNÁ ANALÝZA (PREMIUM) ───────────────────────────────────
                 item { AiBadge(text = uiState.aiSummary) }
 
                 item { CardTitle(text = stringResource(R.string.analysis_top_triggers), icon = Icons.Outlined.Insights) }
@@ -486,86 +568,79 @@ fun AnalysisScreen(
                         )
                     }
                 }
-            }
 
-            // ── Sekce: Spouštěče jídla ──────────────────────────────────────
-            if (uiState.foodTriggers.isNotEmpty()) {
-                item {
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        stringResource(R.string.analysis_food_triggers_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        stringResource(R.string.analysis_food_triggers_subtitle),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(Modifier.height(8.dp))
-                }
-
-                items(
-                    items = uiState.foodTriggers.take(6),  // max 6 karet
-                    key = { it.allergenKey }
-                ) { trigger ->
-                    FoodTriggerCard(
-                        trigger = trigger,
-                        onClick = {
-                            FoodTriggerDetailActivity.start(context, trigger.allergenKey)
-                        }
-                    )
-                    Spacer(Modifier.height(8.dp))
-                }
-
-                // Tlačítko "zobrazit vše" pokud je více než 6
-                if (uiState.foodTriggers.size > 6) {
+                // ── Sekce: Spouštěče jídla ──────────────────────────────────
+                if (uiState.foodTriggers.isNotEmpty()) {
                     item {
-                        TextButton(
-                            onClick = { /* TODO: rozbalit / zobrazit všechny */ },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(stringResource(R.string.analysis_show_all_triggers, uiState.foodTriggers.size))
-                        }
-                    }
-                }
-
-            } else if (uiState.foodTriggersLoading) {
-                item {
-                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(modifier = Modifier.padding(8.dp))
-                    }
-                }
-            } else if (!uiState.foodTriggersLoading && uiState.readiness !is AnalysisReadiness.Locked) {
-                item {
-                    // Empty state — dostatek dat pro analýzu, ale žádné korelace nenalezeny
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
+                        Spacer(Modifier.height(4.dp))
                         Text(
-                            stringResource(R.string.analysis_no_food_patterns),
-                            modifier = Modifier.padding(16.dp),
+                            stringResource(R.string.analysis_food_triggers_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            stringResource(R.string.analysis_food_triggers_subtitle),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    items(
+                        items = uiState.foodTriggers.take(6),
+                        key = { it.allergenKey }
+                    ) { trigger ->
+                        FoodTriggerCard(
+                            trigger = trigger,
+                            onClick = { FoodTriggerDetailActivity.start(context, trigger.allergenKey) }
+                        )
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    if (uiState.foodTriggers.size > 6) {
+                        item {
+                            TextButton(
+                                onClick = { /* TODO: rozbalit / zobrazit všechny */ },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(stringResource(R.string.analysis_show_all_triggers, uiState.foodTriggers.size))
+                            }
+                        }
+                    }
+                } else if (uiState.foodTriggersLoading) {
+                    item {
+                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                        }
+                    }
+                } else if (!uiState.foodTriggersLoading && uiState.readiness !is AnalysisReadiness.Locked) {
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Text(
+                                stringResource(R.string.analysis_no_food_patterns),
+                                modifier = Modifier.padding(16.dp),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
-            }
 
-            item {
-                PremiumGate(
-                    isVisible = isExportVisible,
-                    showUpsell = showExportUpsell,
-                    feature = PremiumFeature.PDF_EXPORT
-                ) {
-                    SecondaryButton(
-                        text = stringResource(R.string.btn_export_pdf),
-                        onClick = viewModel::exportReport
-                    )
+                item {
+                    PremiumGate(
+                        isVisible = isExportVisible,
+                        showUpsell = showExportUpsell,
+                        feature = PremiumFeature.PDF_EXPORT
+                    ) {
+                        SecondaryButton(
+                            text = stringResource(R.string.btn_export_pdf),
+                            onClick = viewModel::exportReport
+                        )
+                    }
                 }
             }
         }
@@ -917,6 +992,103 @@ private fun ComingSoonFeatureRow(icon: ImageVector, text: String) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
+    }
+}
+
+@Composable
+private fun AiBadgeGlimpse(text: String) {
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(88.dp)
+            .clip(RoundedCornerShape(12.dp))
+    ) {
+        AiBadge(text = text)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colorStops = arrayOf(
+                            0.25f to Color.Transparent,
+                            1.0f to surfaceColor
+                        )
+                    )
+                )
+        )
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 14.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Lock,
+                contentDescription = null,
+                modifier = Modifier.size(12.dp),
+                tint = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = stringResource(R.string.analysis_free_ai_locked),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary,
+                fontFamily = MonoFontFamily
+            )
+        }
+    }
+}
+
+@Composable
+private fun LockedFoodTriggerCard(trigger: FoodTrigger) {
+    val localizedName = if (trigger.allergenKey.startsWith("__food__")) {
+        trigger.triggerName
+    } else {
+        FoodAllergenHelper.keyToDisplayRes[trigger.allergenKey]
+            ?.let { stringResource(it) }
+            ?: trigger.triggerName
+    }
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                modifier = Modifier.size(44.dp),
+                shape = RoundedCornerShape(10.dp),
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.08f)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = foodTriggerIcon(trigger.allergenKey),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
+                }
+            }
+            Text(
+                text = localizedName,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = Icons.Outlined.Lock,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            )
+        }
     }
 }
 

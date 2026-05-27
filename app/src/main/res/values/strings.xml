@@ -487,4 +487,12 @@
     <string name="settings_fcm_token_unavailable">Token unavailable</string>
     <string name="update_downloaded_message">A new update has been downloaded. Restart the app to apply it.</string>
     <string name="update_action_restart">RESTART</string>
+
+    <!-- Dashboard — AI Analysis teaser (HIDDEN mode) -->
+    <string name="dashboard_analysis_teaser_title">Potential triggers found</string>
+    <string name="dashboard_analysis_teaser_body">Analysis of your records found %d potential triggers. Unlock AI Analysis for a detailed overview.</string>
+
+    <!-- Analysis — glimpse &amp; lock (VISIBLE + FREE mode) -->
+    <string name="analysis_free_ai_locked">Full AI overview in Premium</string>
+    <string name="analysis_free_more_triggers">+ %d more triggers in Premium</string>
 </resources>
