@@ -3,6 +3,10 @@ package com.allergytrack.app.ui.navigation
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Analytics
@@ -11,6 +15,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -67,17 +72,38 @@ fun MainAppScaffold(appUpdateRepository: com.allergytrack.app.domain.repository.
         NavigationSuiteType.None
     }
 
+    val navSuiteItemColors = NavigationSuiteDefaults.itemColors(
+        navigationBarItemColors = NavigationBarItemDefaults.colors(
+            selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            selectedTextColor = MaterialTheme.colorScheme.primary,
+            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+            indicatorColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        navigationRailItemColors = NavigationRailItemDefaults.colors(
+            selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            selectedTextColor = MaterialTheme.colorScheme.primary,
+            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+            indicatorColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    )
+
     NavigationSuiteScaffold(
         layoutType = layoutType,
+        navigationSuiteColors = NavigationSuiteDefaults.colors(
+            navigationBarContainerColor = MaterialTheme.colorScheme.surface,
+            navigationRailContainerColor = MaterialTheme.colorScheme.surface
+        ),
         navigationSuiteItems = {
             val items = listOf(
-                Pair(Screen.Dashboard, R.string.nav_dashboard to Icons.Outlined.Home),
-                Pair(Screen.Charts,    R.string.nav_charts to Icons.Outlined.Analytics),
-                Pair(Screen.Analysis,  R.string.nav_analysis to Icons.Outlined.AutoAwesome),
-                Pair(Screen.Profile,   R.string.nav_profile to Icons.Outlined.Person),
+                Triple(Screen.Dashboard, R.string.nav_dashboard, Icons.Outlined.Home to Icons.Filled.Home),
+                Triple(Screen.Charts,    R.string.nav_charts,    Icons.Outlined.Analytics to Icons.Filled.Analytics),
+                Triple(Screen.Analysis,  R.string.nav_analysis,  Icons.Outlined.AutoAwesome to Icons.Filled.AutoAwesome),
+                Triple(Screen.Profile,   R.string.nav_profile,   Icons.Outlined.Person to Icons.Filled.Person),
             )
-            items.forEach { (screen, info) ->
-                val (labelRes, icon) = info
+            items.forEach { (screen, labelRes, icons) ->
+                val (outlinedIcon, filledIcon) = icons
                 val selected = currentRoute == screen.route
                 item(
                     selected = selected,
@@ -90,13 +116,14 @@ fun MainAppScaffold(appUpdateRepository: com.allergytrack.app.domain.repository.
                     },
                     icon = {
                         Icon(
-                            imageVector = icon,
+                            imageVector = if (selected) filledIcon else outlinedIcon,
                             contentDescription = stringResource(labelRes)
                         )
                     },
                     label = {
                         Text(stringResource(labelRes))
-                    }
+                    },
+                    colors = navSuiteItemColors
                 )
             }
         }
