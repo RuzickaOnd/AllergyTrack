@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.allergytrack.app.data.analytics.AnalyticsManager
+import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
+import com.allergytrack.app.data.worker.WorkManagerScheduler
 
 data class OnboardingUiState(
     val currentStep: OnboardingStep = OnboardingStep.WELCOME,
@@ -38,7 +40,9 @@ class OnboardingViewModel @Inject constructor(
     private val onboardingDataStore: OnboardingDataStore,
     private val permissionsHelper: PermissionsHelper,
     private val premiumHelper: PremiumHelper,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: AnalyticsManager,
+    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val workManagerScheduler: WorkManagerScheduler
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OnboardingUiState())
@@ -124,6 +128,10 @@ class OnboardingViewModel @Inject constructor(
                 allergyTypes = state.selectedAllergyTypes.map { it.name }.toSet(),
                 symptomTypes = state.selectedSymptomTypes.map { it.name }.toSet()
             )
+            if (permissionsHelper.hasNotificationPermission()) {
+                userPreferencesDataStore.setNotificationsEnabled(true)
+                workManagerScheduler.scheduleReminder()
+            }
             onboardingDataStore.setCompleted()
             analyticsManager.logOnboardingStep(5, "completed")
             _uiState.update { it.copy(isCompleting = false, isCompleted = true) }
@@ -132,6 +140,10 @@ class OnboardingViewModel @Inject constructor(
 
     fun skipOnboarding() {
         viewModelScope.launch {
+            if (permissionsHelper.hasNotificationPermission()) {
+                userPreferencesDataStore.setNotificationsEnabled(true)
+                workManagerScheduler.scheduleReminder()
+            }
             onboardingDataStore.setCompleted()
             analyticsManager.logOnboardingStep(0, "skipped")
             _uiState.update { it.copy(isCompleted = true) }
