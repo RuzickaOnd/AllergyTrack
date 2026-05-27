@@ -368,7 +368,7 @@ Každá změna schématu = zvýšení verze + Migration objekt.
 | `user_name` | String | `""` | Zobrazované jméno uživatele; prázdný = nezadáno |
 | `avatar_selection` | String | `"person"` | ID presetu (např. `"pets"`) nebo `"gallery:<uri>"` pro obrázek z galerie |
 | `dark_mode` | Boolean | `true` | Tmavý/světlý režim; změna se projeví okamžitě — MainActivity sleduje tento flow |
-| `notifications_enabled` | Boolean | `false` | Večerní připomínka ~20:00; zapnutí/vypnutí řídí WorkManager job (`ReminderWorker`) |
+| notifications_enabled | Boolean | false | Večerní připomínka v 19:00; zapnutí/vypnutí řídí WorkManager; auto-zapnuto po onboardingu při uděleném oprávnění |
 
 ### 9. ProfileScreen — avatar a editace jména
 
@@ -771,7 +771,7 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 ### AnalyticsManager:
 - Třída: `AnalyticsManager` (`com.allergytrack.app.data.analytics.AnalyticsManager`), spravovaná Hilt (@Singleton).
 - Inicializace: Lazy delegace inicializovaná asynchronně na pozadí (`Dispatchers.Default`) v `AllergyTrackApplication.onCreate()`.
-- Metody: Interní `private fun logEvent(eventName: String, params: Bundle? = null)` a typově bezpečné veřejné metody (`logScreenView`, `logFoodLogged`, `logSymptomLogged` atd.).
+- Metody: Interní `private fun logEvent(eventName: String, params: Bundle? = null)` a typově bezpečné veřejné metody (`logScreenView`, `logFoodLogged`, `logSymptomLogged`, `logAiAnalysisCardClicked` atd.).
 
 ### Firebase Cloud Messaging (FCM) & NotificationManager:
 - Služba: `AppFirebaseMessagingService` (`com.allergytrack.app.data.notifications.AppFirebaseMessagingService`), registrovaná v manifestu.
