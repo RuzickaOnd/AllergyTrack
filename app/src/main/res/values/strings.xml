@@ -255,6 +255,7 @@
     <!-- Profile -->
     <string name="profile_user_name">User</string>
     <string name="profile_option_premium">Premium</string>
+    <string name="profile_option_premium_manage">Manage Subscription</string>
     <string name="about_version">Version %s</string>
     <string name="profile_edit_name">Edit name</string>
     <string name="profile_name_done">Done</string>
@@ -344,7 +345,7 @@
     <!-- Premium features -->
     <string name="premium_feature_food_photo">Food photo recognition</string>
     <string name="premium_feature_pollen">Pollen data</string>
-    <string name="premium_feature_extended_charts">Charts 30+ days</string>
+    <string name="premium_feature_extended_charts">Charts 14+ days</string>
     <string name="premium_feature_ai_analysis">AI trigger analysis</string>
     <string name="premium_feature_pdf_export">PDF export for doctor</string>
     <string name="premium_feature_unlimited_history">Unlimited history</string>

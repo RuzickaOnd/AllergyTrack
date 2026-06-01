@@ -25,7 +25,7 @@ class PremiumHelper @Inject constructor(
     // HIDDEN  = funkce fyzicky neexistují v UI
     // VISIBLE = funkce viditelné, free uživatel vidí hvězdičky
     // =========================================================
-    private val visibilityMode = PremiumVisibilityMode.HIDDEN
+    private val visibilityMode = PremiumVisibilityMode.VISIBLE
 
     val currentVisibilityMode: PremiumVisibilityMode get() = visibilityMode
 
@@ -59,7 +59,7 @@ class PremiumHelper @Inject constructor(
      * Efektivní premium status — v DEBUG může být přepsán z DataStore.
      * V RELEASE vždy vrátí skutečný stav z PremiumRepository.
      */
-    private fun observeEffectiveStatus(): Flow<PremiumStatus> {
+    fun observeEffectiveStatus(): Flow<PremiumStatus> {
         if (!BuildConfig.DEBUG) return premiumRepository.observePremiumStatus()
         return combine(
             premiumRepository.observePremiumStatus(),

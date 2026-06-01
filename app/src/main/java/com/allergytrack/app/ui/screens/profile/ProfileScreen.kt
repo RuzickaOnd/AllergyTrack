@@ -173,10 +173,13 @@ fun ProfileScreen(
         // Options list
         item {
             AppCard(contentPadding = PaddingValues(0.dp)) {
-                if (isPremiumVisible && !isPremiumUser) {
+                if (isPremiumVisible) {
                     SettingsActionItem(
                         icon = Icons.Default.Star,
-                        label = stringResource(R.string.profile_option_premium),
+                        label = stringResource(
+                            if (isPremiumUser) R.string.profile_option_premium_manage
+                            else R.string.profile_option_premium
+                        ),
                         onClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
                     )
                     HorizontalDivider(

@@ -10,6 +10,8 @@ import com.allergytrack.app.data.analytics.AnalyticsManager
 import com.allergytrack.app.data.local.datastore.DebugPreferences
 import com.allergytrack.app.data.notifications.NotificationManager as AppNotificationManager
 import com.allergytrack.app.data.worker.ReminderWorker
+import com.revenuecat.purchases.Purchases
+import com.revenuecat.purchases.PurchasesConfiguration
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -39,6 +41,14 @@ class AllergyTrackApplication : Application(), Configuration.Provider {
         super.onCreate()
         instance = this
         appNotificationManager.createNotificationChannels()
+
+        // Inicializace RevenueCat
+        Purchases.configure(
+            PurchasesConfiguration.Builder(
+                this,
+                BuildConfig.REVENUECAT_API_KEY
+            ).build()
+        )
         
         // Inicializace analytiky na pozadí, aby se neblokovalo hlavní vlákno při startu aplikace
         kotlinx.coroutines.MainScope().launch(kotlinx.coroutines.Dispatchers.Default) {

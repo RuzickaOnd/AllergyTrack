@@ -255,6 +255,7 @@
     <!-- Profil -->
     <string name="profile_user_name">Uživatel</string>
     <string name="profile_option_premium">Premium</string>
+    <string name="profile_option_premium_manage">Správa předplatného</string>
     <string name="about_version">Verze %s</string>
     <string name="profile_edit_name">Upravit jméno</string>
     <string name="profile_name_done">Hotovo</string>

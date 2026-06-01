@@ -36,6 +36,10 @@ android {
             "String", "SUPABASE_KEY",
             "\"${localProperties["SUPABASE_KEY"] ?: ""}\""
         )
+        buildConfigField(
+            "String", "REVENUECAT_API_KEY",
+            "\"${localProperties["REVENUECAT_API_KEY"] ?: ""}\""
+        )
     }
 
     buildTypes {
@@ -119,6 +123,11 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.play.app.update)
     implementation(libs.play.app.update.ktx)
+
+    // RevenueCat
+    implementation(libs.revenuecat.purchases)
+    implementation(libs.revenuecat.purchases.ui)
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.testing.ui.manifest)
     testImplementation(libs.testing.junit)
