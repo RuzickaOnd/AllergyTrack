@@ -36,7 +36,7 @@ class PremiumRepositoryImpl @Inject constructor() : PremiumRepository {
             }
 
             override fun onError(error: PurchasesError) {
-                // V případě chyby (např. offline) zůstává předchozí (případně free) stav
+                // V případě chyby (např. Offline) zůstává předchozí (případně free) stav
             }
         })
     }
