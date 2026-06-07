@@ -31,6 +31,13 @@ sealed interface DashboardInsight {
     data object GoodDay : DashboardInsight
 }
 
+private data class DashboardPremiumState(
+    val locationGranted: Boolean,
+    val canSeePollen: Boolean,
+    val showPollenBadge: Boolean,
+    val showPremiumPromo: Boolean
+)
+
 data class DashboardUiState(
     val isLoading: Boolean = true,
     val todayFoodLogs: List<FoodLogEntity> = emptyList(),
@@ -39,6 +46,8 @@ data class DashboardUiState(
     val isRefreshingEnvironment: Boolean = false,
     val showEnvironmentSection: Boolean = false,
     val locationGranted: Boolean = true,
+    val showPollenPremiumBadge: Boolean = false,
+    val showPremiumPromoCard: Boolean = false,
     @get:StringRes val greetingRes: Int = R.string.greeting_morning,
     val insight: DashboardInsight? = null,
     val error: String? = null
@@ -118,10 +127,21 @@ class DashboardViewModel @Inject constructor(
         _isRefreshingEnv,
         combine(
             _locationGranted,
-            premiumHelper.observeAccess(PremiumFeature.POLLEN_DATA)
-        ) { location, pollen -> location to pollen }
-    ) { foodLogs, symptomLogs, envLogs, isRefreshing, locationAndPollen ->
-        val (locationGranted, canSeePollen) = locationAndPollen
+            premiumHelper.observeAccess(PremiumFeature.POLLEN_DATA),
+            premiumHelper.observeShowBadge(PremiumFeature.POLLEN_DATA),
+            premiumHelper.observeShowUpsell(PremiumFeature.UNLIMITED_HISTORY)
+        ) { location, canSeePollen, showPollenBadge, showPremiumPromo ->
+            DashboardPremiumState(
+                locationGranted = location,
+                canSeePollen = canSeePollen,
+                showPollenBadge = showPollenBadge,
+                showPremiumPromo = showPremiumPromo
+            )
+        }
+    ) { foodLogs, symptomLogs, envLogs, isRefreshing, premiumState ->
+        val locationGranted = premiumState.locationGranted
+        val canSeePollen = premiumState.canSeePollen
+        val showPollenBadge = premiumState.showPollenBadge
         val latest = envLogs.maxByOrNull { it.timestamp }
         // DŮLEŽITÉ: Sekce prostředí se zobrazuje POUZE pro uživatele v Evropě.
         // Používáme Open-Meteo Air Quality API s modelem CAMS (Copernicus), který
@@ -130,7 +150,7 @@ class DashboardViewModel @Inject constructor(
         // Pyl je také EU-only a sezónní (únor–říjen). Pro globální podporu by bylo
         // nutné integrovat jiný datový zdroj (např. IQAir, AirVisual nebo WAQI API).
         val isEurope = latest?.region == EnvironmentRegion.EUROPE
-        val filteredEnv = latest?.let {
+        val gatedEnv = latest?.let {
             if (isEurope) {
                 if (canSeePollen) {
                     it
@@ -144,18 +164,26 @@ class DashboardViewModel @Inject constructor(
                 }
             } else null
         }
+        val shouldLockPollen = showPollenBadge && latest?.let { isEurope && it.pollenAvailable } == true
+        val displayEnv = latest?.let {
+            if (isEurope) {
+                if (canSeePollen || shouldLockPollen) it else gatedEnv
+            } else null
+        }
         DashboardUiState(
             isLoading = false,
             todayFoodLogs = foodLogs,
             todaySymptomLogs = symptomLogs,
             // Null pro non-EU: AQI by byl uložen jako 0 (chybějící data, ne skutečná hodnota).
-            latestEnvironment = filteredEnv,
+            latestEnvironment = displayEnv,
             isRefreshingEnvironment = isRefreshing,
             locationGranted = locationGranted,
             // Zobrazit sekci: chybějící oprávnění (zobrazíme kartu s výzvou) NEBO načítáme/EU.
             showEnvironmentSection = !locationGranted || (latest == null && isRefreshing) || isEurope,
             greetingRes = getGreeting(),
-            insight = computeInsight(filteredEnv)
+            insight = computeInsight(gatedEnv),
+            showPollenPremiumBadge = shouldLockPollen,
+            showPremiumPromoCard = premiumState.showPremiumPromo
         )
     }.stateIn(
         scope = viewModelScope,

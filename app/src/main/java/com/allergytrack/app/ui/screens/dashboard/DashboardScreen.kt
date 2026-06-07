@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.dashboard
 
+import android.content.Intent
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.outlined.Air
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Close
@@ -42,8 +45,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +70,7 @@ import com.allergytrack.app.ui.components.CardTitle
 import com.allergytrack.app.ui.components.PermissionRequiredCard
 import com.allergytrack.app.ui.components.PrimaryButton
 import com.allergytrack.app.ui.navigation.Screen
+import com.allergytrack.app.ui.screens.profile.PremiumActivity
 import com.allergytrack.app.ui.theme.MonoFontFamily
 import com.allergytrack.app.ui.theme.SerifFontFamily
 import com.allergytrack.app.ui.theme.okColor
@@ -82,6 +88,7 @@ fun DashboardScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val showNotificationBanner by viewModel.showNotificationBanner.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     val isAnalysisHidden by viewModel.isAnalysisHidden.collectAsStateWithLifecycle()
     val triggerCount by viewModel.potentialTriggerCount.collectAsStateWithLifecycle()
 
@@ -134,6 +141,12 @@ fun DashboardScreen(
                         )
                     }
 
+                    if (uiState.showPremiumPromoCard) {
+                        PremiumPromoCard(
+                            onClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
+                        )
+                    }
+
                     if (isAnalysisHidden && triggerCount > 0) {
                         AnalysisTeaserCard(
                             count = triggerCount,
@@ -155,7 +168,10 @@ fun DashboardScreen(
                             )
 
                             uiState.latestEnvironment != null -> uiState.latestEnvironment?.let {
-                                EnvironmentCard(env = it)
+                                EnvironmentCard(
+                                    env = it,
+                                    showPollenPremiumBadge = uiState.showPollenPremiumBadge
+                                )
                             } ?: run { NoEnvironmentCard() }
 
                             else -> NoEnvironmentCard()
@@ -247,6 +263,14 @@ fun DashboardScreen(
                     }
                 }
 
+                if (uiState.showPremiumPromoCard) {
+                    item {
+                        PremiumPromoCard(
+                            onClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
+                        )
+                    }
+                }
+
                 if (isAnalysisHidden && triggerCount > 0) {
                     item {
                         AnalysisTeaserCard(
@@ -270,7 +294,10 @@ fun DashboardScreen(
                             )
 
                             uiState.latestEnvironment != null -> uiState.latestEnvironment?.let {
-                                EnvironmentCard(env = it)
+                                EnvironmentCard(
+                                    env = it,
+                                    showPollenPremiumBadge = uiState.showPollenPremiumBadge
+                                )
                             } ?: run { NoEnvironmentCard() }
 
                             else -> NoEnvironmentCard()
@@ -406,6 +433,60 @@ fun NotificationReminderBanner(
 }
 
 @Composable
+private fun PremiumPromoCard(onClick: () -> Unit) {
+    AppCard(
+        onClick = onClick,
+        borderColor = MaterialTheme.colorScheme.warningColor.copy(alpha = 0.45f),
+        backgroundColor = MaterialTheme.colorScheme.warningColor.copy(alpha = 0.08f),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 10.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.warningColor.copy(alpha = 0.16f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.warningColor
+                )
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.dashboard_premium_promo_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = stringResource(R.string.dashboard_premium_promo_body),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Text(
+                text = stringResource(R.string.dashboard_premium_promo_cta).uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                fontFamily = MonoFontFamily,
+                color = MaterialTheme.colorScheme.warningColor
+            )
+        }
+    }
+}
+
+@Composable
 fun InsightBadge(insight: DashboardInsight?) {
     if (insight == null) return
     val message = when (insight) {
@@ -422,7 +503,10 @@ fun InsightBadge(insight: DashboardInsight?) {
 }
 
 @Composable
-fun EnvironmentCard(env: EnvironmentLog) {
+fun EnvironmentCard(
+    env: EnvironmentLog,
+    showPollenPremiumBadge: Boolean = false
+) {
     val maxPollen = if (env.pollenAvailable) {
         maxOf(env.pollenGrassIndex ?: 0, env.pollenTreeIndex ?: 0, env.pollenWeedIndex ?: 0)
     } else null
@@ -438,7 +522,7 @@ fun EnvironmentCard(env: EnvironmentLog) {
     AppCard(borderColor = borderColor) {
         CardTitle(stringResource(R.string.env_section_title), icon = Icons.Outlined.Air)
         Spacer(Modifier.height(12.dp))
-        if (env.pollenAvailable) {
+        if (env.pollenAvailable || showPollenPremiumBadge) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
@@ -446,7 +530,8 @@ fun EnvironmentCard(env: EnvironmentLog) {
                 EnvironmentStat(
                     label = stringResource(R.string.env_label_pollen_grass),
                     value = env.pollenGrassIndex?.toString() ?: "—",
-                    color = pollenStatColor(env.pollenGrassIndex)
+                    color = pollenStatColor(env.pollenGrassIndex),
+                    isLocked = showPollenPremiumBadge
                 )
                 EnvironmentStat(
                     label = stringResource(R.string.env_label_aqi),
@@ -456,7 +541,8 @@ fun EnvironmentCard(env: EnvironmentLog) {
                 EnvironmentStat(
                     label = stringResource(R.string.env_label_pollen_tree),
                     value = env.pollenTreeIndex?.toString() ?: "—",
-                    color = pollenStatColor(env.pollenTreeIndex)
+                    color = pollenStatColor(env.pollenTreeIndex),
+                    isLocked = showPollenPremiumBadge
                 )
             }
         } else {
@@ -487,21 +573,76 @@ private fun aqiStatColor(aqi: Int) = when {
 }
 
 @Composable
-fun EnvironmentStat(label: String, value: String, color: androidx.compose.ui.graphics.Color) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = value,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = color,
-            fontFamily = SerifFontFamily
-        )
-        Text(
-            text = label.uppercase(),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontFamily = MonoFontFamily
-        )
+fun EnvironmentStat(
+    label: String,
+    value: String,
+    color: androidx.compose.ui.graphics.Color,
+    isLocked: Boolean = false
+) {
+    val contentAlpha = if (isLocked) 0.45f else 1f
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(3.dp)
+    ) {
+        val statContent: @Composable () -> Unit = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = color.copy(alpha = contentAlpha),
+                    fontFamily = SerifFontFamily
+                )
+                Text(
+                    text = label.uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = contentAlpha),
+                    fontFamily = MonoFontFamily
+                )
+            }
+        }
+
+        if (isLocked) {
+            Box(
+                modifier = Modifier.padding(end = 6.dp, bottom = 6.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f))
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                        .blur(12.dp)
+                ) {
+                    statContent()
+                }
+                PremiumPollenBadge(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = 6.dp, y = 6.dp)
+                )
+            }
+        } else {
+            statContent()
+        }
+    }
+}
+
+@Composable
+private fun PremiumPollenBadge(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.size(22.dp),
+        color = MaterialTheme.colorScheme.warningColor.copy(alpha = 0.16f),
+        shape = CircleShape
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = null,
+                modifier = Modifier.size(12.dp),
+                tint = MaterialTheme.colorScheme.warningColor
+            )
+        }
     }
 }
 

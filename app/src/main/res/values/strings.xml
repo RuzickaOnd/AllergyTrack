@@ -340,6 +340,9 @@
     <!-- Premium -->
     <string name="premium_upsell_desc">This feature is available in the Premium version.</string>
     <string name="premium_badge_label">PREMIUM</string>
+    <string name="dashboard_premium_promo_title">Unlock Premium</string>
+    <string name="dashboard_premium_promo_body">AI insights, pollen data, longer charts and PDF reports.</string>
+    <string name="dashboard_premium_promo_cta">View</string>
     <string name="ai_badge_label">CLINICAL INSIGHT</string>
 
     <!-- Premium features -->

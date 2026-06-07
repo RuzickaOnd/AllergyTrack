@@ -337,6 +337,9 @@
     <!-- Premium -->
     <string name="premium_upsell_desc">Tato funkce je dostupná v Premium verzi.</string>
     <string name="premium_badge_label">PREMIUM</string>
+    <string name="dashboard_premium_promo_title">Odemkněte Premium</string>
+    <string name="dashboard_premium_promo_body">AI vhledy, pylová data, delší grafy a PDF reporty.</string>
+    <string name="dashboard_premium_promo_cta">Zobrazit</string>
     <string name="ai_badge_label">KLINICKÝ VHLED</string>
 
     <!-- Prémiové funkce -->
@@ -454,10 +457,10 @@
     <string name="faq_a_food_database">Data o balených potravinách pocházejí z Open Food Facts (openfoodfacts.org) — otevřené komunitní databáze produktů z celého světa. Pokud hledaný produkt v databázi nenajdeš, můžeš ho zadat ručně a sám/sama vybrat alergeny ze seznamu EU 14.</string>
     <string name="faq_q_no_pollen">Proč nevidím pylová data?</string>
     <string name="faq_a_no_pollen">Pylová data se zobrazí jen pokud jsou splněny tři podmínky: máš povolený přístup k poloze, nacházíš se v Evropě a je pylová sezóna (přibližně únor–říjen). Mimo toto období nebo mimo Evropu aplikace správně zobrazí hlášku o nedostupnosti — není to chyba.</string>
-    <string name="faq_q_eu_allergens">Co jsou EU 14 alergenů?</string>
+    <string name="faq_q_eu_allergens">Co je 14 EU alergenů?</string>
     <string name="faq_a_eu_allergens">Jsou to alergeny, které musí být povinně označeny na obalu potravin v Evropské unii. Patří sem: lepek (pšenice, žito, ječmen, oves), mléko, vejce, ryby, korýši (krevety, krabi, humr), arašídy, sója, ořechy (mandle, kešu, vlašské ořechy a další), celer, hořčice, sezam, siřičitany (konzervant v sušeném ovoci a víně), vlčí bob a měkkýši (chobotnice, mušle, hřebenatky).</string>
     <string name="faq_q_data_safety">Jsou moje data v bezpečí?</string>
-    <string name="faq_a_data_safety">Ano. Všechna tvá data — záznamy jídla, příznaků i prostředí — jsou uložena jen v tvém telefonu. Aplikace neodesílá žádná osobní data na servery ani nesbírá žádné informace o tobě. K registraci nebo vytvoření účtu vůbec nepotřebuješ.</string>
+    <string name="faq_a_data_safety">Ano. Všechna tvá data — záznamy jídla, příznaků i prostředí — jsou uložena jen v tvém telefonu. Aplikace neodesílá žádná osobní data na servery ani nesbírá žádné informace o tobě. Žádnou registraci nebo vytvoření účtu vůbec nepotřebuješ.</string>
 
     <!-- Přehled příznaků -->
     <string name="symptom_detail_title">Přehled příznaků</string>
