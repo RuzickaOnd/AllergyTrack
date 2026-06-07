@@ -23,7 +23,7 @@ android {
         applicationId = "com.allergytrack.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1000300
+        versionCode = 1000301
         versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -36,14 +36,14 @@ android {
             "String", "SUPABASE_KEY",
             "\"${localProperties["SUPABASE_KEY"] ?: ""}\""
         )
-        buildConfigField(
-            "String", "REVENUECAT_API_KEY",
-            "\"${localProperties["REVENUECAT_API_KEY"] ?: ""}\""
-        )
     }
 
     buildTypes {
         debug {
+            buildConfigField(
+                "String", "REVENUECAT_API_KEY",
+                "\"${localProperties["REVENUECAT_TEST_API_KEY"] ?: ""}\""
+            )
             isMinifyEnabled = false
             isShrinkResources = false
             isDebuggable = true
@@ -52,6 +52,10 @@ android {
             }
         }
         release {
+            buildConfigField(
+                "String", "REVENUECAT_API_KEY",
+                "\"${localProperties["REVENUECAT_API_KEY"] ?: ""}\""
+            )
             isMinifyEnabled = true
             isShrinkResources = true
             isDebuggable = false
