@@ -8,7 +8,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
  * Manažer pro správu a odesílání analytických událostí do Firebase Analytics.
  * Inicializace probíhá efektivně (lazy inicializace na pozadí), aby se neblokovalo hlavní vlákno při startu aplikace.
  */
-class AnalyticsManager constructor(
+class AnalyticsManager(
     private val context: Context
 ) {
 

@@ -24,7 +24,7 @@ data class FoodTriggerDetailUiState(
     val isLoading: Boolean = true
 )
 
-class FoodTriggerDetailViewModel constructor(
+class FoodTriggerDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val foodLogDao: FoodLogDao,
     private val symptomLogDao: SymptomLogDao,

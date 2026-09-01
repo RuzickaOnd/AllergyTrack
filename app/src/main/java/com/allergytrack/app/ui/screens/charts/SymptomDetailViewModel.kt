@@ -25,7 +25,7 @@ data class SymptomDetailUiState(
     val maxCount: Int = 0
 )
 
-class SymptomDetailViewModel constructor(
+class SymptomDetailViewModel(
     private val symptomLogDao: SymptomLogDao,
     private val premiumHelper: PremiumHelper,
     savedStateHandle: SavedStateHandle

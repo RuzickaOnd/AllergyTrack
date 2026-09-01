@@ -1,5 +1,6 @@
 package com.allergytrack.app.di.koin
 
+import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.data.analytics.AnalyticsManager
 import com.allergytrack.app.data.local.recognition.FoodImageRecognizer
 import com.allergytrack.app.data.location.LocationProvider
@@ -8,6 +9,7 @@ import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.data.remote.ai.AiSummaryService
 import com.allergytrack.app.data.worker.WorkManagerScheduler
 import com.allergytrack.app.domain.export.MedicalReportExporter
+import com.allergytrack.shared.config.AppConfig
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -19,6 +21,16 @@ import org.koin.dsl.module
  * třídy se dřív injektovaly konstruktorem s @ApplicationContext.
  */
 val coreModule = module {
+
+    /** Nahrazuje BuildConfig pro kód mířící do commonMain. */
+    single {
+        AppConfig(
+            supabaseUrl = BuildConfig.SUPABASE_URL,
+            supabaseKey = BuildConfig.SUPABASE_KEY,
+            isDebug = BuildConfig.DEBUG,
+            versionName = BuildConfig.VERSION_NAME
+        )
+    }
 
     single {
         Json {

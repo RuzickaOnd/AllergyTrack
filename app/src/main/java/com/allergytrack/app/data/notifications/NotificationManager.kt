@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.firstOrNull
 /**
  * Centrální manažer pro správu, konfiguraci a zobrazování notifikací (lokálních i FCM push notifikací).
  */
-class NotificationManager constructor(
+class NotificationManager(
     private val context: Context,
     private val userPreferences: UserPreferencesDataStore
 ) {

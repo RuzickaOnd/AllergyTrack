@@ -21,7 +21,7 @@ private val Context.debugDataStore: DataStore<Preferences>
  * Používá se POUZE v BuildConfig.DEBUG buildu.
  * V release buildu jsou tyto hodnoty ignorovány (viz PremiumHelper).
  */
-class DebugPreferences constructor(
+class DebugPreferences(
     private val context: Context
 ) {
     companion object {

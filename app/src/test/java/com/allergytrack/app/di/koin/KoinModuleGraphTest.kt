@@ -25,6 +25,8 @@ import org.koin.test.verify.verify
  *   Context           — z androidContext() v startKoin
  *   SavedStateHandle  — z ViewModelStoreOwner
  *   WorkerParameters  — z WorkerFactory
+ *   String, Boolean   — konstruktor AppConfig bere literály z lambdy;
+ *                       verify() čte konstruktor reflexí a lambdu nevidí
  */
 @OptIn(KoinExperimentalAPI::class)
 class KoinModuleGraphTest {
@@ -48,7 +50,9 @@ class KoinModuleGraphTest {
             extraTypes = listOf(
                 Context::class,
                 SavedStateHandle::class,
-                WorkerParameters::class
+                WorkerParameters::class,
+                String::class,
+                Boolean::class
             )
         )
     }

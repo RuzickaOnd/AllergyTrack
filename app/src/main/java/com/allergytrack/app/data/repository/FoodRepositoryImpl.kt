@@ -21,7 +21,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @OptIn(ExperimentalUuidApi::class)
-class FoodRepositoryImpl constructor(
+class FoodRepositoryImpl(
     private val foodLogDao: FoodLogDao,
     private val supabaseFoodApi: SupabaseFoodApiService,   // ← Supabase místo OFF
     private val json: Json,

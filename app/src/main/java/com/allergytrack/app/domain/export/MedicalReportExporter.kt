@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class MedicalReportExporter constructor(
+class MedicalReportExporter(
     private val context: Context
 ) {
     suspend fun generatePdfReport(

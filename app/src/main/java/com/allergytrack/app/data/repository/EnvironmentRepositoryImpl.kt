@@ -15,7 +15,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class EnvironmentRepositoryImpl constructor(
+class EnvironmentRepositoryImpl(
     private val environmentLogDao: EnvironmentLogDao,
     private val airQualityApi: AirQualityApiService,
     private val locationProvider: LocationProvider

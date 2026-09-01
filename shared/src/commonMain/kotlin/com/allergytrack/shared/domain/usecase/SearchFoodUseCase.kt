@@ -1,9 +1,9 @@
-package com.allergytrack.app.domain.usecase
+package com.allergytrack.shared.domain.usecase
 
 import com.allergytrack.shared.data.remote.food.RecognizedFood
 import com.allergytrack.shared.domain.repository.FoodRepository
 
-class SearchFoodUseCase constructor(
+class SearchFoodUseCase(
     private val repository: FoodRepository
 ) {
     suspend operator fun invoke(query: String): List<RecognizedFood> =

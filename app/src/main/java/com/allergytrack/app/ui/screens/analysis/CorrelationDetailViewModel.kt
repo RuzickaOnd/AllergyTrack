@@ -23,7 +23,7 @@ data class CorrelationDetailUiState(
     val isLoading: Boolean = true
 )
 
-class CorrelationDetailViewModel constructor(
+class CorrelationDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val symptomLogDao: SymptomLogDao,
     private val foodLogDao: FoodLogDao,

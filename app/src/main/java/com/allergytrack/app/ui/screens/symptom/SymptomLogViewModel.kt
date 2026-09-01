@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.shared.domain.model.SymptomLog
 import com.allergytrack.shared.domain.model.SymptomType
-import com.allergytrack.app.domain.usecase.SaveSymptomLogUseCase
+import com.allergytrack.shared.domain.usecase.SaveSymptomLogUseCase
 import com.allergytrack.app.data.analytics.AnalyticsManager
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,7 +20,7 @@ data class SymptomLogUiState(
     val error: String? = null
 )
 
-class SymptomLogViewModel constructor(
+class SymptomLogViewModel(
     private val saveSymptomLogUseCase: SaveSymptomLogUseCase,
     private val analyticsManager: AnalyticsManager
 ) : ViewModel() {

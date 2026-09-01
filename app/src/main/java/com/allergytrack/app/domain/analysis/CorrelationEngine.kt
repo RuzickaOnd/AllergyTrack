@@ -15,7 +15,7 @@ import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 import kotlin.math.sqrt
 
-class CorrelationEngine constructor(
+class CorrelationEngine(
     private val json: Json
 ) {
     // ─── Konstanty pro potravinovou korelaci ──────────────────────────────────────

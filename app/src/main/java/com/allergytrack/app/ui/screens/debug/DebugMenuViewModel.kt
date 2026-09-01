@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class DebugMenuViewModel constructor(
+class DebugMenuViewModel(
     private val debugPreferences: DebugPreferences,
     private val onboardingDataStore: OnboardingDataStore,
     private val foodRepository: FoodRepository,

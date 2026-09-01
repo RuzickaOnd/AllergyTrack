@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class ProfileViewModel constructor(
+class ProfileViewModel(
     private val userPreferencesDataStore: UserPreferencesDataStore,
     private val premiumHelper: PremiumHelper,
     private val analyticsManager: AnalyticsManager

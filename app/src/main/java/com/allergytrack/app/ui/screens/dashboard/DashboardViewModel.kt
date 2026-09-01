@@ -51,7 +51,7 @@ data class DashboardUiState(
     val error: String? = null
 )
 
-class DashboardViewModel constructor(
+class DashboardViewModel(
     private val foodLogDao: FoodLogDao,
     private val symptomLogDao: SymptomLogDao,
     private val environmentRepository: EnvironmentRepository,

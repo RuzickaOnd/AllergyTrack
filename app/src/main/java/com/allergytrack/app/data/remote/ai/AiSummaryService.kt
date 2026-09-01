@@ -16,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import android.util.Log
 
-class AiSummaryService constructor(
+class AiSummaryService(
     private val context: Context
 ) {
 

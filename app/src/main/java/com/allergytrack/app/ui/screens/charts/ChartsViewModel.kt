@@ -29,7 +29,7 @@ data class ChartsUiState(
     val avgDailyIntensity: Float = 0f
 )
 
-class ChartsViewModel constructor(
+class ChartsViewModel(
     private val symptomLogDao: SymptomLogDao,
     private val environmentLogDao: EnvironmentLogDao,
     private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper,

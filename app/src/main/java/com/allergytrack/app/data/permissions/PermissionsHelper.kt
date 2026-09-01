@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
  * Centrální správce runtime oprávnění aplikace.
  * Zjišťuje aktuální stav — request provádí UI vrstva přes Compose launcher.
  */
-class PermissionsHelper constructor(
+class PermissionsHelper(
     private val context: Context
 ) {
     /** Je uděleno oprávnění k přibližné GPS poloze? */

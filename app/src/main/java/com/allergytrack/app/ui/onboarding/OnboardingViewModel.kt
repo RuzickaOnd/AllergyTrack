@@ -33,7 +33,7 @@ data class OnboardingUiState(
     val isCameraPermissionVisible: Boolean = false
 )
 
-class OnboardingViewModel constructor(
+class OnboardingViewModel(
     private val onboardingDataStore: OnboardingDataStore,
     private val permissionsHelper: PermissionsHelper,
     private val premiumHelper: PremiumHelper,

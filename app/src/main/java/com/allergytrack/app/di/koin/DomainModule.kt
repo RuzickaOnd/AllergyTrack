@@ -4,9 +4,9 @@ import com.allergytrack.app.domain.analysis.CorrelationEngine
 import com.allergytrack.app.domain.premium.PremiumHelper
 import com.allergytrack.app.domain.usecase.CheckPremiumAccessUseCase
 import com.allergytrack.app.domain.usecase.RecognizeFoodFromImageUseCase
-import com.allergytrack.app.domain.usecase.SaveFoodLogUseCase
-import com.allergytrack.app.domain.usecase.SaveSymptomLogUseCase
-import com.allergytrack.app.domain.usecase.SearchFoodUseCase
+import com.allergytrack.shared.domain.usecase.SaveFoodLogUseCase
+import com.allergytrack.shared.domain.usecase.SaveSymptomLogUseCase
+import com.allergytrack.shared.domain.usecase.SearchFoodUseCase
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -16,7 +16,7 @@ import org.koin.dsl.module
  */
 val domainModule = module {
 
-    single { PremiumHelper(premiumRepository = get(), debugPreferences = get()) }
+    single { PremiumHelper(premiumRepository = get(), debugPreferences = get(), appConfig = get()) }
     single { CorrelationEngine(json = get()) }
 
     factory { SaveFoodLogUseCase(repository = get()) }

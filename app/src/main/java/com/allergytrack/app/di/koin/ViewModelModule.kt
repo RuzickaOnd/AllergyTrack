@@ -87,7 +87,8 @@ val viewModelModule = module {
             medicalReportExporter = get(),
             premiumHelper = get(),
             debugPreferences = get(),
-            analyticsManager = get()
+            analyticsManager = get(),
+            appConfig = get()
         )
     }
 

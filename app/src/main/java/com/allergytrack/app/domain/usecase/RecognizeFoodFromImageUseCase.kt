@@ -5,7 +5,7 @@ import android.net.Uri
 import com.allergytrack.shared.data.remote.food.RecognizedFood
 import com.allergytrack.shared.domain.repository.FoodRepository
 
-class RecognizeFoodFromImageUseCase constructor(
+class RecognizeFoodFromImageUseCase(
     private val context: Context,
     private val repository: FoodRepository
 ) {

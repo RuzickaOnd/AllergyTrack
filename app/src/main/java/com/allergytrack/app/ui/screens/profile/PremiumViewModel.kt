@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class PremiumViewModel constructor(
+class PremiumViewModel(
     private val premiumHelper: PremiumHelper,
     private val analyticsManager: AnalyticsManager
 ) : ViewModel() {

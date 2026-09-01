@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 private val Context.onboardingDataStore: DataStore<Preferences>
     by preferencesDataStore(name = "onboarding_preferences")
 
-class OnboardingDataStore constructor(
+class OnboardingDataStore(
     private val context: Context
 ) {
     companion object {

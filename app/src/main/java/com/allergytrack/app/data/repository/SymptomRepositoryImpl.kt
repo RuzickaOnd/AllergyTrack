@@ -14,7 +14,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class SymptomRepositoryImpl constructor(
+class SymptomRepositoryImpl(
     private val symptomLogDao: SymptomLogDao,
     private val json: Json
 ) : SymptomRepository {

@@ -47,7 +47,7 @@ val FOOD_LANGUAGE_OPTIONS = listOf(
     FoodLanguageOption("ro", "Română")
 )
 
-class SettingsViewModel constructor(
+class SettingsViewModel(
     private val appContext: Context,
     private val permissionsHelper: PermissionsHelper,
     private val userPreferencesDataStore: UserPreferencesDataStore,

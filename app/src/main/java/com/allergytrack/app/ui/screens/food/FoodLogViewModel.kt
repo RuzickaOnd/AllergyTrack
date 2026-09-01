@@ -9,8 +9,8 @@ import com.allergytrack.shared.domain.model.FoodLog
 import retrofit2.HttpException
 import com.allergytrack.shared.domain.repository.FoodRepository
 import com.allergytrack.app.domain.usecase.RecognizeFoodFromImageUseCase
-import com.allergytrack.app.domain.usecase.SaveFoodLogUseCase
-import com.allergytrack.app.domain.usecase.SearchFoodUseCase
+import com.allergytrack.shared.domain.usecase.SaveFoodLogUseCase
+import com.allergytrack.shared.domain.usecase.SearchFoodUseCase
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -42,7 +42,7 @@ data class FoodSearchState(
 
 // ---- ViewModel ----
 
-class FoodLogViewModel constructor(
+class FoodLogViewModel(
     private val saveFoodLogUseCase: SaveFoodLogUseCase,
     private val searchFoodUseCase: SearchFoodUseCase,
     private val recognizeFoodFromImageUseCase: RecognizeFoodFromImageUseCase,

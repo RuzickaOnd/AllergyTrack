@@ -1,6 +1,6 @@
 package com.allergytrack.app.domain.premium
 
-import com.allergytrack.app.BuildConfig
+import com.allergytrack.shared.config.AppConfig
 import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
 import com.allergytrack.app.data.local.datastore.DebugPreferences
 import com.allergytrack.shared.domain.model.PremiumFeature
@@ -13,9 +13,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
-class PremiumHelper constructor(
+class PremiumHelper(
     private val premiumRepository: PremiumRepository,
-    private val debugPreferences: DebugPreferences
+    private val debugPreferences: DebugPreferences,
+    private val appConfig: AppConfig
 ) {
     // =========================================================
     // HLAVNÍ PŘEPÍNAČ — mění se POUZE zde
@@ -42,7 +43,7 @@ class PremiumHelper constructor(
      * V RELEASE vždy vrátí produkční visibilityMode.
      */
     private fun observeEffectiveVisibility(): Flow<PremiumVisibilityMode> {
-        if (!BuildConfig.DEBUG) return flowOf(visibilityMode)
+        if (!appConfig.isDebug) return flowOf(visibilityMode)
         return debugPreferences.premiumOverride.map { override ->
             when (override) {
                 DebugPremiumOverride.USE_APP_STATE -> visibilityMode
@@ -57,7 +58,7 @@ class PremiumHelper constructor(
      * V RELEASE vždy vrátí skutečný stav z PremiumRepository.
      */
     fun observeEffectiveStatus(): Flow<PremiumStatus> {
-        if (!BuildConfig.DEBUG) return premiumRepository.observePremiumStatus()
+        if (!appConfig.isDebug) return premiumRepository.observePremiumStatus()
         return combine(
             premiumRepository.observePremiumStatus(),
             debugPreferences.premiumOverride
@@ -97,13 +98,13 @@ class PremiumHelper constructor(
         }
 
     suspend fun hasAccess(feature: PremiumFeature): Boolean {
-        val mode = if (BuildConfig.DEBUG) {
+        val mode = if (appConfig.isDebug) {
             observeEffectiveVisibility().first()
         } else {
             visibilityMode
         }
 
-        val status = if (BuildConfig.DEBUG) {
+        val status = if (appConfig.isDebug) {
             observeEffectiveStatus().first()
         } else {
             premiumRepository.getPremiumStatus()
@@ -113,7 +114,7 @@ class PremiumHelper constructor(
     }
 
     suspend fun isVisible(feature: PremiumFeature): Boolean {
-        val mode = if (BuildConfig.DEBUG) {
+        val mode = if (appConfig.isDebug) {
             observeEffectiveVisibility().first()
         } else {
             visibilityMode

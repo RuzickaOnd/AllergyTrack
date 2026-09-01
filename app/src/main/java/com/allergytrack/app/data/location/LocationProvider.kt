@@ -11,7 +11,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class LocationProvider constructor(
+class LocationProvider(
     private val context: Context
 ) {
     private val fusedLocationClient: FusedLocationProviderClient =

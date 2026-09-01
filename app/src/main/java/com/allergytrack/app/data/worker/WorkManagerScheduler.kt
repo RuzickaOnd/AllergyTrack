@@ -5,7 +5,7 @@ import androidx.work.*
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
-class WorkManagerScheduler constructor(
+class WorkManagerScheduler(
     private val context: Context
 ) {
     fun scheduleEnvironmentTracking() {

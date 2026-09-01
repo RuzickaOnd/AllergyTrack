@@ -2,7 +2,7 @@ package com.allergytrack.app.ui.screens.analysis
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.allergytrack.app.BuildConfig
+import com.allergytrack.shared.config.AppConfig
 import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
 import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
@@ -37,7 +37,7 @@ data class AnalysisUiState(
     val exportedFile: File? = null
 )
 
-class AnalysisViewModel constructor(
+class AnalysisViewModel(
     private val symptomLogDao: SymptomLogDao,
     private val foodLogDao: FoodLogDao,
     private val environmentLogDao: EnvironmentLogDao,
@@ -47,7 +47,8 @@ class AnalysisViewModel constructor(
     private val medicalReportExporter: MedicalReportExporter,
     private val premiumHelper: PremiumHelper,
     private val debugPreferences: DebugPreferences,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: AnalyticsManager,
+    private val appConfig: AppConfig
 ) : ViewModel() {
 
     init {
@@ -136,7 +137,7 @@ class AnalysisViewModel constructor(
                 val allergySet = allergies.split(",").filter { it.isNotEmpty() }.toSet()
                 val symptomSet = userSymptoms.split(",").filter { it.isNotEmpty() }.toSet()
 
-                val effectiveSymptomCount = if (BuildConfig.DEBUG && countOverride >= 0) {
+                val effectiveSymptomCount = if (appConfig.isDebug && countOverride >= 0) {
                     countOverride
                 } else {
                     symptoms.size
