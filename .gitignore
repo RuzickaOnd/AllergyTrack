@@ -88,3 +88,6 @@ profiling/
 # Dočasné artefakty z experimentů
 temp_classes/
 temp_classes*.jar
+
+# Záloha DB pro ověření migrace — nikdy necommitovat (obsahuje reálná data)
+baseline/
