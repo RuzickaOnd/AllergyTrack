@@ -1,9 +1,9 @@
 package com.allergytrack.app.ui.screens.charts
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
+import org.jetbrains.compose.resources.StringResource
 import androidx.lifecycle.viewModelScope
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.shared.data.local.database.dao.EnvironmentLogDao
 import com.allergytrack.shared.data.local.database.dao.SymptomLogDao
 import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
 import com.allergytrack.app.data.analytics.AnalyticsManager
 
-enum class TimeRange(val days: Int, @StringRes val labelRes: Int) {
-    WEEK(7, R.string.time_range_week),
-    TWO_WEEKS(14, R.string.time_range_two_weeks),
-    MONTH(30, R.string.time_range_month)
+enum class TimeRange(val days: Int, val labelRes: StringResource) {
+    WEEK(7, Res.string.time_range_week),
+    TWO_WEEKS(14, Res.string.time_range_two_weeks),
+    MONTH(30, Res.string.time_range_month)
 }
 
 data class ChartsUiState(

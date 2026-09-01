@@ -11,14 +11,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.allergytrack.app.R
-import com.allergytrack.app.data.remote.food.FoodAllergenHelper
+import com.allergytrack.shared.resources.*
+import com.allergytrack.shared.data.remote.food.FoodAllergenHelper
 import com.allergytrack.shared.domain.model.Correlation
 import com.allergytrack.shared.domain.model.CorrelationSeverity
 import com.allergytrack.shared.domain.model.TriggerType
@@ -68,10 +68,10 @@ fun CorrelationDetailScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.analysis_correlation_detail)) },
+                title = { Text(stringResource(Res.string.analysis_correlation_detail)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -109,7 +109,7 @@ fun CorrelationDetailScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            stringResource(R.string.correlation_reliability),
+                            stringResource(Res.string.correlation_reliability),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             letterSpacing = 1.sp
@@ -123,21 +123,21 @@ fun CorrelationDetailScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_matches), value = "${correlation.occurrences}/${correlation.totalEvents}")
-                    DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_latency), value = "${correlation.avgDelayHours.toInt()}h")
-                    DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_impact), icon = correlation.symptomType.icon())
+                    DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(Res.string.stat_matches), value = "${correlation.occurrences}/${correlation.totalEvents}")
+                    DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(Res.string.stat_latency), value = "${correlation.avgDelayHours.toInt()}h")
+                    DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(Res.string.stat_impact), icon = correlation.symptomType.icon())
                 }
             }
 
             item {
-                CardTitle(text = stringResource(R.string.correlation_insight_title), icon = Icons.Outlined.Lightbulb)
+                CardTitle(text = stringResource(Res.string.correlation_insight_title), icon = Icons.Outlined.Lightbulb)
                 AiBadge(text = generateInterpretation(correlation))
             }
 
             item {
                 AppCard {
                     Text(
-                        text = stringResource(R.string.correlation_recommendation_title),
+                        text = stringResource(Res.string.correlation_recommendation_title),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(bottom = 8.dp)
@@ -169,9 +169,9 @@ fun localizedTriggerName(correlation: Correlation): String =
 fun getRecommendation(correlation: Correlation): String {
     val trigger = localizedTriggerName(correlation)
     return when (correlation.triggerType) {
-        TriggerType.FOOD        -> stringResource(R.string.recommendation_food, trigger)
-        TriggerType.ENVIRONMENT -> stringResource(R.string.recommendation_environment, trigger)
-        TriggerType.COMBINED    -> stringResource(R.string.recommendation_combined)
+        TriggerType.FOOD        -> stringResource(Res.string.recommendation_food, trigger)
+        TriggerType.ENVIRONMENT -> stringResource(Res.string.recommendation_environment, trigger)
+        TriggerType.COMBINED    -> stringResource(Res.string.recommendation_combined)
     }
 }
 
@@ -182,10 +182,10 @@ fun generateInterpretation(correlation: Correlation): String {
     val trigger = localizedTriggerName(correlation)
     return when (correlation.triggerType) {
         TriggerType.FOOD ->
-            stringResource(R.string.interpretation_food, trigger, symptomLabel, scorePercent, correlation.avgDelayHours.toInt())
+            stringResource(Res.string.interpretation_food, trigger, symptomLabel, scorePercent, correlation.avgDelayHours.toInt())
         TriggerType.ENVIRONMENT ->
-            stringResource(R.string.interpretation_environment, trigger, symptomLabel, scorePercent)
+            stringResource(Res.string.interpretation_environment, trigger, symptomLabel, scorePercent)
         TriggerType.COMBINED ->
-            stringResource(R.string.interpretation_combined, trigger)
+            stringResource(Res.string.interpretation_combined, trigger)
     }
 }

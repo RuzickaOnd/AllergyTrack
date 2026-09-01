@@ -7,11 +7,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.shared.domain.model.OnboardingStep
 import com.allergytrack.app.ui.components.PrimaryButton
 import com.allergytrack.app.ui.theme.SerifFontFamily
@@ -36,9 +36,9 @@ fun OnboardingFlow(
         topBar = {
             val title = when (uiState.currentStep) {
                 OnboardingStep.WELCOME -> ""
-                OnboardingStep.ALLERGY_PROFILE -> stringResource(R.string.onboarding_profile_title)
-                OnboardingStep.PERMISSIONS -> stringResource(R.string.onboarding_permissions_title)
-                OnboardingStep.READY -> stringResource(R.string.onboarding_ready_title)
+                OnboardingStep.ALLERGY_PROFILE -> stringResource(Res.string.onboarding_profile_title)
+                OnboardingStep.PERMISSIONS -> stringResource(Res.string.onboarding_permissions_title)
+                OnboardingStep.READY -> stringResource(Res.string.onboarding_ready_title)
             }
 
             TopAppBar(
@@ -50,7 +50,7 @@ fun OnboardingFlow(
                             modifier = Modifier.padding(end = 8.dp)
                         ) {
                             Text(
-                                text = stringResource(R.string.onboarding_skip),
+                                text = stringResource(Res.string.onboarding_skip),
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -109,16 +109,16 @@ fun OnboardingFlow(
                 )
 
                 val buttonText = when (uiState.currentStep) {
-                    OnboardingStep.WELCOME -> stringResource(R.string.onboarding_cta)
+                    OnboardingStep.WELCOME -> stringResource(Res.string.onboarding_cta)
                     OnboardingStep.ALLERGY_PROFILE -> {
                         val isAnySelected = uiState.selectedAllergyTypes.isNotEmpty() || uiState.selectedSymptomTypes.isNotEmpty()
-                        if (isAnySelected) stringResource(R.string.btn_continue) else stringResource(R.string.btn_skip)
+                        if (isAnySelected) stringResource(Res.string.btn_continue) else stringResource(Res.string.btn_skip)
                     }
                     OnboardingStep.PERMISSIONS -> {
-                        if (uiState.permissionsState.location) stringResource(R.string.btn_continue_arrow) 
-                        else stringResource(R.string.btn_continue_no_location)
+                        if (uiState.permissionsState.location) stringResource(Res.string.btn_continue_arrow) 
+                        else stringResource(Res.string.btn_continue_no_location)
                     }
-                    OnboardingStep.READY -> stringResource(R.string.btn_go_to_dashboard)
+                    OnboardingStep.READY -> stringResource(Res.string.btn_go_to_dashboard)
                 }
 
                 val onButtonClick = when (uiState.currentStep) {

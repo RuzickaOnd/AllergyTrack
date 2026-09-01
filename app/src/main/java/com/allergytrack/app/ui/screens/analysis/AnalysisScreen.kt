@@ -55,7 +55,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -65,8 +65,8 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.content.Intent
 import android.widget.Toast
-import com.allergytrack.app.R
-import com.allergytrack.app.data.remote.food.FoodAllergenHelper
+import com.allergytrack.shared.resources.*
+import com.allergytrack.shared.data.remote.food.FoodAllergenHelper
 import com.allergytrack.shared.domain.model.AnalysisReadiness
 import com.allergytrack.shared.domain.model.Correlation
 import com.allergytrack.shared.domain.model.CorrelationSeverity
@@ -184,12 +184,12 @@ fun AnalysisScreen(
                         item {
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                stringResource(R.string.analysis_food_triggers_title),
+                                stringResource(Res.string.analysis_food_triggers_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
-                                stringResource(R.string.analysis_food_triggers_subtitle),
+                                stringResource(Res.string.analysis_food_triggers_subtitle),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -208,7 +208,7 @@ fun AnalysisScreen(
                         if (hiddenCount > 0) {
                             item {
                                 Text(
-                                    stringResource(R.string.analysis_free_more_triggers, hiddenCount),
+                                    stringResource(Res.string.analysis_free_more_triggers, hiddenCount),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -221,13 +221,13 @@ fun AnalysisScreen(
                     // ── PLNÁ ANALÝZA (PREMIUM) ───────────────────────────────────
                     item { AiBadge(text = uiState.aiSummary) }
 
-                    item { CardTitle(text = stringResource(R.string.analysis_top_triggers), icon = Icons.Outlined.Insights) }
+                    item { CardTitle(text = stringResource(Res.string.analysis_top_triggers), icon = Icons.Outlined.Insights) }
 
                     if (uiState.correlations.isEmpty()) {
                         item {
                             AppCard {
                                 Text(
-                                    stringResource(R.string.analysis_no_patterns),
+                                    stringResource(Res.string.analysis_no_patterns),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -260,12 +260,12 @@ fun AnalysisScreen(
                         item {
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                stringResource(R.string.analysis_food_triggers_title),
+                                stringResource(Res.string.analysis_food_triggers_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
-                                stringResource(R.string.analysis_food_triggers_subtitle),
+                                stringResource(Res.string.analysis_food_triggers_subtitle),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -300,7 +300,7 @@ fun AnalysisScreen(
                                     onClick = { /* TODO: rozbalit / zobrazit všechny */ },
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Text(stringResource(R.string.analysis_show_all_triggers, uiState.foodTriggers.size))
+                                    Text(stringResource(Res.string.analysis_show_all_triggers, uiState.foodTriggers.size))
                                 }
                             }
                         }
@@ -320,7 +320,7 @@ fun AnalysisScreen(
                                 )
                             ) {
                                 Text(
-                                    stringResource(R.string.analysis_no_food_patterns),
+                                    stringResource(Res.string.analysis_no_food_patterns),
                                     modifier = Modifier.padding(16.dp),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -336,7 +336,7 @@ fun AnalysisScreen(
                             feature = PremiumFeature.PDF_EXPORT
                         ) {
                             SecondaryButton(
-                                text = stringResource(R.string.btn_export_pdf),
+                                text = stringResource(Res.string.btn_export_pdf),
                                 onClick = viewModel::exportReport
                             )
                         }
@@ -387,7 +387,7 @@ fun AnalysisScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                stringResource(R.string.correlation_reliability),
+                                stringResource(Res.string.correlation_reliability),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 letterSpacing = 1.sp
@@ -399,17 +399,17 @@ fun AnalysisScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_matches), value = "${corr.occurrences}/${corr.totalEvents}")
-                        DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_latency), value = "${corr.avgDelayHours.toInt()}h")
-                        DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(R.string.stat_impact), icon = corr.symptomType.icon())
+                        DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(Res.string.stat_matches), value = "${corr.occurrences}/${corr.totalEvents}")
+                        DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(Res.string.stat_latency), value = "${corr.avgDelayHours.toInt()}h")
+                        DetailStatCard(modifier = Modifier.weight(1f), label = stringResource(Res.string.stat_impact), icon = corr.symptomType.icon())
                     }
 
-                    CardTitle(text = stringResource(R.string.correlation_insight_title), icon = Icons.Outlined.Lightbulb)
+                    CardTitle(text = stringResource(Res.string.correlation_insight_title), icon = Icons.Outlined.Lightbulb)
                     AiBadge(text = generateInterpretation(corr))
 
                     AppCard {
                         Text(
-                            text = stringResource(R.string.correlation_recommendation_title),
+                            text = stringResource(Res.string.correlation_recommendation_title),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -447,13 +447,13 @@ fun AnalysisScreen(
                     }
 
                     Text(
-                        stringResource(R.string.food_trigger_history_title),
+                        stringResource(Res.string.food_trigger_history_title),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(top = 4.dp)
                     )
                     Text(
-                        stringResource(R.string.food_trigger_history_subtitle),
+                        stringResource(Res.string.food_trigger_history_subtitle),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -505,12 +505,12 @@ fun AnalysisScreen(
                     item {
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            stringResource(R.string.analysis_food_triggers_title),
+                            stringResource(Res.string.analysis_food_triggers_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            stringResource(R.string.analysis_food_triggers_subtitle),
+                            stringResource(Res.string.analysis_food_triggers_subtitle),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -528,7 +528,7 @@ fun AnalysisScreen(
                     if (hiddenCount > 0) {
                         item {
                             Text(
-                                stringResource(R.string.analysis_free_more_triggers, hiddenCount),
+                                stringResource(Res.string.analysis_free_more_triggers, hiddenCount),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = 4.dp)
@@ -541,13 +541,13 @@ fun AnalysisScreen(
                 // ── PLNÁ ANALÝZA (PREMIUM) ───────────────────────────────────
                 item { AiBadge(text = uiState.aiSummary) }
 
-                item { CardTitle(text = stringResource(R.string.analysis_top_triggers), icon = Icons.Outlined.Insights) }
+                item { CardTitle(text = stringResource(Res.string.analysis_top_triggers), icon = Icons.Outlined.Insights) }
 
                 if (uiState.correlations.isEmpty()) {
                     item {
                         AppCard {
                             Text(
-                                stringResource(R.string.analysis_no_patterns),
+                                stringResource(Res.string.analysis_no_patterns),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -574,12 +574,12 @@ fun AnalysisScreen(
                     item {
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            stringResource(R.string.analysis_food_triggers_title),
+                            stringResource(Res.string.analysis_food_triggers_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            stringResource(R.string.analysis_food_triggers_subtitle),
+                            stringResource(Res.string.analysis_food_triggers_subtitle),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -601,7 +601,7 @@ fun AnalysisScreen(
                                 onClick = { /* TODO: rozbalit / zobrazit všechny */ },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(stringResource(R.string.analysis_show_all_triggers, uiState.foodTriggers.size))
+                                Text(stringResource(Res.string.analysis_show_all_triggers, uiState.foodTriggers.size))
                             }
                         }
                     }
@@ -621,7 +621,7 @@ fun AnalysisScreen(
                             )
                         ) {
                             Text(
-                                stringResource(R.string.analysis_no_food_patterns),
+                                stringResource(Res.string.analysis_no_food_patterns),
                                 modifier = Modifier.padding(16.dp),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -637,7 +637,7 @@ fun AnalysisScreen(
                         feature = PremiumFeature.PDF_EXPORT
                     ) {
                         SecondaryButton(
-                            text = stringResource(R.string.btn_export_pdf),
+                            text = stringResource(Res.string.btn_export_pdf),
                             onClick = viewModel::exportReport
                         )
                     }
@@ -668,7 +668,7 @@ fun CorrelationItem(
     }
     val symptomLabel = stringResource(correlation.symptomType.labelRes())
     val detailsText = stringResource(
-        R.string.correlation_item_details,
+        Res.string.correlation_item_details,
         symptomLabel,
         correlation.occurrences,
         correlation.totalEvents
@@ -725,7 +725,7 @@ fun CorrelationItem(
                             shape = RoundedCornerShape(4.dp)
                         ) {
                             Text(
-                                text = stringResource(R.string.correlation_badge_expected),
+                                text = stringResource(Res.string.correlation_badge_expected),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
@@ -785,7 +785,7 @@ fun AnalysisLockedScreen(readiness: AnalysisReadiness.Locked) {
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            stringResource(R.string.analysis_locked_no_data),
+            stringResource(Res.string.analysis_locked_no_data),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
@@ -805,7 +805,7 @@ fun AnalysisLockedScreen(readiness: AnalysisReadiness.Locked) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    stringResource(R.string.analysis_symptom_count_label),
+                    stringResource(Res.string.analysis_symptom_count_label),
                     style = MaterialTheme.typography.labelMedium
                 )
                 Text(
@@ -827,7 +827,7 @@ fun AnalysisLockedScreen(readiness: AnalysisReadiness.Locked) {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                stringResource(R.string.analysis_log_encouragement),
+                stringResource(Res.string.analysis_log_encouragement),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -931,7 +931,7 @@ fun AnalysisComingSoonScreen() {
         Spacer(Modifier.height(28.dp))
 
         Text(
-            stringResource(R.string.analysis_coming_soon_title),
+            stringResource(Res.string.analysis_coming_soon_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -941,7 +941,7 @@ fun AnalysisComingSoonScreen() {
         Spacer(Modifier.height(10.dp))
 
         Text(
-            stringResource(R.string.analysis_coming_soon_subtitle),
+            stringResource(Res.string.analysis_coming_soon_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -956,15 +956,15 @@ fun AnalysisComingSoonScreen() {
         ) {
             ComingSoonFeatureRow(
                 icon = Icons.AutoMirrored.Outlined.ShowChart,
-                text = stringResource(R.string.analysis_coming_feature_1)
+                text = stringResource(Res.string.analysis_coming_feature_1)
             )
             ComingSoonFeatureRow(
                 icon = Icons.AutoMirrored.Outlined.ManageSearch,
-                text = stringResource(R.string.analysis_coming_feature_2)
+                text = stringResource(Res.string.analysis_coming_feature_2)
             )
             ComingSoonFeatureRow(
                 icon = Icons.AutoMirrored.Outlined.Article,
-                text = stringResource(R.string.analysis_coming_feature_3)
+                text = stringResource(Res.string.analysis_coming_feature_3)
             )
         }
     }
@@ -1031,7 +1031,7 @@ private fun AiBadgeGlimpse(text: String) {
                 tint = MaterialTheme.colorScheme.secondary
             )
             Text(
-                text = stringResource(R.string.analysis_free_ai_locked),
+                text = stringResource(Res.string.analysis_free_ai_locked),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.secondary,
                 fontFamily = MonoFontFamily
@@ -1152,7 +1152,7 @@ fun FoodTriggerCard(
                             shape = RoundedCornerShape(4.dp)
                         ) {
                             Text(
-                                stringResource(R.string.correlation_badge_expected),
+                                stringResource(Res.string.correlation_badge_expected),
                                 modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,

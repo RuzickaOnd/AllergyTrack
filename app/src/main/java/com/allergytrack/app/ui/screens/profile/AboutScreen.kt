@@ -11,14 +11,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.allergytrack.app.BuildConfig
-import com.allergytrack.shared.resources.Res
-import com.allergytrack.shared.resources.about_section_what_title
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.app.ui.theme.SerifFontFamily
 
 @Composable
@@ -56,7 +54,7 @@ fun AboutScreen(navController: NavController) {
         )
 
         Text(
-            stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
+            stringResource(Res.string.about_version, BuildConfig.VERSION_NAME),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -64,20 +62,20 @@ fun AboutScreen(navController: NavController) {
         HorizontalDivider()
 
         AboutSection(
-            title = org.jetbrains.compose.resources.stringResource(Res.string.about_section_what_title),
-            content = stringResource(R.string.about_section_what_content)
+            title = stringResource(Res.string.about_section_what_title),
+            content = stringResource(Res.string.about_section_what_content)
         )
         AboutSection(
-            title = stringResource(R.string.about_section_how_title),
-            content = stringResource(R.string.about_section_how_content)
+            title = stringResource(Res.string.about_section_how_title),
+            content = stringResource(Res.string.about_section_how_content)
         )
         AboutSection(
-            title = stringResource(R.string.about_section_data_title),
-            content = stringResource(R.string.about_section_data_content)
+            title = stringResource(Res.string.about_section_data_title),
+            content = stringResource(Res.string.about_section_data_content)
         )
         AboutSection(
-            title = stringResource(R.string.about_section_sources_title),
-            content = stringResource(R.string.about_section_sources_content)
+            title = stringResource(Res.string.about_section_sources_title),
+            content = stringResource(Res.string.about_section_sources_content)
         )
 
         Card(
@@ -97,7 +95,7 @@ fun AboutScreen(navController: NavController) {
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = stringResource(R.string.about_disclaimer),
+                    text = stringResource(Res.string.about_disclaimer),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

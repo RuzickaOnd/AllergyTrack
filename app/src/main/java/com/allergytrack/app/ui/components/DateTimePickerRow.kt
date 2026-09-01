@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLocale
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -43,7 +43,7 @@ fun DateTimePickerRow(
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             CardTitle(
-                text = stringResource(R.string.datetime_picker_title),
+                text = stringResource(Res.string.datetime_picker_title),
                 icon = Icons.Filled.CalendarMonth
             )
 
@@ -104,12 +104,12 @@ fun DateTimePickerRow(
                         }
                         showDatePicker = false
                     }) {
-                        Text(stringResource(R.string.btn_ok), color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(Res.string.btn_ok), color = MaterialTheme.colorScheme.primary)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showDatePicker = false }) {
-                        Text(stringResource(R.string.btn_cancel), color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(Res.string.btn_cancel), color = MaterialTheme.colorScheme.primary)
                     }
                 },
                 colors = dialogColors
@@ -135,7 +135,7 @@ fun DateTimePickerRow(
         }
         CompositionLocalProvider(LocalConfiguration provides configuration) {
             TimePickerDialog(
-                title = stringResource(R.string.time_picker_title),
+                title = stringResource(Res.string.time_picker_title),
                 onDismissRequest = { showTimePicker = false },
                 confirmButton = {
                     TextButton(onClick = {
@@ -149,12 +149,12 @@ fun DateTimePickerRow(
                         onTimestampChanged(newTimestamp)
                         showTimePicker = false
                     }) {
-                        Text(stringResource(R.string.btn_ok), color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(Res.string.btn_ok), color = MaterialTheme.colorScheme.primary)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showTimePicker = false }) {
-                        Text(stringResource(R.string.btn_cancel), color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(Res.string.btn_cancel), color = MaterialTheme.colorScheme.primary)
                     }
                 }
             ) {

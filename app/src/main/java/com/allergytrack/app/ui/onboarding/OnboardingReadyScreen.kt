@@ -16,11 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.util.icon
 import com.allergytrack.app.ui.util.labelRes
@@ -41,7 +41,7 @@ fun OnboardingReadyContent(
     ) {
         // Subtitle
         Text(
-            text = stringResource(R.string.onboarding_ready_subtitle),
+            text = stringResource(Res.string.onboarding_ready_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth()
@@ -50,38 +50,38 @@ fun OnboardingReadyContent(
         // Settings Summary
         AppCard(borderColor = MaterialTheme.colorScheme.outline) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                CardTitle(stringResource(R.string.ready_settings_title), icon = Icons.Outlined.Tune)
+                CardTitle(stringResource(Res.string.ready_settings_title), icon = Icons.Outlined.Tune)
 
                 ReadySummaryItem(
-                    label = stringResource(R.string.ready_allergies_label),
+                    label = stringResource(Res.string.ready_allergies_label),
                     value = if (uiState.selectedAllergyTypes.isEmpty())
-                        stringResource(R.string.ready_allergies_not_set)
+                        stringResource(Res.string.ready_allergies_not_set)
                     else
                         uiState.selectedAllergyTypes.map { stringResource(it.labelRes()) }.joinToString(", ")
                 )
 
                 ReadySummaryItem(
-                    label = stringResource(R.string.ready_symptoms_label),
+                    label = stringResource(Res.string.ready_symptoms_label),
                     value = if (uiState.selectedSymptomTypes.isEmpty())
-                        stringResource(R.string.ready_symptoms_not_set)
+                        stringResource(Res.string.ready_symptoms_not_set)
                     else
                         uiState.selectedSymptomTypes.map { stringResource(it.labelRes()) }.joinToString(", ")
                 )
 
                 ReadyPermissionItem(
-                    label = stringResource(R.string.ready_location_label),
+                    label = stringResource(Res.string.ready_location_label),
                     isGranted = permissions.location
                 )
 
                 if (uiState.isCameraPermissionVisible) {
                     ReadyPermissionItem(
-                        label = stringResource(R.string.ready_camera_label),
+                        label = stringResource(Res.string.ready_camera_label),
                         isGranted = permissions.camera
                     )
                 }
 
                 ReadyPermissionItem(
-                    label = stringResource(R.string.ready_notifications_label),
+                    label = stringResource(Res.string.ready_notifications_label),
                     isGranted = permissions.notifications
                 )
             }
@@ -90,11 +90,11 @@ fun OnboardingReadyContent(
         // Workflow tips
         AppCard(borderColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                CardTitle(stringResource(R.string.ready_first_day_title), icon = Icons.Outlined.PlayArrow)
+                CardTitle(stringResource(Res.string.ready_first_day_title), icon = Icons.Outlined.PlayArrow)
 
-                WorkflowTipItem(Icons.Outlined.Restaurant, stringResource(R.string.ready_tip_breakfast))
-                WorkflowTipItem(Icons.Outlined.Healing, stringResource(R.string.ready_tip_feeling))
-                WorkflowTipItem(Icons.Outlined.BarChart, stringResource(R.string.ready_tip_environment))
+                WorkflowTipItem(Icons.Outlined.Restaurant, stringResource(Res.string.ready_tip_breakfast))
+                WorkflowTipItem(Icons.Outlined.Healing, stringResource(Res.string.ready_tip_feeling))
+                WorkflowTipItem(Icons.Outlined.BarChart, stringResource(Res.string.ready_tip_environment))
             }
         }
 
@@ -146,7 +146,7 @@ private fun ReadyPermissionItem(label: String, isGranted: Boolean) {
                 tint = if (isGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
             )
             Text(
-                text = stringResource(if (isGranted) R.string.ready_status_granted else R.string.ready_status_denied),
+                text = stringResource(if (isGranted) Res.string.ready_status_granted else Res.string.ready_status_denied),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = if (isGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error

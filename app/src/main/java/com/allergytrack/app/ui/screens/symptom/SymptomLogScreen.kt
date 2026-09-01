@@ -12,7 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -20,7 +20,7 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.compose.material3.Icon
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.app.ui.util.icon
 import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.app.ui.components.*
@@ -103,7 +103,7 @@ fun SymptomLogScreen(
 
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            stringResource(R.string.label_notes),
+                            stringResource(Res.string.label_notes),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontFamily = MonoFontFamily
@@ -111,7 +111,7 @@ fun SymptomLogScreen(
                         OutlinedTextField(
                             value = uiState.notes,
                             onValueChange = viewModel::onNotesChanged,
-                            placeholder = { Text(stringResource(R.string.notes_placeholder_symptom), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            placeholder = { Text(stringResource(Res.string.notes_placeholder_symptom), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             maxLines = 3,
@@ -125,9 +125,9 @@ fun SymptomLogScreen(
                     }
 
                     val savingLabel = if (uiState.isSaving)
-                        stringResource(R.string.btn_saving)
+                        stringResource(Res.string.btn_saving)
                     else
-                        stringResource(R.string.btn_save_symptom)
+                        stringResource(Res.string.btn_save_symptom)
 
                     PrimaryButton(
                         text = savingLabel,
@@ -143,7 +143,7 @@ fun SymptomLogScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = stringResource(R.string.select_symptom_type_prompt),
+                            text = stringResource(Res.string.select_symptom_type_prompt),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
@@ -187,7 +187,7 @@ fun SymptomLogScreen(
 
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        stringResource(R.string.label_notes),
+                        stringResource(Res.string.label_notes),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontFamily = MonoFontFamily
@@ -195,7 +195,7 @@ fun SymptomLogScreen(
                     OutlinedTextField(
                         value = uiState.notes,
                         onValueChange = viewModel::onNotesChanged,
-                        placeholder = { Text(stringResource(R.string.notes_placeholder_symptom), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                        placeholder = { Text(stringResource(Res.string.notes_placeholder_symptom), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         maxLines = 3,
@@ -209,9 +209,9 @@ fun SymptomLogScreen(
                 }
 
                 val savingLabel = if (uiState.isSaving)
-                    stringResource(R.string.btn_saving)
+                    stringResource(Res.string.btn_saving)
                 else
-                    stringResource(R.string.btn_save_symptom)
+                    stringResource(Res.string.btn_save_symptom)
 
                 PrimaryButton(
                     text = savingLabel,
@@ -232,7 +232,7 @@ fun SymptomTypeSection(
     onTypeSelected: (SymptomType) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        CardTitle(stringResource(R.string.section_symptom_type), icon = Icons.Outlined.Sick)
+        CardTitle(stringResource(Res.string.section_symptom_type), icon = Icons.Outlined.Sick)
 
         val types = SymptomType.entries
         for (row in types.chunked(2)) {
@@ -300,11 +300,11 @@ fun IntensitySection(
     onIntensityChanged: (Int) -> Unit
 ) {
     val intensityLabels = listOf(
-        stringResource(R.string.intensity_1),
-        stringResource(R.string.intensity_2),
-        stringResource(R.string.intensity_3),
-        stringResource(R.string.intensity_4),
-        stringResource(R.string.intensity_5)
+        stringResource(Res.string.intensity_1),
+        stringResource(Res.string.intensity_2),
+        stringResource(Res.string.intensity_3),
+        stringResource(Res.string.intensity_4),
+        stringResource(Res.string.intensity_5)
     )
     val intensityColors = listOf(
         MaterialTheme.colorScheme.okColor,
@@ -320,9 +320,9 @@ fun IntensitySection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
-            CardTitle(stringResource(R.string.section_intensity), icon = Icons.Outlined.Equalizer)
+            CardTitle(stringResource(Res.string.section_intensity), icon = Icons.Outlined.Equalizer)
             Text(
-                stringResource(R.string.intensity_format, intensityLabels[intensity - 1], intensity).uppercase(),
+                stringResource(Res.string.intensity_format, intensityLabels[intensity - 1], intensity).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 color = intensityColors[intensity - 1],
                 fontFamily = MonoFontFamily
@@ -371,7 +371,7 @@ fun BodyPartSection(
     onPartToggled: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        CardTitle(stringResource(R.string.section_body_area), icon = Icons.Outlined.Person)
+        CardTitle(stringResource(Res.string.section_body_area), icon = Icons.Outlined.Person)
 
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),

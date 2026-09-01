@@ -10,11 +10,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.app.ui.theme.*
 
 @Composable
@@ -48,7 +48,7 @@ fun OnboardingWelcomeContent() {
 
         // Title
         Text(
-            text = stringResource(R.string.onboarding_title),
+            text = stringResource(Res.string.onboarding_title),
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface,
@@ -60,7 +60,7 @@ fun OnboardingWelcomeContent() {
 
         // Description
         Text(
-            text = stringResource(R.string.onboarding_description),
+            text = stringResource(Res.string.onboarding_description),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -11,7 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
@@ -19,7 +19,7 @@ import androidx.navigation.NavController
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import com.allergytrack.app.BuildConfig
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.shared.data.local.datastore.DebugPremiumOverride
 import com.allergytrack.shared.domain.model.PremiumVisibilityMode
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -33,6 +33,8 @@ fun DebugMenuScreen(
     val currentMode = viewModel.currentVisibilityMode
 
     val context = LocalContext.current
+    // Hoistováno mimo lambdu — stringResource je @Composable a v onClick ho volat nelze.
+    val crashlyticsToastMsg = stringResource(Res.string.debug_enable_crashlytics_toast)
     val analyticsEnabled by viewModel.analyticsEnabled.collectAsState()
     val crashlyticsEnabled by viewModel.crashlyticsEnabled.collectAsState()
 
@@ -44,7 +46,7 @@ fun DebugMenuScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            stringResource(R.string.debug_premium_override_title),
+            stringResource(Res.string.debug_premium_override_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -128,23 +130,23 @@ fun DebugMenuScreen(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                stringResource(R.string.debug_analysis_sim_title),
+                stringResource(Res.string.debug_analysis_sim_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                stringResource(R.string.debug_analysis_sim_desc),
+                stringResource(Res.string.debug_analysis_sim_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             val analysisOptions = listOf(
-                -1 to stringResource(R.string.debug_analysis_real_data),
-                0  to stringResource(R.string.debug_analysis_0),
-                3  to stringResource(R.string.debug_analysis_3),
-                5  to stringResource(R.string.debug_analysis_5),
-                8  to stringResource(R.string.debug_analysis_8),
-                10 to stringResource(R.string.debug_analysis_10)
+                -1 to stringResource(Res.string.debug_analysis_real_data),
+                0  to stringResource(Res.string.debug_analysis_0),
+                3  to stringResource(Res.string.debug_analysis_3),
+                5  to stringResource(Res.string.debug_analysis_5),
+                8  to stringResource(Res.string.debug_analysis_8),
+                10 to stringResource(Res.string.debug_analysis_10)
             )
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 analysisOptions.forEach { (count, label) ->
@@ -182,13 +184,13 @@ fun DebugMenuScreen(
         HorizontalDivider()
 
         Text(
-            stringResource(R.string.debug_other_options),
+            stringResource(Res.string.debug_other_options),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
 
         Text(
-            stringResource(R.string.debug_seed_hint),
+            stringResource(Res.string.debug_seed_hint),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -204,7 +206,7 @@ fun DebugMenuScreen(
                 CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    stringResource(R.string.debug_seed_in_progress),
+                    stringResource(Res.string.debug_seed_in_progress),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -217,13 +219,13 @@ fun DebugMenuScreen(
                     onClick = { viewModel.seedTestData(czech = true) },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(stringResource(R.string.debug_seed_cz))
+                    Text(stringResource(Res.string.debug_seed_cz))
                 }
                 OutlinedButton(
                     onClick = { viewModel.seedTestData(czech = false) },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(stringResource(R.string.debug_seed_en))
+                    Text(stringResource(Res.string.debug_seed_en))
                 }
             }
         }
@@ -231,7 +233,7 @@ fun DebugMenuScreen(
         HorizontalDivider()
 
         Text(
-            stringResource(R.string.debug_firebase_section),
+            stringResource(Res.string.debug_firebase_section),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -242,8 +244,8 @@ fun DebugMenuScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(R.string.debug_firebase_analytics_title), style = MaterialTheme.typography.bodyLarge)
-                Text(stringResource(R.string.debug_firebase_analytics_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(Res.string.debug_firebase_analytics_title), style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(Res.string.debug_firebase_analytics_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Switch(
                 checked = analyticsEnabled,
@@ -257,8 +259,8 @@ fun DebugMenuScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(R.string.debug_firebase_crashlytics_title), style = MaterialTheme.typography.bodyLarge)
-                Text(stringResource(R.string.debug_firebase_crashlytics_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(Res.string.debug_firebase_crashlytics_title), style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(Res.string.debug_firebase_crashlytics_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Switch(
                 checked = crashlyticsEnabled,
@@ -271,7 +273,7 @@ fun DebugMenuScreen(
         Button(
             onClick = {
                 if (!crashlyticsEnabled) {
-                    Toast.makeText(context, context.getString(R.string.debug_enable_crashlytics_toast), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, crashlyticsToastMsg, Toast.LENGTH_SHORT).show()
                 } else {
                     throw RuntimeException("Test Crash")
                 }
@@ -282,13 +284,13 @@ fun DebugMenuScreen(
             ),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(R.string.debug_crash_app))
+            Text(stringResource(Res.string.debug_crash_app))
         }
 
         OutlinedButton(
             onClick = {
                 if (!crashlyticsEnabled) {
-                    Toast.makeText(context, context.getString(R.string.debug_enable_crashlytics_toast), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, crashlyticsToastMsg, Toast.LENGTH_SHORT).show()
                 } else {
                     FirebaseCrashlytics.getInstance().recordException(
                         RuntimeException("Test non-fatal exception z Debug menu")
@@ -300,14 +302,14 @@ fun DebugMenuScreen(
             ),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(R.string.debug_nonfatal_test))
+            Text(stringResource(Res.string.debug_nonfatal_test))
         }
 
         HorizontalDivider()
         Spacer(Modifier.height(8.dp))
 
         Text(
-            stringResource(R.string.debug_onboarding_section),
+            stringResource(Res.string.debug_onboarding_section),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
@@ -319,11 +321,11 @@ fun DebugMenuScreen(
         ) {
             Icon(Icons.Default.Refresh, null)
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.debug_reset_onboarding_btn))
+            Text(stringResource(Res.string.debug_reset_onboarding_btn))
         }
 
         Text(
-            stringResource(R.string.debug_reset_onboarding_note),
+            stringResource(Res.string.debug_reset_onboarding_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

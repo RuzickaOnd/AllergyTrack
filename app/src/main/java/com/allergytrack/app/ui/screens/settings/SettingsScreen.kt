@@ -53,7 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
@@ -63,7 +63,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.BuildConfig
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.app.ui.components.AppCard
 import com.allergytrack.app.ui.components.AppSnackbarHost
 import com.allergytrack.app.ui.components.PremiumBadge
@@ -164,29 +164,29 @@ fun SettingsScreen(
         ) {
             Spacer(Modifier.height(8.dp))
 
-            SettingsHeader(title = stringResource(R.string.settings_section_general))
+            SettingsHeader(title = stringResource(Res.string.settings_section_general))
 
             AppCard(contentPadding = PaddingValues(0.dp)) {
                 val appLangLabel = when (appLanguage) {
                     "cs" -> "Čeština"
                     "en" -> "English"
-                    else -> stringResource(R.string.settings_app_language_auto)
+                    else -> stringResource(Res.string.settings_app_language_auto)
                 }
                 SettingsActionItem(
-                    label = stringResource(R.string.settings_app_language),
+                    label = stringResource(Res.string.settings_app_language),
                     sublabel = appLangLabel,
                     onClick = { showAppLanguageDialog = true }
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
                 SettingsSwitchItem(
-                    label = stringResource(R.string.settings_dark_mode),
+                    label = stringResource(Res.string.settings_dark_mode),
                     checked = darkMode,
                     onCheckedChange = { viewModel.setDarkMode(it) }
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
-                val permissionHint = stringResource(R.string.settings_notifications_permission_required)
+                val permissionHint = stringResource(Res.string.settings_notifications_permission_required)
                 SettingsSwitchItem(
-                    label = stringResource(R.string.settings_push_notifications),
+                    label = stringResource(Res.string.settings_push_notifications),
                     checked = notificationsEnabled && permissions.notifications,
                     enabled = permissions.notifications,
                     onCheckedChange = { viewModel.setNotificationsEnabled(it) },
@@ -197,28 +197,28 @@ fun SettingsScreen(
             }
 
             if (canUseExtendedCharts) {
-                SettingsHeader(title = stringResource(R.string.settings_section_charts))
+                SettingsHeader(title = stringResource(Res.string.settings_section_charts))
 
                 AppCard(contentPadding = PaddingValues(0.dp)) {
                     SettingsSwitchItem(
-                        label = stringResource(R.string.settings_sync_charts_scroll),
+                        label = stringResource(Res.string.settings_sync_charts_scroll),
                         checked = syncChartsScroll,
                         onCheckedChange = { viewModel.setSyncChartsScroll(it) }
                     )
                 }
             }
 
-            SettingsHeader(title = stringResource(R.string.settings_section_food_search))
+            SettingsHeader(title = stringResource(Res.string.settings_section_food_search))
 
             AppCard(contentPadding = PaddingValues(0.dp)) {
                 val autoLabel = stringResource(
-                    R.string.settings_food_language_auto,
+                    Res.string.settings_food_language_auto,
                     LocalLocale.current.platformLocale.language.uppercase()
                 )
                 val currentLabel = if (foodLanguage.isEmpty()) autoLabel
                 else FOOD_LANGUAGE_OPTIONS.find { it.code == foodLanguage }?.nativeName ?: autoLabel
                 SettingsActionItem(
-                    label = stringResource(R.string.settings_food_language),
+                    label = stringResource(Res.string.settings_food_language),
                     sublabel = currentLabel,
                     onClick = { showLanguageDialog = true }
                 )
@@ -246,11 +246,11 @@ fun SettingsScreen(
                 )
             }
 
-            SettingsHeader(title = stringResource(R.string.settings_section_permissions))
+            SettingsHeader(title = stringResource(Res.string.settings_section_permissions))
 
             AppCard(contentPadding = PaddingValues(0.dp)) {
                 PermissionSettingItem(
-                    label = stringResource(R.string.permission_location_title),
+                    label = stringResource(Res.string.permission_location_title),
                     isGranted = permissions.location,
                     onClick = {
                         handlePermissionClick(permissions.location, PermissionType.LOCATION) {
@@ -265,7 +265,7 @@ fun SettingsScreen(
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
                 PermissionSettingItem(
-                    label = stringResource(R.string.permission_camera_title),
+                    label = stringResource(Res.string.permission_camera_title),
                     isGranted = permissions.camera,
                     onClick = {
                         handlePermissionClick(permissions.camera, PermissionType.CAMERA) {
@@ -276,7 +276,7 @@ fun SettingsScreen(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
                     PermissionSettingItem(
-                        label = stringResource(R.string.permission_notifications_title),
+                        label = stringResource(Res.string.permission_notifications_title),
                         isGranted = permissions.notifications,
                         onClick = {
                             handlePermissionClick(permissions.notifications, PermissionType.NOTIFICATIONS) {
@@ -287,13 +287,13 @@ fun SettingsScreen(
                 }
             }
 
-            SettingsHeader(title = stringResource(R.string.settings_section_data_privacy))
+            SettingsHeader(title = stringResource(Res.string.settings_section_data_privacy))
 
             if (isExportVisible) {
                 AppCard(contentPadding = PaddingValues(0.dp)) {
                     SettingsActionItem(
-                        label = stringResource(R.string.settings_export_data),
-                        sublabel = if (isExporting) stringResource(R.string.settings_exporting) else null,
+                        label = stringResource(Res.string.settings_export_data),
+                        sublabel = if (isExporting) stringResource(Res.string.settings_exporting) else null,
                         badge = if (showExportBadge) {
                             { PremiumBadge() }
                         } else null,
@@ -307,14 +307,14 @@ fun SettingsScreen(
                     )
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 0.5.dp)
                     SettingsActionItem(
-                        label = stringResource(R.string.settings_delete_data),
+                        label = stringResource(Res.string.settings_delete_data),
                         onClick = { showDeleteConfirmDialog = true }
                     )
                 }
             } else {
                 AppCard(contentPadding = PaddingValues(0.dp)) {
                     SettingsActionItem(
-                        label = stringResource(R.string.settings_delete_data),
+                        label = stringResource(Res.string.settings_delete_data),
                         onClick = { showDeleteConfirmDialog = true }
                     )
                 }
@@ -323,8 +323,8 @@ fun SettingsScreen(
             if (showDeleteConfirmDialog) {
                 AlertDialog(
                     onDismissRequest = { showDeleteConfirmDialog = false },
-                    title = { Text(stringResource(R.string.settings_delete_confirm_title)) },
-                    text = { Text(stringResource(R.string.settings_delete_confirm_message)) },
+                    title = { Text(stringResource(Res.string.settings_delete_confirm_title)) },
+                    text = { Text(stringResource(Res.string.settings_delete_confirm_message)) },
                     confirmButton = {
                         TextButton(
                             onClick = {
@@ -335,22 +335,22 @@ fun SettingsScreen(
                                 contentColor = MaterialTheme.colorScheme.error
                             )
                         ) {
-                            Text(stringResource(R.string.settings_delete_confirm_btn))
+                            Text(stringResource(Res.string.settings_delete_confirm_btn))
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteConfirmDialog = false }) {
-                            Text(stringResource(R.string.btn_close))
+                            Text(stringResource(Res.string.btn_close))
                         }
                     }
                 )
             }
 
             if (BuildConfig.DEBUG) {
-                SettingsHeader(title = stringResource(R.string.settings_section_developer))
+                SettingsHeader(title = stringResource(Res.string.settings_section_developer))
                 AppCard(contentPadding = PaddingValues(0.dp)) {
                     SettingsActionItem(
-                        label = stringResource(R.string.settings_debug_menu_label),
+                        label = stringResource(Res.string.settings_debug_menu_label),
                         icon = Icons.Default.Build,
                         onClick = { navController.navigate(Screen.DebugMenu.route) }
                     )
@@ -358,13 +358,13 @@ fun SettingsScreen(
             }
 
             val fcmTokenText = when (val token = fcmToken) {
-                null -> stringResource(R.string.settings_fcm_token_loading)
-                "" -> stringResource(R.string.settings_fcm_token_unavailable)
+                null -> stringResource(Res.string.settings_fcm_token_loading)
+                "" -> stringResource(Res.string.settings_fcm_token_unavailable)
                 else -> token
             }
-            val fcmTokenCopiedMessage = stringResource(R.string.settings_fcm_token_copied_toast)
+            val fcmTokenCopiedMessage = stringResource(Res.string.settings_fcm_token_copied_toast)
 
-            SettingsHeader(title = stringResource(R.string.settings_section_diagnostics))
+            SettingsHeader(title = stringResource(Res.string.settings_section_diagnostics))
             AppCard(contentPadding = PaddingValues(0.dp)) {
                 Row(
                     modifier = Modifier
@@ -375,7 +375,7 @@ fun SettingsScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = stringResource(R.string.settings_fcm_token_title),
+                            text = stringResource(Res.string.settings_fcm_token_title),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -407,7 +407,7 @@ fun SettingsScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.ContentCopy,
-                            contentDescription = stringResource(R.string.settings_fcm_token_copy_desc),
+                            contentDescription = stringResource(Res.string.settings_fcm_token_copy_desc),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -416,7 +416,7 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(40.dp))
             Text(
-                text = stringResource(R.string.settings_version_format, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE.toString()),
+                text = stringResource(Res.string.settings_version_format, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE.toString()),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -447,7 +447,7 @@ fun PermissionSettingItem(
         Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                text = if (isGranted) stringResource(R.string.ready_status_granted) else stringResource(R.string.ready_status_denied),
+                text = if (isGranted) stringResource(Res.string.ready_status_granted) else stringResource(Res.string.ready_status_denied),
                 style = MaterialTheme.typography.bodyMedium,
                 color = if (isGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
             )
@@ -572,13 +572,13 @@ fun AppLanguageDialog(
     onDismiss: () -> Unit
 ) {
     val options = listOf(
-        Triple("", stringResource(R.string.settings_app_language_auto), false),
+        Triple("", stringResource(Res.string.settings_app_language_auto), false),
         Triple("cs", "Čeština", false),
         Triple("en", "English", false),
     )
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_app_language_dialog_title)) },
+        title = { Text(stringResource(Res.string.settings_app_language_dialog_title)) },
         text = {
             Column {
                 options.forEach { (code, label, _) ->
@@ -605,7 +605,7 @@ fun AppLanguageDialog(
         confirmButton = {},
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.btn_close))
+                Text(stringResource(Res.string.btn_close))
             }
         }
     )
@@ -619,7 +619,7 @@ fun FoodLanguageDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_food_language_dialog_title)) },
+        title = { Text(stringResource(Res.string.settings_food_language_dialog_title)) },
         text = {
             LazyColumn {
                 items(FOOD_LANGUAGE_OPTIONS) { option ->
@@ -646,7 +646,7 @@ fun FoodLanguageDialog(
         confirmButton = {},
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.btn_close))
+                Text(stringResource(Res.string.btn_close))
             }
         }
     )

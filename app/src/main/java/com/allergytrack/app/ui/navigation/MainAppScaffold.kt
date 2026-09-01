@@ -21,14 +21,14 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.allergytrack.shared.domain.model.AnalysisReadiness
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.app.ui.screens.analysis.AnalysisViewModel
 import com.allergytrack.app.ui.screens.dashboard.DashboardViewModel
 import com.allergytrack.app.ui.screens.debug.DebugMenuViewModel
@@ -97,10 +97,10 @@ fun MainAppScaffold(appUpdateRepository: com.allergytrack.shared.domain.reposito
         ),
         navigationSuiteItems = {
             val items = listOf(
-                Triple(Screen.Dashboard, R.string.nav_dashboard, Icons.Outlined.Home to Icons.Filled.Home),
-                Triple(Screen.Charts,    R.string.nav_charts,    Icons.Outlined.Analytics to Icons.Filled.Analytics),
-                Triple(Screen.Analysis,  R.string.nav_analysis,  Icons.Outlined.AutoAwesome to Icons.Filled.AutoAwesome),
-                Triple(Screen.Profile,   R.string.nav_profile,   Icons.Outlined.Person to Icons.Filled.Person),
+                Triple(Screen.Dashboard, Res.string.nav_dashboard, Icons.Outlined.Home to Icons.Filled.Home),
+                Triple(Screen.Charts,    Res.string.nav_charts,    Icons.Outlined.Analytics to Icons.Filled.Analytics),
+                Triple(Screen.Analysis,  Res.string.nav_analysis,  Icons.Outlined.AutoAwesome to Icons.Filled.AutoAwesome),
+                Triple(Screen.Profile,   Res.string.nav_profile,   Icons.Outlined.Person to Icons.Filled.Person),
             )
             items.forEach { (screen, labelRes, icons) ->
                 val (outlinedIcon, filledIcon) = icons
@@ -130,8 +130,8 @@ fun MainAppScaffold(appUpdateRepository: com.allergytrack.shared.domain.reposito
     ) {
         val snackbarHostState = remember { SnackbarHostState() }
         val isUpdateDownloaded by appUpdateRepository.isUpdateDownloaded.collectAsStateWithLifecycle(initialValue = false)
-        val updateMessage = stringResource(R.string.update_downloaded_message)
-        val updateActionLabel = stringResource(R.string.update_action_restart)
+        val updateMessage = stringResource(Res.string.update_downloaded_message)
+        val updateActionLabel = stringResource(Res.string.update_action_restart)
 
         LaunchedEffect(isUpdateDownloaded) {
             if (isUpdateDownloaded) {
@@ -168,24 +168,24 @@ fun MainAppScaffold(appUpdateRepository: com.allergytrack.shared.domain.reposito
                             Column {
                                 val title = when {
                                     currentRoute == Screen.Dashboard.route -> stringResource(dashboardState.greetingRes)
-                                    currentRoute == Screen.Charts.route -> stringResource(R.string.screen_analytics)
-                                    currentRoute == Screen.Analysis.route -> stringResource(R.string.screen_ai_analysis)
-                                    currentRoute == Screen.Profile.route -> stringResource(R.string.screen_profile)
-                                    currentRoute == Screen.FoodLog.route -> stringResource(R.string.screen_log_food)
-                                    currentRoute == Screen.SymptomLog.route -> stringResource(R.string.screen_log_symptom)
-                                    currentRoute == Screen.Settings.route -> stringResource(R.string.screen_settings)
-                                    currentRoute == Screen.About.route -> stringResource(R.string.screen_about)
-                                    currentRoute == Screen.Faq.route -> stringResource(R.string.screen_faq)
-                                    currentRoute == Screen.DebugMenu.route -> stringResource(R.string.screen_debug_menu)
-                                    currentRoute?.startsWith("food_confirm") == true -> stringResource(R.string.screen_confirm_food)
-                                    currentRoute == Screen.FoodManualSearch.route -> stringResource(R.string.screen_search_food)
+                                    currentRoute == Screen.Charts.route -> stringResource(Res.string.screen_analytics)
+                                    currentRoute == Screen.Analysis.route -> stringResource(Res.string.screen_ai_analysis)
+                                    currentRoute == Screen.Profile.route -> stringResource(Res.string.screen_profile)
+                                    currentRoute == Screen.FoodLog.route -> stringResource(Res.string.screen_log_food)
+                                    currentRoute == Screen.SymptomLog.route -> stringResource(Res.string.screen_log_symptom)
+                                    currentRoute == Screen.Settings.route -> stringResource(Res.string.screen_settings)
+                                    currentRoute == Screen.About.route -> stringResource(Res.string.screen_about)
+                                    currentRoute == Screen.Faq.route -> stringResource(Res.string.screen_faq)
+                                    currentRoute == Screen.DebugMenu.route -> stringResource(Res.string.screen_debug_menu)
+                                    currentRoute?.startsWith("food_confirm") == true -> stringResource(Res.string.screen_confirm_food)
+                                    currentRoute == Screen.FoodManualSearch.route -> stringResource(Res.string.screen_search_food)
                                     else -> ""
                                 }
                                 Text(title, fontFamily = SerifFontFamily)
 
                                 if (currentRoute == Screen.Charts.route) {
                                     Text(
-                                        stringResource(R.string.subtitle_charts),
+                                        stringResource(Res.string.subtitle_charts),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontFamily = MonoFontFamily
@@ -196,7 +196,7 @@ fun MainAppScaffold(appUpdateRepository: com.allergytrack.shared.domain.reposito
                         navigationIcon = {
                             if (!showBottomBar) {
                                 IconButton(onClick = { navController.popBackStack() }) {
-                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back))
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.nav_back))
                                 }
                             }
                         },
@@ -212,14 +212,14 @@ fun MainAppScaffold(appUpdateRepository: com.allergytrack.shared.domain.reposito
                                                     color = MaterialTheme.colorScheme.primary
                                                 )
                                             } else {
-                                                Icon(Icons.Default.Share, stringResource(R.string.cd_export_report), tint = MaterialTheme.colorScheme.onSurface)
+                                                Icon(Icons.Default.Share, stringResource(Res.string.cd_export_report), tint = MaterialTheme.colorScheme.onSurface)
                                             }
                                         }
                                     }
                                 }
                                 Screen.DebugMenu.route -> {
                                     IconButton(onClick = { debugViewModel.resetAll() }) {
-                                        Icon(Icons.Default.Refresh, stringResource(R.string.cd_reset_all))
+                                        Icon(Icons.Default.Refresh, stringResource(Res.string.cd_reset_all))
                                     }
                                 }
                             }

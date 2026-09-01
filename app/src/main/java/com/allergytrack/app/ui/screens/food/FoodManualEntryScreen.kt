@@ -11,13 +11,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.allergytrack.app.R
-import com.allergytrack.app.data.remote.food.FoodAllergenHelper
+import com.allergytrack.shared.resources.*
+import com.allergytrack.shared.data.remote.food.FoodAllergenHelper
 import com.allergytrack.app.ui.components.AppCard
 import com.allergytrack.app.ui.components.CardTitle
 import com.allergytrack.app.ui.components.PrimaryButton
@@ -57,13 +57,13 @@ fun FoodManualEntryScreen(
     ) {
         Spacer(Modifier.height(8.dp))
 
-        SectionHeading(title = stringResource(R.string.screen_manual_food_entry))
+        SectionHeading(title = stringResource(Res.string.screen_manual_food_entry))
 
         AppCard {
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text(stringResource(R.string.manual_entry_name_label)) },
+                label = { Text(stringResource(Res.string.manual_entry_name_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
                 singleLine = true
@@ -72,7 +72,7 @@ fun FoodManualEntryScreen(
 
         AppCard {
             CardTitle(
-                text = stringResource(R.string.manual_entry_allergen_heading),
+                text = stringResource(Res.string.manual_entry_allergen_heading),
                 icon = Icons.Outlined.AutoAwesome
             )
 
@@ -119,7 +119,7 @@ fun FoodManualEntryScreen(
                         strokeWidth = 2.dp
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.manual_entry_suggesting))
+                    Text(stringResource(Res.string.manual_entry_suggesting))
                 } else {
                     Icon(
                         imageVector = Icons.Outlined.AutoAwesome,
@@ -127,14 +127,14 @@ fun FoodManualEntryScreen(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.manual_entry_suggest_btn))
+                    Text(stringResource(Res.string.manual_entry_suggest_btn))
                 }
             }
 
             if (!isSuggesting && suggestedAllergens.isEmpty() && name.isNotBlank()) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = stringResource(R.string.manual_entry_suggest_hint),
+                    text = stringResource(Res.string.manual_entry_suggest_hint),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -142,7 +142,7 @@ fun FoodManualEntryScreen(
         }
 
         PrimaryButton(
-            text = stringResource(R.string.btn_continue),
+            text = stringResource(Res.string.btn_continue),
             enabled = name.isNotBlank(),
             onClick = {
                 val encodedName = Uri.encode(name.trim())

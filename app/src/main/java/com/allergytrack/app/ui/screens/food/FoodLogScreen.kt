@@ -25,14 +25,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
@@ -52,8 +52,8 @@ fun FoodLogScreen(
     val showPhotoUpsell by viewModel.showPhotoUpsell.collectAsStateWithLifecycle()
     val voiceState by viewModel.voiceState.collectAsStateWithLifecycle()
     val navigateToSearch by viewModel.navigateToSearch.collectAsStateWithLifecycle()
-    val voicePermissionDeniedMsg = stringResource(R.string.voice_permission_denied)
-    val voiceNotAvailableMsg = stringResource(R.string.voice_not_available)
+    val voicePermissionDeniedMsg = stringResource(Res.string.voice_permission_denied)
+    val voiceNotAvailableMsg = stringResource(Res.string.voice_not_available)
 
     // SpeechRecognizer — lifecycle spravovaný DisposableEffect
     val speechRecognizer = remember {
@@ -132,10 +132,10 @@ fun FoodLogScreen(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
-            title = { Text(stringResource(R.string.voice_listening_title)) },
+            title = { Text(stringResource(Res.string.voice_listening_title)) },
             text = {
                 Text(
-                    text = stringResource(R.string.voice_listening_hint),
+                    text = stringResource(Res.string.voice_listening_hint),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -146,7 +146,7 @@ fun FoodLogScreen(
                     speechRecognizer?.stopListening()
                     viewModel.dismissVoiceInput()
                 }) {
-                    Text(stringResource(R.string.btn_close))
+                    Text(stringResource(Res.string.btn_close))
                 }
             }
         )
@@ -195,14 +195,14 @@ fun FoodLogScreen(
                             )
                             Spacer(Modifier.height(12.dp))
                             Text(
-                                stringResource(R.string.btn_scan_tap),
+                                stringResource(Res.string.btn_scan_tap),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontFamily = MonoFontFamily,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                stringResource(R.string.btn_scan_subtitle),
+                                stringResource(Res.string.btn_scan_subtitle),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -215,12 +215,12 @@ fun FoodLogScreen(
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 SecondaryButton(
-                    text = stringResource(R.string.btn_barcode),
+                    text = stringResource(Res.string.btn_barcode),
                     onClick = { navController.navigate(Screen.Camera.barcode()) },
                     modifier = Modifier.weight(1f)
                 )
                 SecondaryButton(
-                    text = stringResource(R.string.btn_voice_input),
+                    text = stringResource(Res.string.btn_voice_input),
                     onClick = {
                         when {
                             !SpeechRecognizer.isRecognitionAvailable(context) ->
@@ -253,7 +253,7 @@ fun FoodLogScreen(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        stringResource(R.string.search_food_hint),
+                        stringResource(Res.string.search_food_hint),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -263,10 +263,10 @@ fun FoodLogScreen(
 
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                CardTitle(stringResource(R.string.section_recently_logged), icon = Icons.Outlined.History)
+                CardTitle(stringResource(Res.string.section_recently_logged), icon = Icons.Outlined.History)
                 if (recentLogs.isEmpty()) {
                     Text(
-                        text = stringResource(R.string.food_recently_empty),
+                        text = stringResource(Res.string.food_recently_empty),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

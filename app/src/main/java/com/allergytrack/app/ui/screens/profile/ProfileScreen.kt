@@ -43,7 +43,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -52,7 +52,7 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.BuildConfig
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.app.ui.components.AppCard
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.screens.settings.SettingsActionItem
@@ -113,7 +113,7 @@ fun ProfileScreen(
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             Icons.Default.Edit,
-                            contentDescription = stringResource(R.string.profile_change_avatar),
+                            contentDescription = stringResource(Res.string.profile_change_avatar),
                             modifier = Modifier.size(15.dp),
                             tint = MaterialTheme.colorScheme.onSecondary
                         )
@@ -159,7 +159,7 @@ fun ProfileScreen(
                         .padding(vertical = 16.dp)
                 ) {
                     Text(
-                        text = userName.ifEmpty { stringResource(R.string.profile_name_placeholder) },
+                        text = userName.ifEmpty { stringResource(Res.string.profile_name_placeholder) },
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = if (userName.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant
@@ -177,8 +177,8 @@ fun ProfileScreen(
                     SettingsActionItem(
                         icon = Icons.Default.Star,
                         label = stringResource(
-                            if (isPremiumUser) R.string.profile_option_premium_manage
-                            else R.string.profile_option_premium
+                            if (isPremiumUser) Res.string.profile_option_premium_manage
+                            else Res.string.profile_option_premium
                         ),
                         onClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
                     )
@@ -189,7 +189,7 @@ fun ProfileScreen(
                 }
                 SettingsActionItem(
                     icon = Icons.Default.Settings,
-                    label = stringResource(R.string.screen_settings),
+                    label = stringResource(Res.string.screen_settings),
                     onClick = { navController.navigate(Screen.Settings.route) }
                 )
                 HorizontalDivider(
@@ -198,7 +198,7 @@ fun ProfileScreen(
                 )
                 SettingsActionItem(
                     icon = Icons.Outlined.HelpOutline,
-                    label = stringResource(R.string.screen_faq),
+                    label = stringResource(Res.string.screen_faq),
                     onClick = { navController.navigate(Screen.Faq.route) }
                 )
                 HorizontalDivider(
@@ -207,7 +207,7 @@ fun ProfileScreen(
                 )
                 SettingsActionItem(
                     icon = Icons.Default.Info,
-                    label = stringResource(R.string.screen_about),
+                    label = stringResource(Res.string.screen_about),
                     onClick = { navController.navigate(Screen.About.route) }
                 )
             }
@@ -215,7 +215,7 @@ fun ProfileScreen(
 
         item {
             Text(
-                stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
+                stringResource(Res.string.about_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 24.dp)

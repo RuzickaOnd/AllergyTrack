@@ -41,11 +41,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
+import org.jetbrains.compose.resources.StringResource
 import com.allergytrack.app.ui.components.CardTitle
 import com.allergytrack.app.ui.components.PrimaryButton
 import com.allergytrack.app.ui.theme.MonoFontFamily
@@ -54,17 +55,17 @@ import com.allergytrack.app.ui.theme.warningColor
 
 private data class PremiumFeatureItem(
     val icon: ImageVector,
-    val titleRes: Int,
-    val descRes: Int
+    val titleRes: StringResource,
+    val descRes: StringResource
 )
 
 private val premiumFeatureItems = listOf(
-    PremiumFeatureItem(Icons.Outlined.CameraAlt, R.string.premium_feature_food_photo, R.string.premium_feature_food_photo_desc),
-    PremiumFeatureItem(Icons.Outlined.FilterVintage, R.string.premium_feature_pollen, R.string.premium_feature_pollen_desc),
-    PremiumFeatureItem(Icons.AutoMirrored.Outlined.ShowChart, R.string.premium_feature_extended_charts, R.string.premium_feature_extended_charts_desc),
-    PremiumFeatureItem(Icons.Outlined.AutoAwesome, R.string.premium_feature_ai_analysis, R.string.premium_feature_ai_analysis_desc),
-    PremiumFeatureItem(Icons.Outlined.Description, R.string.premium_feature_pdf_export, R.string.premium_feature_pdf_export_desc),
-    PremiumFeatureItem(Icons.Outlined.History, R.string.premium_feature_unlimited_history, R.string.premium_feature_unlimited_history_desc),
+    PremiumFeatureItem(Icons.Outlined.CameraAlt, Res.string.premium_feature_food_photo, Res.string.premium_feature_food_photo_desc),
+    PremiumFeatureItem(Icons.Outlined.FilterVintage, Res.string.premium_feature_pollen, Res.string.premium_feature_pollen_desc),
+    PremiumFeatureItem(Icons.AutoMirrored.Outlined.ShowChart, Res.string.premium_feature_extended_charts, Res.string.premium_feature_extended_charts_desc),
+    PremiumFeatureItem(Icons.Outlined.AutoAwesome, Res.string.premium_feature_ai_analysis, Res.string.premium_feature_ai_analysis_desc),
+    PremiumFeatureItem(Icons.Outlined.Description, Res.string.premium_feature_pdf_export, Res.string.premium_feature_pdf_export_desc),
+    PremiumFeatureItem(Icons.Outlined.History, Res.string.premium_feature_unlimited_history, Res.string.premium_feature_unlimited_history_desc),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,11 +80,11 @@ fun PremiumScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(stringResource(R.string.screen_premium), fontFamily = SerifFontFamily)
+                    Text(stringResource(Res.string.screen_premium), fontFamily = SerifFontFamily)
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.nav_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -101,7 +102,7 @@ fun PremiumScreen(
                     .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
                 PrimaryButton(
-                    text = stringResource(R.string.premium_page_cta),
+                    text = stringResource(Res.string.premium_page_cta),
                     onClick = {
                         onBuyClick()
                         Toast.makeText(
@@ -130,7 +131,7 @@ fun PremiumScreen(
 
             item {
                 CardTitle(
-                    text = stringResource(R.string.premium_page_features_title),
+                    text = stringResource(Res.string.premium_page_features_title),
                     icon = Icons.Outlined.Star
                 )
             }
@@ -165,7 +166,7 @@ private fun PremiumHeroSection() {
             tint = accentColor
         )
         Text(
-            text = stringResource(R.string.premium_page_headline),
+            text = stringResource(Res.string.premium_page_headline),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             fontFamily = SerifFontFamily,
@@ -174,7 +175,7 @@ private fun PremiumHeroSection() {
             modifier = Modifier.fillMaxWidth()
         )
         Text(
-            text = stringResource(R.string.premium_page_subtitle),
+            text = stringResource(Res.string.premium_page_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

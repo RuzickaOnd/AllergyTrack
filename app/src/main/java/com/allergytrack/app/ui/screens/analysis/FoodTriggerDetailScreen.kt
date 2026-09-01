@@ -17,14 +17,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.allergytrack.app.R
-import com.allergytrack.app.data.remote.food.FoodAllergenHelper
+import com.allergytrack.shared.resources.*
+import com.allergytrack.shared.data.remote.food.FoodAllergenHelper
 import com.allergytrack.shared.domain.model.CorrelationSeverity
 import com.allergytrack.shared.domain.model.FoodReactionEvent
 import com.allergytrack.shared.domain.model.FoodTrigger
@@ -99,7 +99,7 @@ fun FoodTriggerDetailScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cd_back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -142,13 +142,13 @@ fun FoodTriggerDetailScreen(
             // ── Reakční časová osa — seznam konzumací ────────────────────
             item {
                 Text(
-                    stringResource(R.string.food_trigger_history_title),
+                    stringResource(Res.string.food_trigger_history_title),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 Text(
-                    stringResource(R.string.food_trigger_history_subtitle),
+                    stringResource(Res.string.food_trigger_history_subtitle),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -200,19 +200,19 @@ fun FoodTriggerSummaryCard(trigger: FoodTrigger) {
                         color = severityColor
                     )
                     Text(
-                        stringResource(R.string.food_trigger_reaction_probability),
+                        stringResource(Res.string.food_trigger_reaction_probability),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        stringResource(R.string.food_trigger_servings_fraction, trigger.reactionCount, trigger.totalCount),
+                        stringResource(Res.string.food_trigger_servings_fraction, trigger.reactionCount, trigger.totalCount),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        stringResource(R.string.food_trigger_servings_with_reaction),
+                        stringResource(Res.string.food_trigger_servings_with_reaction),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -247,7 +247,7 @@ fun FoodTriggerSummaryCard(trigger: FoodTrigger) {
                             tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            stringResource(R.string.food_trigger_matches_profile),
+                            stringResource(Res.string.food_trigger_matches_profile),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
@@ -262,7 +262,7 @@ fun FoodTriggerSummaryCard(trigger: FoodTrigger) {
                 }
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    stringResource(R.string.food_trigger_typical_reactions, localizedSymptoms.joinToString(", ")),
+                    stringResource(Res.string.food_trigger_typical_reactions, localizedSymptoms.joinToString(", ")),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -278,7 +278,7 @@ fun FoodReactionFrequencyCard(trigger: FoodTrigger) {
     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                stringResource(R.string.food_trigger_frequency_title),
+                stringResource(Res.string.food_trigger_frequency_title),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold
             )
@@ -305,7 +305,7 @@ fun FoodReactionFrequencyCard(trigger: FoodTrigger) {
                     ) {
                         if (reactionFraction > 0.25f) {
                             Text(
-                                stringResource(R.string.food_trigger_bar_with_reaction, trigger.reactionCount),
+                                stringResource(Res.string.food_trigger_bar_with_reaction, trigger.reactionCount),
                                 modifier = Modifier.padding(start = 8.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onError
@@ -323,7 +323,7 @@ fun FoodReactionFrequencyCard(trigger: FoodTrigger) {
                     ) {
                         if (okFraction > 0.2f) {
                             Text(
-                                stringResource(R.string.food_trigger_bar_without_reaction, trigger.totalCount - trigger.reactionCount),
+                                stringResource(Res.string.food_trigger_bar_without_reaction, trigger.totalCount - trigger.reactionCount),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
@@ -336,11 +336,11 @@ fun FoodReactionFrequencyCard(trigger: FoodTrigger) {
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 LegendItem(
                     color = MaterialTheme.colorScheme.symptomColor,
-                    label = stringResource(R.string.food_trigger_legend_with_reaction)
+                    label = stringResource(Res.string.food_trigger_legend_with_reaction)
                 )
                 LegendItem(
                     color = MaterialTheme.colorScheme.primaryContainer,
-                    label = stringResource(R.string.food_trigger_legend_without_reaction),
+                    label = stringResource(Res.string.food_trigger_legend_without_reaction),
                     textColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
@@ -375,7 +375,7 @@ fun FoodSymptomMatrixCard(trigger: FoodTrigger) {
     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                stringResource(R.string.food_trigger_symptom_matrix_title),
+                stringResource(Res.string.food_trigger_symptom_matrix_title),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold
             )
@@ -483,7 +483,7 @@ fun FoodEventCard(
                         shape = RoundedCornerShape(6.dp)
                     ) {
                         Text(
-                            stringResource(R.string.food_trigger_intensity_label, maxIntensity),
+                            stringResource(Res.string.food_trigger_intensity_label, maxIntensity),
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.symptomColor
@@ -498,7 +498,7 @@ fun FoodEventCard(
                 HorizontalDivider()
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    stringResource(R.string.food_trigger_reactions_timeline),
+                    stringResource(Res.string.food_trigger_reactions_timeline),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.SemiBold
@@ -511,7 +511,7 @@ fun FoodEventCard(
             } else if (isExpanded && !event.hadReaction) {
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    stringResource(R.string.food_trigger_no_reactions),
+                    stringResource(Res.string.food_trigger_no_reactions),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -523,9 +523,9 @@ fun FoodEventCard(
 @Composable
 fun ReactionTimelineItem(symptom: SymptomInWindow) {
     val delayStr = when {
-        symptom.delayHours < 1f -> stringResource(R.string.delay_minutes, (symptom.delayHours * 60).toInt())
-        symptom.delayHours < 24f -> stringResource(R.string.delay_hours, symptom.delayHours.toInt())
-        else -> stringResource(R.string.delay_days, (symptom.delayHours / 24).toInt())
+        symptom.delayHours < 1f -> stringResource(Res.string.delay_minutes, (symptom.delayHours * 60).toInt())
+        symptom.delayHours < 24f -> stringResource(Res.string.delay_hours, symptom.delayHours.toInt())
+        else -> stringResource(Res.string.delay_days, (symptom.delayHours / 24).toInt())
     }
     val symptomType = try { SymptomType.valueOf(symptom.symptomName) } catch (e: IllegalArgumentException) { null }
     val localizedSymptomName = if (symptomType != null) stringResource(symptomType.labelRes()) else symptom.symptomName

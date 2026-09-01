@@ -3,7 +3,7 @@ package com.allergytrack.app.ui.screens.food
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.allergytrack.app.data.remote.food.FoodAllergenHelper
+import com.allergytrack.shared.data.remote.food.FoodAllergenHelper
 import com.allergytrack.shared.data.remote.food.RecognizedFood
 import com.allergytrack.shared.domain.model.FoodLog
 import com.allergytrack.shared.data.remote.ApiHttpException

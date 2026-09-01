@@ -1,9 +1,9 @@
 package com.allergytrack.app.ui.screens.dashboard
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
+import org.jetbrains.compose.resources.StringResource
 import androidx.lifecycle.viewModelScope
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.shared.data.local.database.dao.FoodLogDao
 import com.allergytrack.shared.data.local.database.dao.SymptomLogDao
 import com.allergytrack.shared.data.local.database.entity.FoodLogEntity
@@ -46,7 +46,7 @@ data class DashboardUiState(
     val locationGranted: Boolean = true,
     val showPollenPremiumBadge: Boolean = false,
     val showPremiumPromoCard: Boolean = false,
-    @get:StringRes val greetingRes: Int = R.string.greeting_morning,
+    val greetingRes: StringResource = Res.string.greeting_morning,
     val insight: DashboardInsight? = null,
     val error: String? = null
 )
@@ -215,13 +215,12 @@ class DashboardViewModel(
         }
     }
 
-    @StringRes
-    private fun getGreeting(): Int {
+    private fun getGreeting(): StringResource {
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
         return when {
-            hour < 12 -> R.string.greeting_morning
-            hour < 18 -> R.string.greeting_afternoon
-            else -> R.string.greeting_evening
+            hour < 12 -> Res.string.greeting_morning
+            hour < 18 -> Res.string.greeting_afternoon
+            else -> Res.string.greeting_evening
         }
     }
 

@@ -1,13 +1,12 @@
-package com.allergytrack.app.data.remote.food
+package com.allergytrack.shared.data.remote.food
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Charakterizační testy heuristiky návrhu alergenů.
- * Přesouvají se do shared/src/commonTest/ ve fázi 7 (spolu se stringy,
- * protože AllergenDefinition.displayRes odkazuje na R.string).
+ * Přesunuty do commonTest ve fázi 7 spolu se stringy.
  */
 class FoodAllergenHelperCharacterizationTest {
 
@@ -25,8 +24,8 @@ class FoodAllergenHelperCharacterizationTest {
         expectedMappings.forEach { (name, allergen) ->
             val result = FoodAllergenHelper.suggestFromName(name)
             assertTrue(
-                "Pro '$name' byl očekáván alergen '$allergen', dostal jsem: $result",
-                allergen in result
+                allergen in result,
+                "Pro '$name' byl očekáván alergen '$allergen', dostal jsem: $result"
             )
         }
     }
@@ -39,8 +38,8 @@ class FoodAllergenHelperCharacterizationTest {
     @Test
     fun `nazev muze trefit vice alergenu najednou`() {
         val result = FoodAllergenHelper.suggestFromName("Arašídové máslo")
-        assertTrue("Očekáván Peanuts v $result", "Peanuts" in result)
-        assertTrue("Očekáván i Milk (kvůli 'máslo') v $result", "Milk" in result)
+        assertTrue("Peanuts" in result, "Očekáván Peanuts v $result")
+        assertTrue("Milk" in result, "Očekáván i Milk (kvůli 'máslo') v $result")
     }
 
     @Test
@@ -66,7 +65,7 @@ class FoodAllergenHelperCharacterizationTest {
     fun `EU_14 obsahuje presne 14 alergenu s unikatnimi klici`() {
         assertEquals(14, FoodAllergenHelper.EU_14.size)
         val keys = FoodAllergenHelper.EU_14.map { it.key }
-        assertEquals("Klíče musí být unikátní", keys.size, keys.toSet().size)
+        assertEquals(keys.size, keys.toSet().size, "Klíče musí být unikátní")
     }
 
     @Test

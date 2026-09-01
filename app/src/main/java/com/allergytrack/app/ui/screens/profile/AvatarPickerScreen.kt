@@ -49,32 +49,33 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import org.jetbrains.compose.resources.StringResource
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 
-data class AvatarPreset(val id: String, val icon: ImageVector, val labelRes: Int)
+data class AvatarPreset(val id: String, val icon: ImageVector, val labelRes: StringResource)
 
 val AVATAR_PRESETS = listOf(
-    AvatarPreset("person", Icons.Default.Person, R.string.avatar_person),
-    AvatarPreset("favorite", Icons.Default.Favorite, R.string.avatar_favorite),
-    AvatarPreset("star", Icons.Default.Star, R.string.avatar_star),
-    AvatarPreset("pets", Icons.Default.Pets, R.string.avatar_pets),
-    AvatarPreset("local_florist", Icons.Default.LocalFlorist, R.string.avatar_florist),
-    AvatarPreset("fitness_center", Icons.Default.FitnessCenter, R.string.avatar_fitness),
-    AvatarPreset("directions_run", Icons.AutoMirrored.Filled.DirectionsRun, R.string.avatar_run),
-    AvatarPreset("spa", Icons.Default.Spa, R.string.avatar_spa),
-    AvatarPreset("eco", Icons.Default.Eco, R.string.avatar_eco),
-    AvatarPreset("health_and_safety", Icons.Default.HealthAndSafety, R.string.avatar_health),
-    AvatarPreset("sentiment_satisfied", Icons.Default.SentimentSatisfied, R.string.avatar_happy),
-    AvatarPreset("self_improvement", Icons.Default.SelfImprovement, R.string.avatar_mindful),
+    AvatarPreset("person", Icons.Default.Person, Res.string.avatar_person),
+    AvatarPreset("favorite", Icons.Default.Favorite, Res.string.avatar_favorite),
+    AvatarPreset("star", Icons.Default.Star, Res.string.avatar_star),
+    AvatarPreset("pets", Icons.Default.Pets, Res.string.avatar_pets),
+    AvatarPreset("local_florist", Icons.Default.LocalFlorist, Res.string.avatar_florist),
+    AvatarPreset("fitness_center", Icons.Default.FitnessCenter, Res.string.avatar_fitness),
+    AvatarPreset("directions_run", Icons.AutoMirrored.Filled.DirectionsRun, Res.string.avatar_run),
+    AvatarPreset("spa", Icons.Default.Spa, Res.string.avatar_spa),
+    AvatarPreset("eco", Icons.Default.Eco, Res.string.avatar_eco),
+    AvatarPreset("health_and_safety", Icons.Default.HealthAndSafety, Res.string.avatar_health),
+    AvatarPreset("sentiment_satisfied", Icons.Default.SentimentSatisfied, Res.string.avatar_happy),
+    AvatarPreset("self_improvement", Icons.Default.SelfImprovement, Res.string.avatar_mindful),
 )
 
 @Composable
@@ -134,10 +135,10 @@ fun AvatarPickerScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.avatar_picker_title)) },
+                title = { Text(stringResource(Res.string.avatar_picker_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.nav_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -186,7 +187,7 @@ fun AvatarPickerScreen(
             ) {
                 Icon(Icons.Default.PhotoLibrary, null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.avatar_from_gallery))
+                Text(stringResource(Res.string.avatar_from_gallery))
             }
         }
     }

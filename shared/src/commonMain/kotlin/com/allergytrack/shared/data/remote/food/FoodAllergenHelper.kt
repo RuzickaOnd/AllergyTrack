@@ -1,6 +1,7 @@
-package com.allergytrack.app.data.remote.food
+package com.allergytrack.shared.data.remote.food
 
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
+import org.jetbrains.compose.resources.StringResource
 
 /**
  * EU 14 povinných alergenů + lokální heuristika pro návrh alergenů dle názvu jídla.
@@ -8,23 +9,23 @@ import com.allergytrack.app.R
  */
 object FoodAllergenHelper {
 
-    data class AllergenDefinition(val key: String, val displayRes: Int)
+    data class AllergenDefinition(val key: String, val displayRes: StringResource)
 
     val EU_14 = listOf(
-        AllergenDefinition("Gluten",                           R.string.allergen_gluten),
-        AllergenDefinition("Milk",                             R.string.allergen_milk),
-        AllergenDefinition("Eggs",                             R.string.allergen_eggs),
-        AllergenDefinition("Fish",                             R.string.allergen_fish),
-        AllergenDefinition("Crustaceans",                      R.string.allergen_crustaceans),
-        AllergenDefinition("Peanuts",                          R.string.allergen_peanuts),
-        AllergenDefinition("Soybeans",                         R.string.allergen_soybeans),
-        AllergenDefinition("Nuts",                             R.string.allergen_nuts),
-        AllergenDefinition("Celery",                           R.string.allergen_celery),
-        AllergenDefinition("Mustard",                          R.string.allergen_mustard),
-        AllergenDefinition("Sesame-seeds",                     R.string.allergen_sesame),
-        AllergenDefinition("Sulphur-dioxide-and-sulphites",    R.string.allergen_sulphites),
-        AllergenDefinition("Lupin",                            R.string.allergen_lupin),
-        AllergenDefinition("Molluscs",                         R.string.allergen_molluscs),
+        AllergenDefinition("Gluten",                           Res.string.allergen_gluten),
+        AllergenDefinition("Milk",                             Res.string.allergen_milk),
+        AllergenDefinition("Eggs",                             Res.string.allergen_eggs),
+        AllergenDefinition("Fish",                             Res.string.allergen_fish),
+        AllergenDefinition("Crustaceans",                      Res.string.allergen_crustaceans),
+        AllergenDefinition("Peanuts",                          Res.string.allergen_peanuts),
+        AllergenDefinition("Soybeans",                         Res.string.allergen_soybeans),
+        AllergenDefinition("Nuts",                             Res.string.allergen_nuts),
+        AllergenDefinition("Celery",                           Res.string.allergen_celery),
+        AllergenDefinition("Mustard",                          Res.string.allergen_mustard),
+        AllergenDefinition("Sesame-seeds",                     Res.string.allergen_sesame),
+        AllergenDefinition("Sulphur-dioxide-and-sulphites",    Res.string.allergen_sulphites),
+        AllergenDefinition("Lupin",                            Res.string.allergen_lupin),
+        AllergenDefinition("Molluscs",                         Res.string.allergen_molluscs),
     )
 
     private val KEYWORD_MAP: List<Pair<List<String>, String>> = listOf(
@@ -89,7 +90,7 @@ object FoodAllergenHelper {
     )
 
     /** Mapa klíče alergenu → string resource ID pro lokalizaci v UI. */
-    val keyToDisplayRes: Map<String, Int> = EU_14.associate { it.key to it.displayRes }
+    val keyToDisplayRes: Map<String, StringResource> = EU_14.associate { it.key to it.displayRes }
 
     /** Navrhne alergeny na základě klíčových slov v názvu jídla (A: lokální heuristika). */
     fun suggestFromName(name: String): Set<String> {

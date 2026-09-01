@@ -50,7 +50,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
@@ -59,7 +59,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.shared.data.local.database.entity.FoodLogEntity
 import com.allergytrack.shared.data.local.database.entity.SymptomLogEntity
 import com.allergytrack.shared.domain.model.EnvironmentLog
@@ -123,12 +123,12 @@ fun DashboardScreen(
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         PrimaryButton(
-                            text = stringResource(R.string.btn_add_food),
+                            text = stringResource(Res.string.btn_add_food),
                             onClick = { navController.navigate(Screen.FoodLog.route) },
                             modifier = Modifier.weight(1f)
                         )
                         PrimaryButton(
-                            text = stringResource(R.string.btn_add_symptom),
+                            text = stringResource(Res.string.btn_add_symptom),
                             onClick = { navController.navigate(Screen.SymptomLog.route) },
                             modifier = Modifier.weight(1f)
                         )
@@ -158,12 +158,12 @@ fun DashboardScreen(
                     }
 
                     if (uiState.showEnvironmentSection) {
-                        CardTitle(text = stringResource(R.string.env_section_title), icon = Icons.Outlined.Air)
+                        CardTitle(text = stringResource(Res.string.env_section_title), icon = Icons.Outlined.Air)
                         when {
                             !uiState.locationGranted -> PermissionRequiredCard(
-                                title = stringResource(R.string.permission_required_location_title),
-                                description = stringResource(R.string.permission_required_location_body),
-                                actionLabel = stringResource(R.string.permission_required_go_to_settings),
+                                title = stringResource(Res.string.permission_required_location_title),
+                                description = stringResource(Res.string.permission_required_location_body),
+                                actionLabel = stringResource(Res.string.permission_required_go_to_settings),
                                 onAction = { navController.navigate(Screen.Settings.route) }
                             )
 
@@ -188,7 +188,7 @@ fun DashboardScreen(
                         .fillMaxHeight(),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    CardTitle(text = stringResource(R.string.section_today_records), icon = Icons.Outlined.CalendarToday)
+                    CardTitle(text = stringResource(Res.string.section_today_records), icon = Icons.Outlined.CalendarToday)
 
                     val allItems = buildList {
                         uiState.todayFoodLogs.forEach { add(Pair("food", it)) }
@@ -242,12 +242,12 @@ fun DashboardScreen(
                 item {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         PrimaryButton(
-                            text = stringResource(R.string.btn_add_food),
+                            text = stringResource(Res.string.btn_add_food),
                             onClick = { navController.navigate(Screen.FoodLog.route) },
                             modifier = Modifier.weight(1f)
                         )
                         PrimaryButton(
-                            text = stringResource(R.string.btn_add_symptom),
+                            text = stringResource(Res.string.btn_add_symptom),
                             onClick = { navController.navigate(Screen.SymptomLog.route) },
                             modifier = Modifier.weight(1f)
                         )
@@ -287,9 +287,9 @@ fun DashboardScreen(
                     item {
                         when {
                             !uiState.locationGranted -> PermissionRequiredCard(
-                                title = stringResource(R.string.permission_required_location_title),
-                                description = stringResource(R.string.permission_required_location_body),
-                                actionLabel = stringResource(R.string.permission_required_go_to_settings),
+                                title = stringResource(Res.string.permission_required_location_title),
+                                description = stringResource(Res.string.permission_required_location_body),
+                                actionLabel = stringResource(Res.string.permission_required_go_to_settings),
                                 onAction = { navController.navigate(Screen.Settings.route) }
                             )
 
@@ -306,7 +306,7 @@ fun DashboardScreen(
                 }
 
                 item {
-                    CardTitle(text = stringResource(R.string.section_today_records), icon = Icons.Outlined.CalendarToday)
+                    CardTitle(text = stringResource(Res.string.section_today_records), icon = Icons.Outlined.CalendarToday)
                 }
 
                 val allItems = buildList {
@@ -402,13 +402,13 @@ fun NotificationReminderBanner(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     Text(
-                        text = stringResource(R.string.dashboard_notification_banner_title),
+                        text = stringResource(Res.string.dashboard_notification_banner_title),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = stringResource(R.string.dashboard_notification_banner_body),
+                        text = stringResource(Res.string.dashboard_notification_banner_body),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -423,7 +423,7 @@ fun NotificationReminderBanner(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Close,
-                    contentDescription = stringResource(R.string.dashboard_notification_banner_dismiss),
+                    contentDescription = stringResource(Res.string.dashboard_notification_banner_dismiss),
                     modifier = Modifier.size(16.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -464,19 +464,19 @@ private fun PremiumPromoCard(onClick: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.dashboard_premium_promo_title),
+                    text = stringResource(Res.string.dashboard_premium_promo_title),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = stringResource(R.string.dashboard_premium_promo_body),
+                    text = stringResource(Res.string.dashboard_premium_promo_body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Text(
-                text = stringResource(R.string.dashboard_premium_promo_cta).uppercase(),
+                text = stringResource(Res.string.dashboard_premium_promo_cta).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
                 fontFamily = MonoFontFamily,
@@ -491,13 +491,13 @@ fun InsightBadge(insight: DashboardInsight?) {
     if (insight == null) return
     val message = when (insight) {
         is DashboardInsight.HighPollen ->
-            stringResource(R.string.dashboard_insight_high_pollen, insight.maxLevel)
+            stringResource(Res.string.dashboard_insight_high_pollen, insight.maxLevel)
 
         is DashboardInsight.HighAqi ->
-            stringResource(R.string.dashboard_insight_high_aqi, insight.aqi)
+            stringResource(Res.string.dashboard_insight_high_aqi, insight.aqi)
 
         DashboardInsight.GoodDay ->
-            stringResource(R.string.dashboard_insight_good_day)
+            stringResource(Res.string.dashboard_insight_good_day)
     }
     AiBadge(text = message)
 }
@@ -520,7 +520,7 @@ fun EnvironmentCard(
     }
 
     AppCard(borderColor = borderColor) {
-        CardTitle(stringResource(R.string.env_section_title), icon = Icons.Outlined.Air)
+        CardTitle(stringResource(Res.string.env_section_title), icon = Icons.Outlined.Air)
         Spacer(Modifier.height(12.dp))
         if (env.pollenAvailable || showPollenPremiumBadge) {
             Row(
@@ -528,18 +528,18 @@ fun EnvironmentCard(
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 EnvironmentStat(
-                    label = stringResource(R.string.env_label_pollen_grass),
+                    label = stringResource(Res.string.env_label_pollen_grass),
                     value = env.pollenGrassIndex?.toString() ?: "—",
                     color = pollenStatColor(env.pollenGrassIndex),
                     isLocked = showPollenPremiumBadge
                 )
                 EnvironmentStat(
-                    label = stringResource(R.string.env_label_aqi),
+                    label = stringResource(Res.string.env_label_aqi),
                     value = env.aqi.toString(),
                     color = aqiStatColor(env.aqi)
                 )
                 EnvironmentStat(
-                    label = stringResource(R.string.env_label_pollen_tree),
+                    label = stringResource(Res.string.env_label_pollen_tree),
                     value = env.pollenTreeIndex?.toString() ?: "—",
                     color = pollenStatColor(env.pollenTreeIndex),
                     isLocked = showPollenPremiumBadge
@@ -548,7 +548,7 @@ fun EnvironmentCard(
         } else {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 EnvironmentStat(
-                    label = stringResource(R.string.env_label_aqi),
+                    label = stringResource(Res.string.env_label_aqi),
                     value = env.aqi.toString(),
                     color = aqiStatColor(env.aqi)
                 )
@@ -774,7 +774,7 @@ fun EmptyDayCard() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                stringResource(R.string.empty_day_title),
+                stringResource(Res.string.empty_day_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = SerifFontFamily,
@@ -782,7 +782,7 @@ fun EmptyDayCard() {
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
             Text(
-                stringResource(R.string.empty_day_subtitle),
+                stringResource(Res.string.empty_day_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
@@ -821,12 +821,12 @@ private fun AnalysisTeaserCard(count: Int, onClick: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.dashboard_analysis_teaser_title),
+                    text = stringResource(Res.string.dashboard_analysis_teaser_title),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = stringResource(R.string.dashboard_analysis_teaser_body, count),
+                    text = stringResource(Res.string.dashboard_analysis_teaser_body, count),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -855,7 +855,7 @@ fun NoEnvironmentCard() {
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                stringResource(R.string.loading_environment),
+                stringResource(Res.string.loading_environment),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontFamily = MonoFontFamily

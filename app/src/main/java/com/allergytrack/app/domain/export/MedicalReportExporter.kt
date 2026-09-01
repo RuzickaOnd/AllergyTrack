@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import com.allergytrack.app.R
+import org.jetbrains.compose.resources.getString
 import com.allergytrack.shared.domain.model.Correlation
 import com.allergytrack.shared.domain.model.FoodTrigger
 import com.allergytrack.app.ui.util.labelRes
@@ -113,7 +114,7 @@ class MedicalReportExporter(
         }
     }
 
-    private fun drawCorrelationItem(
+    private suspend fun drawCorrelationItem(
         canvas: Canvas,
         paint: Paint,
         margin: Float,
@@ -134,7 +135,7 @@ class MedicalReportExporter(
         paint.isFakeBoldText = false
         paint.textSize = 11f
         paint.color = Color.DKGRAY
-        val symptomLabel = context.getString(correlation.symptomType.labelRes())
+        val symptomLabel = getString(correlation.symptomType.labelRes())
         canvas.drawText(
             context.getString(R.string.export_pdf_confidence_label, (correlation.score * 100).toInt()) +
                     " | " + context.getString(R.string.export_pdf_symptom_label, symptomLabel),
@@ -145,7 +146,7 @@ class MedicalReportExporter(
         canvas.drawText(details, margin + 10, y + 45, paint)
     }
 
-    private fun drawFoodTriggers(
+    private suspend fun drawFoodTriggers(
         canvas: Canvas,
         paint: Paint,
         margin: Float,

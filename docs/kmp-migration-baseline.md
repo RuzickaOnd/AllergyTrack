@@ -278,3 +278,60 @@ Osm ViewModelů volá DAO přímo, mimo repository pattern (starší nedostatek,
 viz seznam zděděných chyb). `:app` proto potřebuje `room-runtime` kvůli
 typům. Databáze i migrace žijí v `:shared` za továrnou `createAllergyDatabase()`.
 Odstranitelné až po fázi 8.
+
+---
+
+## Fáze 7 — stringy do Compose Resources
+
+### Rozhodovací brána prošla
+
+Přepínání jazyka aplikace funguje i pro stringy z Compose Resources.
+Ověřeno na API 36 (cesta přes `LocaleManager`): string zobrazený anglicky
+se po přepnutí na češtinu změnil spolu se všemi `R.string`.
+
+**Neověřeno: cesta pro API < 33**, kde jazyk řídí `createConfigurationContext`
+místo `LocaleManager`. Všechny dostupné AVD jsou API 36+. `minSdk` je 26,
+takže tuhle cestu používá reálná část uživatelů — stojí za doověření
+na starším zařízení.
+
+### Compose Resources vyžadují POZIČNÍ placeholdery
+
+Toto je tichá past. Android resources přijímají `%s` i `%1$s`, Compose
+Resources **jen poziční tvar**. Holý `%s` se vypíše doslova.
+
+Projevilo se to v Nastavení jako „Automaticky **(%s)**" místo „Auto (EN)".
+Kompilátor to nezachytí a testy taky ne — odhalí to jedině pohled
+na obrazovku.
+
+Převedeno 19 stringů v obou jazycích. **Při přidávání nového
+parametrizovaného stringu vždy použij `%1$s`, ne `%s`.**
+
+### Rozdělení stringů mezi res/ a composeResources
+
+| Umístění | Počet | Pro co |
+|---|---|---|
+| `shared/…/composeResources/` | 423 | Compose UI přes `stringResource(Res.string.x)` |
+| `app/src/main/res/` | 26 | manifest (labely Activit) + kód mimo Compose |
+
+Manifest ani `context.getString()` Compose Resources neumí. Do `res/`
+proto patří 6 klíčů z manifestu a 20 klíčů používaných v `NotificationManager`,
+`ReminderWorker`, `AiSummaryService`, `MedicalReportExporter` a `ExportUtils`.
+**Tyto klíče existují duplicitně na obou místech — při změně textu je nutné
+upravit obě.**
+
+Překryv mezi Compose a ne-Compose užitím byl nulový, takže duplikace je
+minimální a nevznikla u žádného klíče, který by se zobrazoval v UI.
+
+### Accessory jsou extension properties
+
+`Res.string.foo` je extension property, ne vnořený objekt. Plně kvalifikovaný
+zápis nefunguje — každý soubor potřebuje import. Použit wildcard
+`import com.allergytrack.shared.resources.*` ve 37 souborech.
+
+### Suspend getString pro kód mimo Compose
+
+`MedicalReportExporter` a `AiSummaryService` potřebovaly texty přes
+`SymptomType.labelRes()`, které teď vrací `StringResource`. Pět privátních
+funkcí převedeno na `suspend` a používají
+`org.jetbrains.compose.resources.getString()`. Všechny byly volané
+ze suspend kontextu, takže šlo o mechanickou změnu.

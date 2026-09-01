@@ -1,7 +1,8 @@
 package com.allergytrack.app.data.remote.ai
 
+import org.jetbrains.compose.resources.getString
 import android.content.Context
-import com.allergytrack.app.data.remote.food.FoodAllergenHelper
+import com.allergytrack.shared.data.remote.food.FoodAllergenHelper
 import com.allergytrack.shared.domain.model.Correlation
 import com.allergytrack.shared.domain.model.CorrelationSeverity
 import com.allergytrack.shared.domain.model.TriggerType
@@ -49,7 +50,7 @@ class AiSummaryService(
         return@withContext generateRuleBasedSummary(correlations)
     }
 
-    private fun buildPrompt(correlations: List<Correlation>): String {
+    private suspend fun buildPrompt(correlations: List<Correlation>): String {
         return buildString {
             append("Jsi klinický asistent pro analýzu alergií v aplikaci AllergyTrack. ")
             append("Na základě naměřených korelací mezi jídlem/prostředím a symptomy uživatele vygeneruj stručné, ")
@@ -60,7 +61,7 @@ class AiSummaryService(
             append("Naměřená data:\n")
             for (corr in correlations) {
                 val triggerName = localizedTriggerName(corr)
-                val symptomName = context.getString(corr.symptomType.labelRes())
+                val symptomName = getString(corr.symptomType.labelRes())
                 val severityLabel = when (corr.severity) {
                     CorrelationSeverity.HIGH -> "vysoká"
                     CorrelationSeverity.MEDIUM -> "střední"
@@ -74,7 +75,7 @@ class AiSummaryService(
         }
     }
 
-    private fun generateRuleBasedSummary(correlations: List<Correlation>): String {
+    private suspend fun generateRuleBasedSummary(correlations: List<Correlation>): String {
         val highCorrelations = correlations.filter { it.severity == CorrelationSeverity.HIGH }
         val topTrigger = correlations.firstOrNull()
 
@@ -82,7 +83,7 @@ class AiSummaryService(
             if (topTrigger != null) {
                 val scorePercent = (topTrigger.score * 100).toInt()
                 val triggerName = localizedTriggerName(topTrigger)
-                val symptomName = context.getString(topTrigger.symptomType.labelRes())
+                val symptomName = getString(topTrigger.symptomType.labelRes())
                 append("Na základě tvých záznamů jsem identifikoval hlavní spouštěč: ")
                 append("**$triggerName** koreluje s $symptomName ")
                 append("v $scorePercent % případů")
@@ -108,10 +109,10 @@ class AiSummaryService(
         }
     }
 
-    private fun localizedTriggerName(correlation: Correlation): String =
+    private suspend fun localizedTriggerName(correlation: Correlation): String =
         if (correlation.triggerType == TriggerType.FOOD) {
             FoodAllergenHelper.keyToDisplayRes[correlation.trigger]
-                ?.let { context.getString(it) }
+                ?.let { getString(it) }
                 ?: correlation.trigger
         } else {
             when (correlation.trigger) {

@@ -40,13 +40,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.allergytrack.app.R
-import com.allergytrack.app.data.remote.food.FoodAllergenHelper
+import com.allergytrack.shared.resources.*
+import com.allergytrack.shared.data.remote.food.FoodAllergenHelper
 import com.allergytrack.shared.data.remote.food.RecognizedFood
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.MonoFontFamily
@@ -93,7 +93,7 @@ fun FoodManualSearchScreen(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = stringResource(R.string.search_info_banner),
+                    text = stringResource(Res.string.search_info_banner),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -102,7 +102,7 @@ fun FoodManualSearchScreen(
             OutlinedTextField(
                 value = searchState.query,
                 onValueChange = viewModel::onSearchQueryChange,
-                placeholder = { Text(stringResource(R.string.search_food_query_hint)) },
+                placeholder = { Text(stringResource(Res.string.search_food_query_hint)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
@@ -112,7 +112,7 @@ fun FoodManualSearchScreen(
                 trailingIcon = {
                     if (searchState.query.isNotEmpty()) {
                         IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
-                            Icon(Icons.Default.Clear, stringResource(R.string.cd_clear))
+                            Icon(Icons.Default.Clear, stringResource(Res.string.cd_clear))
                         }
                     }
                 }
@@ -148,7 +148,7 @@ fun FoodManualSearchScreen(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                stringResource(R.string.search_min_chars),
+                                stringResource(Res.string.search_min_chars),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -180,21 +180,21 @@ fun FoodManualSearchScreen(
                         ) {
                             if (searchState.isServiceUnavailable) {
                                 Text(
-                                    stringResource(R.string.search_service_unavailable_title),
+                                    stringResource(Res.string.search_service_unavailable_title),
                                     style = MaterialTheme.typography.titleSmall
                                 )
                                 Text(
-                                    stringResource(R.string.search_service_unavailable_desc),
+                                    stringResource(Res.string.search_service_unavailable_desc),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             } else {
                                 Text(
-                                    stringResource(R.string.search_no_results_title),
+                                    stringResource(Res.string.search_no_results_title),
                                     style = MaterialTheme.typography.titleSmall
                                 )
                                 Text(
-                                    stringResource(R.string.search_no_results_subtitle),
+                                    stringResource(Res.string.search_no_results_subtitle),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -207,9 +207,9 @@ fun FoodManualSearchScreen(
             // Tlačítko "Zadat ručně" — vždy viditelné; Primary když nejsou výsledky, Secondary když jsou
             val hasResults = searchResults.isNotEmpty()
             val buttonLabel = if (searchState.query.length >= 2)
-                stringResource(R.string.search_add_manually, searchState.query)
+                stringResource(Res.string.search_add_manually, searchState.query)
             else
-                stringResource(R.string.btn_add_food_manually)
+                stringResource(Res.string.btn_add_food_manually)
             val buttonModifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 16.dp)
@@ -271,7 +271,7 @@ fun FoodSearchResultItem(
                 )
                 if (!food.nameIsLocalized) {
                     Text(
-                        text = stringResource(R.string.food_name_original_lang),
+                        text = stringResource(Res.string.food_name_original_lang),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )

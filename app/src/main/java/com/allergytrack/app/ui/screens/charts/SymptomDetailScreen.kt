@@ -15,14 +15,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.app.ui.components.AppCard
 import com.allergytrack.app.ui.components.CardTitle
 import com.allergytrack.app.ui.theme.MonoFontFamily
@@ -42,10 +42,10 @@ fun SymptomDetailScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.symptom_detail_title)) },
+                title = { Text(stringResource(Res.string.symptom_detail_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -98,7 +98,7 @@ fun SymptomDetailScreen(
                 item {
                     Spacer(Modifier.height(4.dp))
                     CardTitle(
-                        text = stringResource(R.string.symptom_detail_most_frequent_heading),
+                        text = stringResource(Res.string.symptom_detail_most_frequent_heading),
                         icon = Icons.Outlined.EmojiEvents
                     )
                 }
@@ -111,7 +111,7 @@ fun SymptomDetailScreen(
                     item {
                         Spacer(Modifier.height(4.dp))
                         CardTitle(
-                            text = stringResource(R.string.symptom_detail_other_heading),
+                            text = stringResource(Res.string.symptom_detail_other_heading),
                             icon = Icons.AutoMirrored.Outlined.FormatListBulleted
                         )
                     }
@@ -167,7 +167,7 @@ private fun MostFrequentSymptomCard(stat: SymptomTypeStat) {
                         color = onPrimaryContainer
                     )
                     Text(
-                        text = pluralStringResource(R.plurals.symptom_occurrences, stat.count, stat.count),
+                        text = pluralStringResource(Res.plurals.symptom_occurrences, stat.count, stat.count),
                         style = MaterialTheme.typography.bodyMedium,
                         color = onPrimaryContainer.copy(alpha = 0.75f)
                     )
@@ -178,7 +178,7 @@ private fun MostFrequentSymptomCard(stat: SymptomTypeStat) {
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.symptom_detail_badge).uppercase(),
+                    text = stringResource(Res.string.symptom_detail_badge).uppercase(),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -196,7 +196,7 @@ private fun MostFrequentSymptomCard(stat: SymptomTypeStat) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.symptom_detail_avg_intensity).uppercase(),
+                text = stringResource(Res.string.symptom_detail_avg_intensity).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 color = onPrimaryContainer.copy(alpha = 0.65f),
                 fontFamily = MonoFontFamily
@@ -305,7 +305,7 @@ private fun SymptomDetailEmptyCard() {
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = stringResource(R.string.symptom_detail_empty),
+                text = stringResource(Res.string.symptom_detail_empty),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
