@@ -1,5 +1,6 @@
 package com.allergytrack.app.data.analytics
 
+import com.allergytrack.shared.platform.Analytics
 import android.content.Context
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -10,7 +11,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
  */
 class AnalyticsManager(
     private val context: Context
-) {
+) : Analytics {
 
     // Lazy inicializace Firebase Analytics - zabrání zbytečnému I/O čtení na hlavním vlákně při startu
     private val firebaseAnalytics by lazy {
@@ -35,7 +36,7 @@ class AnalyticsManager(
     /**
      * Záznam zobrazení konkrétní obrazovky.
      */
-    fun logScreenView(screenName: String, screenClass: String? = null) {
+    override fun logScreenView(screenName: String, screenClass: String?) {
         val bundle = Bundle().apply {
             putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
             if (screenClass != null) {
@@ -48,7 +49,7 @@ class AnalyticsManager(
     /**
      * Záznam uložení jídla (Food Logged).
      */
-    fun logFoodLogged(foodName: String, allergenCount: Int) {
+    override fun logFoodLogged(foodName: String, allergenCount: Int) {
         val bundle = Bundle().apply {
             putString("food_name", foodName)
             putInt("allergen_count", allergenCount)
@@ -59,7 +60,7 @@ class AnalyticsManager(
     /**
      * Záznam uložení příznaku (Symptom Logged).
      */
-    fun logSymptomLogged(symptomType: String, severity: Int) {
+    override fun logSymptomLogged(symptomType: String, severity: Int) {
         val bundle = Bundle().apply {
             putString("symptom_type", symptomType)
             putInt("severity", severity)
@@ -70,7 +71,7 @@ class AnalyticsManager(
     /**
      * Záznam uložení environmentálních dat (Environment Logged).
      */
-    fun logEnvironmentLogged(region: String, aqi: Int?) {
+    override fun logEnvironmentLogged(region: String, aqi: Int?) {
         val bundle = Bundle().apply {
             putString("region", region)
             if (aqi != null) {
@@ -83,7 +84,7 @@ class AnalyticsManager(
     /**
      * Záznam interakce s Premium funkcemi.
      */
-    fun logPremiumInteraction(featureName: String, action: String) {
+    override fun logPremiumInteraction(featureName: String, action: String) {
         val bundle = Bundle().apply {
             putString("feature_name", featureName)
             putString("action", action) // např. "view_upsell", "click_buy", "purchase_success"
@@ -94,7 +95,7 @@ class AnalyticsManager(
     /**
      * Záznam o onboarding krocích.
      */
-    fun logOnboardingStep(stepNumber: Int, stepName: String) {
+    override fun logOnboardingStep(stepNumber: Int, stepName: String) {
         val bundle = Bundle().apply {
             putInt("step_number", stepNumber)
             putString("step_name", stepName)
@@ -105,7 +106,7 @@ class AnalyticsManager(
     /**
      * Záznam kliknutí na kartu AI analýzy.
      */
-    fun logAiAnalysisCardClicked(triggerCount: Int) {
+    override fun logAiAnalysisCardClicked(triggerCount: Int) {
         val bundle = Bundle().apply {
             putInt("trigger_count", triggerCount)
         }

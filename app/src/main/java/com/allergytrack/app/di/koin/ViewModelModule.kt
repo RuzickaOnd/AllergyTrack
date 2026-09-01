@@ -1,18 +1,19 @@
 package com.allergytrack.app.di.koin
 
-import com.allergytrack.app.ui.onboarding.OnboardingViewModel
-import com.allergytrack.app.ui.screens.analysis.AnalysisViewModel
-import com.allergytrack.app.ui.screens.analysis.CorrelationDetailViewModel
-import com.allergytrack.app.ui.screens.analysis.FoodTriggerDetailViewModel
-import com.allergytrack.app.ui.screens.charts.ChartsViewModel
-import com.allergytrack.app.ui.screens.charts.SymptomDetailViewModel
-import com.allergytrack.app.ui.screens.dashboard.DashboardViewModel
+import com.allergytrack.shared.presentation.*
+import com.allergytrack.shared.presentation.OnboardingViewModel
+import com.allergytrack.shared.presentation.AnalysisViewModel
+import com.allergytrack.shared.presentation.CorrelationDetailViewModel
+import com.allergytrack.shared.presentation.FoodTriggerDetailViewModel
+import com.allergytrack.shared.presentation.ChartsViewModel
+import com.allergytrack.shared.presentation.SymptomDetailViewModel
+import com.allergytrack.shared.presentation.DashboardViewModel
 import com.allergytrack.app.ui.screens.debug.DebugMenuViewModel
-import com.allergytrack.app.ui.screens.food.FoodLogViewModel
-import com.allergytrack.app.ui.screens.profile.PremiumViewModel
-import com.allergytrack.app.ui.screens.profile.ProfileViewModel
-import com.allergytrack.app.ui.screens.settings.SettingsViewModel
-import com.allergytrack.app.ui.screens.symptom.SymptomLogViewModel
+import com.allergytrack.shared.presentation.FoodLogViewModel
+import com.allergytrack.shared.presentation.PremiumViewModel
+import com.allergytrack.shared.presentation.ProfileViewModel
+import com.allergytrack.shared.presentation.SettingsViewModel
+import com.allergytrack.shared.presentation.SymptomLogViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -116,7 +117,7 @@ val viewModelModule = module {
 
     viewModel {
         SettingsViewModel(
-            appContext = androidContext(),
+            deviceInfo = get(),
             permissionsHelper = get(),
             userPreferencesDataStore = get(),
             workManagerScheduler = get(),

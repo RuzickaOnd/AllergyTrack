@@ -1,5 +1,6 @@
-package com.allergytrack.app.ui.screens.charts
+package com.allergytrack.shared.presentation
 
+import com.allergytrack.shared.platform.currentTimeMillis
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +9,6 @@ import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.shared.domain.premium.PremiumHelper
 import kotlinx.coroutines.flow.*
-import java.util.concurrent.TimeUnit
 
 data class SymptomTypeStat(
     val type: SymptomType,
@@ -47,7 +47,7 @@ class SymptomDetailViewModel(
         symptomLogDao.getAllLogs()
     ) { requestedRange, canUse, logs ->
         val range = if (canUse) requestedRange else TimeRange.WEEK
-        val from = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(range.days.toLong())
+        val from = currentTimeMillis() - (range.days.toLong() * 24L * 60 * 60 * 1000)
         val filtered = logs.filter { it.timestamp >= from }
 
         val stats = SymptomType.entries.mapNotNull { type ->

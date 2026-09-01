@@ -1,5 +1,6 @@
-package com.allergytrack.app.ui.screens.charts
+package com.allergytrack.shared.presentation
 
+import com.allergytrack.shared.platform.currentTimeMillis
 import androidx.lifecycle.ViewModel
 import org.jetbrains.compose.resources.StringResource
 import androidx.lifecycle.viewModelScope
@@ -7,11 +8,10 @@ import com.allergytrack.shared.resources.*
 import com.allergytrack.shared.data.local.database.dao.EnvironmentLogDao
 import com.allergytrack.shared.data.local.database.dao.SymptomLogDao
 import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
-import com.allergytrack.app.data.permissions.PermissionsHelper
+import com.allergytrack.shared.platform.Permissions
 import com.allergytrack.shared.domain.model.SymptomType
 import kotlinx.coroutines.flow.*
-import java.util.concurrent.TimeUnit
-import com.allergytrack.app.data.analytics.AnalyticsManager
+import com.allergytrack.shared.platform.Analytics
 
 enum class TimeRange(val days: Int, val labelRes: StringResource) {
     WEEK(7, Res.string.time_range_week),
@@ -33,13 +33,13 @@ class ChartsViewModel(
     private val symptomLogDao: SymptomLogDao,
     private val environmentLogDao: EnvironmentLogDao,
     private val premiumHelper: com.allergytrack.shared.domain.premium.PremiumHelper,
-    private val permissionsHelper: PermissionsHelper,
+    private val permissionsHelper: Permissions,
     private val userPreferencesDataStore: UserPreferencesDataStore,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: Analytics
 ) : ViewModel() {
 
     init {
-        analyticsManager.logScreenView("charts", this::class.java.simpleName)
+        analyticsManager.logScreenView("charts", this::class.simpleName)
     }
 
     private val _selectedRange = MutableStateFlow(TimeRange.WEEK)
@@ -86,7 +86,7 @@ class ChartsViewModel(
         environmentLogDao.getAllLogs()
     ) { range, filter, symptomLogs, envLogs ->
 
-        val from = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(range.days.toLong())
+        val from = currentTimeMillis() - (range.days.toLong() * 24L * 60 * 60 * 1000)
         val filteredSymptoms = symptomLogs.filter { it.timestamp >= from }
         val filteredEnv = envLogs.filter { it.timestamp >= from }
 

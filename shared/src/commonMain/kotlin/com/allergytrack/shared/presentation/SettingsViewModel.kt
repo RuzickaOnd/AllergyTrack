@@ -1,7 +1,5 @@
-package com.allergytrack.app.ui.screens.settings
+package com.allergytrack.shared.presentation
 
-import android.content.Context
-import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.shared.data.local.database.dao.EnvironmentLogDao
@@ -9,16 +7,17 @@ import com.allergytrack.shared.data.local.database.dao.FoodLogDao
 import com.allergytrack.shared.data.local.database.dao.SymptomLogDao
 import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
 import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
-import com.allergytrack.app.data.permissions.PermissionsHelper
-import com.allergytrack.app.data.permissions.PermissionsState
-import com.allergytrack.app.data.worker.WorkManagerScheduler
-import com.allergytrack.app.data.remote.ai.AiSummaryService
+import com.allergytrack.shared.platform.Analytics
+import com.allergytrack.shared.platform.DeviceInfo
+import com.allergytrack.shared.platform.Permissions
+import com.allergytrack.shared.platform.PermissionsState
+import com.allergytrack.shared.platform.BackgroundScheduler
+import com.allergytrack.shared.platform.AiSummaryGenerator
 import com.allergytrack.shared.domain.analysis.CorrelationEngine
-import com.allergytrack.app.domain.export.MedicalReportExporter
-import com.allergytrack.app.ui.util.AppLocaleHelper
+import com.allergytrack.shared.domain.export.ReportExporter
 import com.allergytrack.shared.domain.premium.PremiumHelper
 import com.allergytrack.shared.domain.model.PremiumFeature
-import com.allergytrack.app.data.notifications.NotificationManager
+import com.allergytrack.shared.platform.AppNotifications
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +26,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.File
 
 data class FoodLanguageOption(val code: String, val nativeName: String)
 
@@ -48,27 +46,27 @@ val FOOD_LANGUAGE_OPTIONS = listOf(
 )
 
 class SettingsViewModel(
-    private val appContext: Context,
-    private val permissionsHelper: PermissionsHelper,
+    private val deviceInfo: DeviceInfo,
+    private val permissionsHelper: Permissions,
     private val userPreferencesDataStore: UserPreferencesDataStore,
-    private val workManagerScheduler: WorkManagerScheduler,
+    private val workManagerScheduler: BackgroundScheduler,
     private val foodLogDao: FoodLogDao,
     private val symptomLogDao: SymptomLogDao,
     private val environmentLogDao: EnvironmentLogDao,
     private val onboardingDataStore: OnboardingDataStore,
     private val correlationEngine: CorrelationEngine,
-    private val aiSummaryService: AiSummaryService,
-    private val medicalReportExporter: MedicalReportExporter,
+    private val aiSummaryService: AiSummaryGenerator,
+    private val medicalReportExporter: ReportExporter,
     private val premiumHelper: PremiumHelper,
-    private val analyticsManager: com.allergytrack.app.data.analytics.AnalyticsManager,
-    private val notificationManager: NotificationManager
+    private val analyticsManager: Analytics,
+    private val notificationManager: AppNotifications
 ) : ViewModel() {
 
     private val _fcmToken = MutableStateFlow<String?>(null)
     val fcmToken: StateFlow<String?> = _fcmToken.asStateFlow()
 
     init {
-        analyticsManager.logScreenView("settings", this::class.java.simpleName)
+        analyticsManager.logScreenView("settings", this::class.simpleName)
         fetchFcmToken()
     }
 
@@ -107,7 +105,7 @@ class SettingsViewModel(
     // --- OBECNÉ ---
 
     // Jazyk aplikace — čte aktuální stav z LocaleManager (API 33+) nebo SharedPreferences (starší)
-    private val _appLanguage = MutableStateFlow(AppLocaleHelper.getLanguage(appContext))
+    private val _appLanguage = MutableStateFlow(deviceInfo.currentLanguage())
     val appLanguage: StateFlow<String> = _appLanguage.asStateFlow()
 
     // API 33+ spustí recreate automaticky přes LocaleManager; pre-33 signalizuje Screen
@@ -115,9 +113,9 @@ class SettingsViewModel(
     val restartAppRequired: StateFlow<Boolean> = _restartAppRequired.asStateFlow()
 
     fun setAppLanguage(code: String) {
-        AppLocaleHelper.setLanguage(appContext, code)
+        deviceInfo.setLanguage(code)
         _appLanguage.value = code
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (deviceInfo.requiresRestartOnLanguageChange()) {
             _restartAppRequired.value = true
         }
     }
@@ -139,7 +137,7 @@ class SettingsViewModel(
     }
 
     /**
-     * Večerní připomínka k logování — viz [WorkManagerScheduler.scheduleReminder].
+     * Večerní připomínka k logování — viz [BackgroundScheduler.scheduleReminder].
      * Zapnutí ihned naplánuje WorkManager job; vypnutí ho zruší.
      * Stav přežije restart aplikace (uložen v DataStore + WorkManager).
      */
@@ -182,14 +180,14 @@ class SettingsViewModel(
     private val _isExporting = MutableStateFlow(false)
     val isExporting: StateFlow<Boolean> = _isExporting.asStateFlow()
 
-    private val _exportedFile = MutableStateFlow<File?>(null)
-    val exportedFile: StateFlow<File?> = _exportedFile.asStateFlow()
+    private val _exportedFilePath = MutableStateFlow<String?>(null)
+    val exportedFilePath: StateFlow<String?> = _exportedFilePath.asStateFlow()
 
     /**
      * Vygeneruje PDF lékařský report a uloží ho do Documents/AllergyTrack.
      * Průběh: načte všechna data → spustí korelační analýzu → AI shrnutí →
-     * MedicalReportExporter → výsledný File předá do [exportedFile].
-     * SettingsScreen sleduje [exportedFile] a po jeho naplnění zobrazí
+     * ReportExporter → výslednou cestu předá do [exportedFilePath].
+     * SettingsScreen sleduje [exportedFilePath] a po jeho naplnění zobrazí
      * systémový share sheet.
      */
     fun exportData() {
@@ -214,13 +212,13 @@ class SettingsViewModel(
                 aiSummary = aiSummary
             )
             _isExporting.value = false
-            _exportedFile.value = file
+            _exportedFilePath.value = file
         }
     }
 
     /** Vymaže referenci na exportovaný soubor po jeho sdílení — zabrání opakovanému spuštění share sheetu. */
     fun dismissExport() {
-        _exportedFile.value = null
+        _exportedFilePath.value = null
     }
 
     /**

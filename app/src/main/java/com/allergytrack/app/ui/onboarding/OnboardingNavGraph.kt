@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.onboarding
 
+import com.allergytrack.shared.presentation.*
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*

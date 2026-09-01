@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.profile
 
+import com.allergytrack.shared.presentation.*
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity

@@ -1,5 +1,6 @@
 package com.allergytrack.app.data.worker
 
+import com.allergytrack.shared.platform.BackgroundScheduler
 import android.content.Context
 import androidx.work.*
 import java.util.Calendar
@@ -7,8 +8,8 @@ import java.util.concurrent.TimeUnit
 
 class WorkManagerScheduler(
     private val context: Context
-) {
-    fun scheduleEnvironmentTracking() {
+) : BackgroundScheduler {
+    override fun scheduleEnvironmentTracking() {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -32,7 +33,7 @@ class WorkManagerScheduler(
         )
     }
 
-    fun cancelEnvironmentTracking() {
+    override fun cancelEnvironmentTracking() {
         WorkManager.getInstance(context)
             .cancelUniqueWork(EnvironmentWorker.WORK_NAME)
     }
@@ -46,7 +47,7 @@ class WorkManagerScheduler(
      * Používá [ExistingPeriodicWorkPolicy.REPLACE]: při opakovaném zapnutí notifikací
      * se timing resetuje na nejbližší 19:00 (zabraňuje driftu z předchozích plánování).
      */
-    fun scheduleReminder() {
+    override fun scheduleReminder() {
         val now = Calendar.getInstance()
         val next7pm = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 19)
@@ -69,7 +70,7 @@ class WorkManagerScheduler(
     }
 
     /** Zruší naplánovanou večerní připomínku. Okamžitě účinné, přežije restart. */
-    fun cancelReminder() {
+    override fun cancelReminder() {
         WorkManager.getInstance(context).cancelUniqueWork(ReminderWorker.WORK_NAME)
     }
 }

@@ -1,4 +1,4 @@
-package com.allergytrack.app.ui.screens.analysis
+package com.allergytrack.shared.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,17 +11,16 @@ import com.allergytrack.shared.data.local.database.entity.FoodLogEntity
 import com.allergytrack.shared.data.local.database.entity.SymptomLogEntity
 import com.allergytrack.shared.data.local.datastore.DebugPreferences
 import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
-import com.allergytrack.app.data.remote.ai.AiSummaryService
+import com.allergytrack.shared.platform.AiSummaryGenerator
 import com.allergytrack.shared.domain.analysis.CorrelationEngine
-import com.allergytrack.app.domain.export.MedicalReportExporter
+import com.allergytrack.shared.domain.export.ReportExporter
 import com.allergytrack.shared.domain.model.AnalysisReadiness
 import com.allergytrack.shared.domain.model.Correlation
 import com.allergytrack.shared.domain.model.FoodTrigger
 import com.allergytrack.shared.domain.premium.PremiumHelper
-import com.allergytrack.app.data.analytics.AnalyticsManager
+import com.allergytrack.shared.platform.Analytics
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.io.File
 
 data class AnalysisUiState(
     val isLoading: Boolean = true,
@@ -34,7 +33,7 @@ data class AnalysisUiState(
     val showDisclaimer: Boolean = false,
     val disclaimer: String = "",
     val isExporting: Boolean = false,
-    val exportedFile: File? = null
+    val exportedFilePath: String? = null
 )
 
 class AnalysisViewModel(
@@ -42,17 +41,17 @@ class AnalysisViewModel(
     private val foodLogDao: FoodLogDao,
     private val environmentLogDao: EnvironmentLogDao,
     private val correlationEngine: CorrelationEngine,
-    private val aiSummaryService: AiSummaryService,
+    private val aiSummaryService: AiSummaryGenerator,
     private val onboardingDataStore: OnboardingDataStore,
-    private val medicalReportExporter: MedicalReportExporter,
+    private val medicalReportExporter: ReportExporter,
     private val premiumHelper: PremiumHelper,
     private val debugPreferences: DebugPreferences,
-    private val analyticsManager: AnalyticsManager,
+    private val analyticsManager: Analytics,
     private val appConfig: AppConfig
 ) : ViewModel() {
 
     init {
-        analyticsManager.logScreenView("analysis", this::class.java.simpleName)
+        analyticsManager.logScreenView("analysis", this::class.simpleName)
     }
 
     private val _uiState = MutableStateFlow(AnalysisUiState())
@@ -217,11 +216,11 @@ class AnalysisViewModel(
                 foodTriggers = state.foodTriggers,
                 aiSummary = state.aiSummary
             )
-            _uiState.update { it.copy(isExporting = false, exportedFile = file) }
+            _uiState.update { it.copy(isExporting = false, exportedFilePath = file) }
         }
     }
 
     fun dismissExport() {
-        _uiState.update { it.copy(exportedFile = null) }
+        _uiState.update { it.copy(exportedFilePath = null) }
     }
 }

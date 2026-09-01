@@ -46,6 +46,8 @@ kotlin {
             // viditelná z :app, kde zatím zůstává Compose UI.
             api(compose.runtime)
             api(compose.components.resources)
+            api(libs.androidx.lifecycle.viewmodel.mp)
+            api(libs.androidx.lifecycle.viewmodel.savedstate.mp)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)

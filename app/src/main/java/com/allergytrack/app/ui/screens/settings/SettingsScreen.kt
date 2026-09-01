@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.settings
 
+import com.allergytrack.shared.presentation.*
 import android.Manifest
 import android.app.Activity
 import android.content.Context
@@ -88,7 +89,7 @@ fun SettingsScreen(
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsStateWithLifecycle()
     val syncChartsScroll by viewModel.syncChartsScroll.collectAsStateWithLifecycle()
     val isExporting by viewModel.isExporting.collectAsStateWithLifecycle()
-    val exportedFile by viewModel.exportedFile.collectAsStateWithLifecycle()
+    val exportedFilePath by viewModel.exportedFilePath.collectAsStateWithLifecycle()
     val isExportVisible by viewModel.isExportVisible.collectAsStateWithLifecycle()
     val canUseExport by viewModel.canUseExport.collectAsStateWithLifecycle()
     val showExportBadge by viewModel.showExportBadge.collectAsStateWithLifecycle()
@@ -100,9 +101,9 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(exportedFile) {
-        exportedFile?.let { file ->
-            context.sharePdfFile(file)
+    LaunchedEffect(exportedFilePath) {
+        exportedFilePath?.let { path ->
+            context.sharePdfFile(java.io.File(path))
             viewModel.dismissExport()
         }
     }

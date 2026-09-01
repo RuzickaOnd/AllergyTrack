@@ -4,6 +4,7 @@ import com.allergytrack.shared.domain.analysis.CorrelationEngine
 import com.allergytrack.shared.domain.premium.PremiumHelper
 import com.allergytrack.shared.domain.usecase.CheckPremiumAccessUseCase
 import com.allergytrack.app.domain.usecase.RecognizeFoodFromImageUseCase
+import com.allergytrack.shared.domain.usecase.RecognizeFoodFromImage
 import com.allergytrack.shared.domain.usecase.SaveFoodLogUseCase
 import com.allergytrack.shared.domain.usecase.SaveSymptomLogUseCase
 import com.allergytrack.shared.domain.usecase.SearchFoodUseCase
@@ -23,5 +24,5 @@ val domainModule = module {
     factory { SaveSymptomLogUseCase(repository = get()) }
     factory { SearchFoodUseCase(repository = get()) }
     factory { CheckPremiumAccessUseCase(premiumHelper = get()) }
-    factory { RecognizeFoodFromImageUseCase(context = androidContext(), repository = get()) }
+    factory<RecognizeFoodFromImage> { RecognizeFoodFromImageUseCase(context = androidContext(), repository = get()) }
 }

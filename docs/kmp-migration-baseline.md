@@ -335,3 +335,53 @@ zápis nefunguje — každý soubor potřebuje import. Použit wildcard
 funkcí převedeno na `suspend` a používají
 `org.jetbrains.compose.resources.getString()`. Všechny byly volané
 ze suspend kontextu, takže šlo o mechanickou změnu.
+
+---
+
+## Fáze 8 — ViewModely do commonMain
+
+12 ze 13 ViewModelů je v `commonMain`. `DebugMenuViewModel` zůstal v `:app`
+podle plánu — je to čistě Firebase/debug nástroj bez hodnoty pro iOS.
+
+### Platformní rozhraní
+
+Pro služby, které zůstávají v `:app`, vzniklo sedm rozhraní v
+`shared/platform/` a `shared/domain/export/`:
+
+| Rozhraní | Implementace v :app |
+|---|---|
+| `Analytics` | `AnalyticsManager` (Firebase) |
+| `Permissions` + `PermissionsState` | `PermissionsHelper` |
+| `BackgroundScheduler` | `WorkManagerScheduler` |
+| `AiSummaryGenerator` | `AiSummaryService` (ML Kit) |
+| `AppNotifications` | `NotificationManager` |
+| `DeviceInfo` | `AndroidDeviceInfo` (nový, obaluje `AppLocaleHelper`) |
+| `ReportExporter` | `MedicalReportExporter` |
+| `RecognizeFoodFromImage` | `RecognizeFoodFromImageUseCase` |
+
+### verify() nezachytí `by inject()`
+
+Aplikace po přesunu spadla dvakrát na `NoDefinitionFoundException`, přestože
+`KoinModuleGraphTest` byl zelený. Důvod: Koin `verify()` kontroluje parametry
+konstruktorů definic, ale **ne typy, které si Application, Activity a Service
+tahají přes `by inject()`**.
+
+Test proto dostal druhou metodu `typyInjektovaneZaBehuMajiDefinici`
+s explicitním seznamem těchto typů. Seznam odpovídá výstupu
+`grep -rn "by inject()" app/src/main` a **musí se udržovat**, když
+takové místo přibude.
+
+### Nahrazené JVM konstrukce
+
+| Bylo | Je |
+|---|---|
+| `System.currentTimeMillis()` | `currentTimeMillis()` |
+| `Calendar` (start dne, hodina, den/měsíc) | `startOfToday()`, `currentHourOfDay()`, `dayAndMonth()` |
+| `TimeUnit.X.toY()` | aritmetika se zachovaným celočíselným dělením |
+| `java.util.concurrent.atomic.AtomicBoolean` | `kotlin.concurrent.atomics.AtomicBoolean` (`set` → `store`) |
+| `this::class.java.simpleName` | `this::class.simpleName` |
+| `java.io.File` ve stavu VM | cesta jako `String`, soubor se rekonstruuje v `:app` |
+| `android.net.Uri` ve `FoodLogViewModel` | `String`, parsuje se v `RecognizeFoodFromImageUseCase` |
+
+`ChartDataMapper` šel do `commonMain` také — je to čistá datová transformace,
+kterou `ChartsViewModel` potřebuje.

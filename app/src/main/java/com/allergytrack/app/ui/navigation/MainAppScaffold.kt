@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.navigation
 
+import com.allergytrack.shared.presentation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -29,8 +30,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.allergytrack.shared.domain.model.AnalysisReadiness
 import com.allergytrack.shared.resources.*
-import com.allergytrack.app.ui.screens.analysis.AnalysisViewModel
-import com.allergytrack.app.ui.screens.dashboard.DashboardViewModel
+import com.allergytrack.shared.presentation.AnalysisViewModel
+import com.allergytrack.shared.presentation.DashboardViewModel
 import com.allergytrack.app.ui.screens.debug.DebugMenuViewModel
 import com.allergytrack.app.ui.theme.*
 import com.allergytrack.app.ui.util.AnalysisExportHandler

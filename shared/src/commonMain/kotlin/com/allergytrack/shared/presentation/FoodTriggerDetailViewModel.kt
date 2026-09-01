@@ -1,4 +1,4 @@
-package com.allergytrack.app.ui.screens.analysis
+package com.allergytrack.shared.presentation
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

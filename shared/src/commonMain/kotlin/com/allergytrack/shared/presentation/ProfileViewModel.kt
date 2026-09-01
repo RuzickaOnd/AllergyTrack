@@ -1,11 +1,11 @@
-package com.allergytrack.app.ui.screens.profile
+package com.allergytrack.shared.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.shared.domain.premium.PremiumHelper
-import com.allergytrack.app.data.analytics.AnalyticsManager
+import com.allergytrack.shared.platform.Analytics
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -14,11 +14,11 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(
     private val userPreferencesDataStore: UserPreferencesDataStore,
     private val premiumHelper: PremiumHelper,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: Analytics
 ) : ViewModel() {
 
     init {
-        analyticsManager.logScreenView("profile", this::class.java.simpleName)
+        analyticsManager.logScreenView("profile", this::class.simpleName)
     }
 
     val userName: StateFlow<String> = userPreferencesDataStore.userName

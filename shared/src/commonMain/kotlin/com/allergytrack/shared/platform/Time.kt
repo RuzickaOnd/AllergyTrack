@@ -17,3 +17,9 @@ expect fun randomUuidString(): String
  * Náhrada za Calendar.getInstance() s vynulovanými poli.
  */
 expect fun startOfToday(): Long
+
+/** Hodina dne (0–23) v místní zóně. Náhrada za Calendar.HOUR_OF_DAY. */
+expect fun currentHourOfDay(): Int
+
+/** Den a měsíc (1–12) daného časového razítka v místní zóně, jako Pair(den, měsíc). */
+expect fun dayAndMonth(epochMillis: Long): Pair<Int, Int>

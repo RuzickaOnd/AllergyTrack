@@ -1,11 +1,12 @@
-package com.allergytrack.app.ui.screens.symptom
+package com.allergytrack.shared.presentation
 
+import com.allergytrack.shared.platform.currentTimeMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.shared.domain.model.SymptomLog
 import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.shared.domain.usecase.SaveSymptomLogUseCase
-import com.allergytrack.app.data.analytics.AnalyticsManager
+import com.allergytrack.shared.platform.Analytics
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -14,7 +15,7 @@ data class SymptomLogUiState(
     val intensity: Int = 3,
     val selectedBodyParts: Set<String> = emptySet(),
     val notes: String = "",
-    val timestamp: Long = System.currentTimeMillis(),
+    val timestamp: Long = currentTimeMillis(),
     val isSaving: Boolean = false,
     val isSaved: Boolean = false,
     val error: String? = null
@@ -22,11 +23,11 @@ data class SymptomLogUiState(
 
 class SymptomLogViewModel(
     private val saveSymptomLogUseCase: SaveSymptomLogUseCase,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: Analytics
 ) : ViewModel() {
 
     init {
-        analyticsManager.logScreenView("symptom_log", this::class.java.simpleName)
+        analyticsManager.logScreenView("symptom_log", this::class.simpleName)
     }
 
     private val _uiState = MutableStateFlow(SymptomLogUiState())

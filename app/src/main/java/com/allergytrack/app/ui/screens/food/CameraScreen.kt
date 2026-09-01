@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.food
 
+import com.allergytrack.shared.presentation.*
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
@@ -155,7 +156,7 @@ fun CameraScreen(
                                 context,
                                 capture,
                                 ContextCompat.getMainExecutor(context)
-                            ) { uri -> viewModel.onImageCaptured(uri) }
+                            ) { uri -> viewModel.onImageCaptured(uri.toString()) }
                         }
                     },
                     modifier = Modifier

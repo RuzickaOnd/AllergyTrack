@@ -10,7 +10,15 @@ import com.allergytrack.app.data.remote.ai.AiSummaryService
 import com.allergytrack.app.data.worker.WorkManagerScheduler
 import com.allergytrack.app.domain.export.MedicalReportExporter
 import com.allergytrack.shared.config.AppConfig
+import com.allergytrack.shared.domain.export.ReportExporter
+import com.allergytrack.shared.platform.AiSummaryGenerator
+import com.allergytrack.shared.platform.Analytics
+import com.allergytrack.shared.platform.AppNotifications
+import com.allergytrack.app.platform.AndroidDeviceInfo
+import com.allergytrack.shared.platform.BackgroundScheduler
+import com.allergytrack.shared.platform.DeviceInfo
 import com.allergytrack.shared.platform.ImageRecognizer
+import com.allergytrack.shared.platform.Permissions
 import com.allergytrack.shared.platform.LocationSource
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidContext
@@ -41,12 +49,18 @@ val coreModule = module {
         }
     }
 
-    single { PermissionsHelper(androidContext()) }
+    single<Permissions> { PermissionsHelper(androidContext()) }
+    single<DeviceInfo> { AndroidDeviceInfo(androidContext()) }
     single<LocationSource> { LocationProvider(androidContext()) }
-    single { WorkManagerScheduler(androidContext()) }
-    single { AnalyticsManager(androidContext()) }
-    single { AiSummaryService(androidContext()) }
-    single { MedicalReportExporter(androidContext()) }
+    single<BackgroundScheduler> { WorkManagerScheduler(androidContext()) }
+    single<Analytics> { AnalyticsManager(androidContext()) }
+    // Application volá initialize(), což na rozhraní není — proto i konkrétní typ.
+    single { get<Analytics>() as AnalyticsManager }
+    single<AiSummaryGenerator> { AiSummaryService(androidContext()) }
+    single<ReportExporter> { MedicalReportExporter(androidContext()) }
     single<ImageRecognizer> { FoodImageRecognizer() }
-    single { NotificationManager(androidContext(), get()) }
+    single<AppNotifications> { NotificationManager(androidContext(), get()) }
+    // FCM služba volá showPushNotification(), které na rozhraní není — proto
+    // i vazba na konkrétní typ. Stejný důvod jako u AnalyticsManager.initialize().
+    single { get<AppNotifications>() as NotificationManager }
 }

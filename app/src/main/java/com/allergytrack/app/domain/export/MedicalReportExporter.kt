@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import com.allergytrack.app.R
+import com.allergytrack.shared.domain.export.ReportExporter
 import org.jetbrains.compose.resources.getString
 import com.allergytrack.shared.domain.model.Correlation
 import com.allergytrack.shared.domain.model.FoodTrigger
@@ -24,12 +25,12 @@ import java.util.Locale
 
 class MedicalReportExporter(
     private val context: Context
-) {
-    suspend fun generatePdfReport(
+) : ReportExporter {
+    override suspend fun generatePdfReport(
         correlations: List<Correlation>,
         foodTriggers: List<FoodTrigger>,
         aiSummary: String
-    ): File? = withContext(Dispatchers.IO) {
+    ): String? = withContext(Dispatchers.IO) {
         val pdfDocument = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4 size
         val page = pdfDocument.startPage(pageInfo)
@@ -107,7 +108,7 @@ class MedicalReportExporter(
             pdfDocument.writeTo(FileOutputStream(file))
             saveToPublicMediaStore(file)
             pdfDocument.close()
-            file
+            file.absolutePath
         } catch (e: Exception) {
             e.printStackTrace()
             null

@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.analysis
 
+import com.allergytrack.shared.presentation.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle

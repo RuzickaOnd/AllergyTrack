@@ -18,3 +18,12 @@ actual fun startOfToday(): Long {
     cal.set(java.util.Calendar.MILLISECOND, 0)
     return cal.timeInMillis
 }
+
+actual fun currentHourOfDay(): Int =
+    java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+
+actual fun dayAndMonth(epochMillis: Long): Pair<Int, Int> {
+    val cal = java.util.Calendar.getInstance()
+    cal.timeInMillis = epochMillis
+    return cal.get(java.util.Calendar.DAY_OF_MONTH) to (cal.get(java.util.Calendar.MONTH) + 1)
+}

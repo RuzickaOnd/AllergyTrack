@@ -1,10 +1,10 @@
-package com.allergytrack.app.ui.screens.charts
+package com.allergytrack.shared.presentation
 
+import com.allergytrack.shared.platform.dayAndMonth
+import com.allergytrack.shared.platform.currentTimeMillis
 import com.allergytrack.shared.data.local.database.entity.EnvironmentLogEntity
 import com.allergytrack.shared.data.local.database.entity.SymptomLogEntity
 import com.allergytrack.shared.domain.model.SymptomType
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 data class DailySymptomPoint(
     val dayIndex: Float,
@@ -32,8 +32,8 @@ object ChartDataMapper {
         filterType: SymptomType? = null,
         days: Int = 7
     ): ChartDataSet {
-        val now = System.currentTimeMillis()
-        val from = now - TimeUnit.DAYS.toMillis(days.toLong())
+        val now = currentTimeMillis()
+        val from = now - (days.toLong() * 24L * 60 * 60 * 1000)
 
         val symptomsByDay = symptomLogs
             .filter { it.timestamp >= from }
@@ -45,9 +45,8 @@ object ChartDataMapper {
             .groupBy { dayIndex(it.timestamp, from) }
 
         val dateLabels = (0 until days).map { i ->
-            val cal = Calendar.getInstance()
-            cal.timeInMillis = from + TimeUnit.DAYS.toMillis(i.toLong())
-            "${cal.get(Calendar.DAY_OF_MONTH)}.${cal.get(Calendar.MONTH) + 1}"
+            val (day, month) = dayAndMonth(from + (i.toLong() * 24L * 60 * 60 * 1000))
+            "$day.$month"
         }
 
         // Normalizační konstanty z celého datasetu — zajistí, že AQI a pyl
@@ -90,5 +89,6 @@ object ChartDataMapper {
     }
 
     private fun dayIndex(timestamp: Long, from: Long): Int =
-        TimeUnit.MILLISECONDS.toDays(timestamp - from).toInt().coerceIn(0, 30)
+        // Celočíselné dělení jako TimeUnit.MILLISECONDS.toDays()
+        ((timestamp - from) / 86_400_000L).toInt().coerceIn(0, 30)
 }

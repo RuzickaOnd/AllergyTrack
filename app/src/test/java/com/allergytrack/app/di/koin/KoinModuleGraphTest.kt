@@ -5,8 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.datastore.core.DataStore
 import androidx.work.WorkerParameters
 import io.ktor.client.HttpClient
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.core.annotation.KoinInternalApi
 import org.koin.dsl.module
 import org.koin.test.verify.verify
 
@@ -35,16 +37,44 @@ import org.koin.test.verify.verify
 @OptIn(KoinExperimentalAPI::class)
 class KoinModuleGraphTest {
 
-    private val vsechnyModuly = module {
-        includes(
-            coreModule,
-            dataStoreModule,
-            databaseModule,
-            networkModule,
-            repositoryModule,
-            domainModule,
-            viewModelModule,
-            workerModule
+    private val moduly = listOf(
+        coreModule, dataStoreModule, databaseModule, networkModule,
+        repositoryModule, domainModule, viewModelModule, workerModule
+    )
+
+    private val vsechnyModuly = module { includes(moduly) }
+
+    /**
+     * Typy, které si Application, Activity a Service tahají přes `by inject()`.
+     *
+     * verify() je nevidí — kontroluje jen parametry konstruktorů definic.
+     * Bez tohoto testu se chybějící vazba projeví až pádem při startu
+     * (NoDefinitionFoundException), což se při fázi 8 skutečně stalo.
+     *
+     * Seznam odpovídá `grep -rn "by inject()" app/src/main`.
+     */
+    private val injectedAtRuntime = listOf(
+        "com.allergytrack.shared.platform.BackgroundScheduler",
+        "com.allergytrack.shared.data.local.datastore.OnboardingDataStore",
+        "com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore",
+        "com.allergytrack.shared.data.local.datastore.DebugPreferences",
+        "com.allergytrack.shared.domain.repository.AppUpdateRepository",
+        "com.allergytrack.app.data.analytics.AnalyticsManager",
+        "com.allergytrack.shared.platform.AppNotifications",
+        "com.allergytrack.app.data.notifications.NotificationManager"
+    )
+
+    @Test
+    fun typyInjektovaneZaBehuMajiDefinici() {
+        @OptIn(KoinInternalApi::class)
+        val declared = moduly
+            .flatMap { it.mappings.values }
+            .map { it.beanDefinition.primaryType.qualifiedName }
+            .toSet()
+        val missing = injectedAtRuntime.filterNot { it in declared }
+        assertTrue(
+            "Chybí Koin definice pro typy injektované přes by inject(): $missing",
+            missing.isEmpty()
         )
     }
 

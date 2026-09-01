@@ -1,6 +1,8 @@
-package com.allergytrack.app.ui.screens.dashboard
+package com.allergytrack.shared.presentation
 
 import androidx.lifecycle.ViewModel
+import com.allergytrack.shared.platform.currentHourOfDay
+import com.allergytrack.shared.platform.startOfToday
 import org.jetbrains.compose.resources.StringResource
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.shared.resources.*
@@ -10,18 +12,18 @@ import com.allergytrack.shared.data.local.database.entity.FoodLogEntity
 import com.allergytrack.shared.data.local.database.entity.SymptomLogEntity
 import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
 import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
-import com.allergytrack.app.data.permissions.PermissionsHelper
+import com.allergytrack.shared.platform.Permissions
 import com.allergytrack.shared.domain.analysis.CorrelationEngine
 import com.allergytrack.shared.domain.model.EnvironmentLog
 import com.allergytrack.shared.domain.model.EnvironmentRegion
 import com.allergytrack.shared.domain.repository.EnvironmentRepository
 import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.shared.domain.premium.PremiumHelper
-import com.allergytrack.app.data.analytics.AnalyticsManager
+import com.allergytrack.shared.platform.Analytics
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.util.Calendar
-import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 sealed interface DashboardInsight {
     data class HighPollen(val maxLevel: Int) : DashboardInsight
@@ -51,20 +53,21 @@ data class DashboardUiState(
     val error: String? = null
 )
 
+@OptIn(ExperimentalAtomicApi::class)
 class DashboardViewModel(
     private val foodLogDao: FoodLogDao,
     private val symptomLogDao: SymptomLogDao,
     private val environmentRepository: EnvironmentRepository,
-    private val permissionsHelper: PermissionsHelper,
+    private val permissionsHelper: Permissions,
     private val premiumHelper: PremiumHelper,
     private val userPreferences: UserPreferencesDataStore,
-    private val analyticsManager: AnalyticsManager,
+    private val analyticsManager: Analytics,
     private val correlationEngine: CorrelationEngine,
     private val onboardingDataStore: OnboardingDataStore
 ) : ViewModel() {
 
     init {
-        analyticsManager.logScreenView("dashboard", this::class.java.simpleName)
+        analyticsManager.logScreenView("dashboard", this::class.simpleName)
     }
 
     // Začíná jako false — loading se zobrazí až po potvrzení EU regionu v refreshEnvironment()
@@ -108,14 +111,7 @@ class DashboardViewModel(
     }
 
     private val startOfDay: Long
-        get() {
-            val cal = Calendar.getInstance()
-            cal.set(Calendar.HOUR_OF_DAY, 0)
-            cal.set(Calendar.MINUTE, 0)
-            cal.set(Calendar.SECOND, 0)
-            cal.set(Calendar.MILLISECOND, 0)
-            return cal.timeInMillis
-        }
+        get() = startOfToday()
 
     val uiState: StateFlow<DashboardUiState> = combine(
         foodLogDao.getTodayLogs(startOfDay),
@@ -199,7 +195,7 @@ class DashboardViewModel(
             // pokračujeme — nechceme zbytečně skrýt sekci EU uživatelům při prvním startu.
             val knownRegion = environmentRepository.getLastKnownRegion()
             if (knownRegion == EnvironmentRegion.GLOBAL) {
-                isFetchingEnv.set(false)
+                isFetchingEnv.store(false)
                 return@launch
             }
             // EU nebo neznámý region → zobrazit loading a spustit fetch
@@ -210,13 +206,13 @@ class DashboardViewModel(
                 // Tichá chyba — WorkManager provede retry
             } finally {
                 _isRefreshingEnv.value = false
-                isFetchingEnv.set(false)
+                isFetchingEnv.store(false)
             }
         }
     }
 
     private fun getGreeting(): StringResource {
-        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        val hour = currentHourOfDay()
         return when {
             hour < 12 -> Res.string.greeting_morning
             hour < 18 -> Res.string.greeting_afternoon

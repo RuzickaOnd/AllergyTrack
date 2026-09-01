@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.symptom
 
+import com.allergytrack.shared.presentation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape

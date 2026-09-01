@@ -11,7 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
 import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
-import com.allergytrack.app.data.worker.WorkManagerScheduler
+import com.allergytrack.shared.platform.BackgroundScheduler
 import com.allergytrack.app.ui.navigation.MainAppScaffold
 import com.allergytrack.app.ui.onboarding.OnboardingFlow
 import com.allergytrack.app.ui.theme.AllergyTrackTheme
@@ -22,7 +22,7 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
 
-    private val workManagerScheduler: WorkManagerScheduler by inject()
+    private val workManagerScheduler: BackgroundScheduler by inject()
     private val onboardingDataStore: OnboardingDataStore by inject()
     private val userPreferencesDataStore: UserPreferencesDataStore by inject()
     private val appUpdateRepository: com.allergytrack.shared.domain.repository.AppUpdateRepository by inject()

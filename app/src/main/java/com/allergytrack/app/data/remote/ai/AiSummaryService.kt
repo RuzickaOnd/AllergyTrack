@@ -1,5 +1,6 @@
 package com.allergytrack.app.data.remote.ai
 
+import com.allergytrack.shared.platform.AiSummaryGenerator
 import org.jetbrains.compose.resources.getString
 import android.content.Context
 import com.allergytrack.shared.data.remote.food.FoodAllergenHelper
@@ -19,13 +20,13 @@ import android.util.Log
 
 class AiSummaryService(
     private val context: Context
-) {
+) : AiSummaryGenerator {
 
     private val generativeModel: GenerativeModel by lazy {
         Generation.getClient()
     }
 
-    suspend fun generateSummary(correlations: List<Correlation>): String = withContext(Dispatchers.Default) {
+    override suspend fun generateSummary(correlations: List<Correlation>): String = withContext(Dispatchers.Default) {
         if (correlations.isEmpty()) {
             return@withContext "Zatím nemám dostatek dat pro analýzu. Pokračuj v zaznamenávání jídla a symptomů."
         }

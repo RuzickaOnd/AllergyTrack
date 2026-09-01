@@ -1,6 +1,6 @@
-package com.allergytrack.app.ui.screens.food
+package com.allergytrack.shared.presentation
 
-import android.net.Uri
+import com.allergytrack.shared.platform.currentTimeMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.shared.data.remote.food.FoodAllergenHelper
@@ -8,13 +8,13 @@ import com.allergytrack.shared.data.remote.food.RecognizedFood
 import com.allergytrack.shared.domain.model.FoodLog
 import com.allergytrack.shared.data.remote.ApiHttpException
 import com.allergytrack.shared.domain.repository.FoodRepository
-import com.allergytrack.app.domain.usecase.RecognizeFoodFromImageUseCase
+import com.allergytrack.shared.domain.usecase.RecognizeFoodFromImage
 import com.allergytrack.shared.domain.usecase.SaveFoodLogUseCase
 import com.allergytrack.shared.domain.usecase.SearchFoodUseCase
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import com.allergytrack.app.data.analytics.AnalyticsManager
+import com.allergytrack.shared.platform.Analytics
 
 // ---- UI State ----
 
@@ -45,14 +45,14 @@ data class FoodSearchState(
 class FoodLogViewModel(
     private val saveFoodLogUseCase: SaveFoodLogUseCase,
     private val searchFoodUseCase: SearchFoodUseCase,
-    private val recognizeFoodFromImageUseCase: RecognizeFoodFromImageUseCase,
+    private val recognizeFoodFromImageUseCase: RecognizeFoodFromImage,
     private val foodRepository: FoodRepository,
     private val premiumHelper: com.allergytrack.shared.domain.premium.PremiumHelper,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: Analytics
 ) : ViewModel() {
 
     init {
-        analyticsManager.logScreenView("food_log", this::class.java.simpleName)
+        analyticsManager.logScreenView("food_log", this::class.simpleName)
     }
 
     private val _uiState = MutableStateFlow<FoodLogUiState>(FoodLogUiState.Idle)
@@ -61,8 +61,8 @@ class FoodLogViewModel(
     private val _searchState = MutableStateFlow(FoodSearchState())
     val searchState: StateFlow<FoodSearchState> = _searchState.asStateFlow()
 
-    private val _capturedImageUri = MutableStateFlow<Uri?>(null)
-    val capturedImageUri: StateFlow<Uri?> = _capturedImageUri.asStateFlow()
+    private val _capturedImageUri = MutableStateFlow<String?>(null)
+    val capturedImageUri: StateFlow<String?> = _capturedImageUri.asStateFlow()
 
     val isPhotoVisible: StateFlow<Boolean> =
         premiumHelper.observeVisible(com.allergytrack.shared.domain.model.PremiumFeature.FOOD_PHOTO_RECOGNITION)
@@ -87,7 +87,7 @@ class FoodLogViewModel(
     private val _navigateToSearch = MutableStateFlow(false)
     val navigateToSearch: StateFlow<Boolean> = _navigateToSearch.asStateFlow()
 
-    private val _customTimestamp = MutableStateFlow(System.currentTimeMillis())
+    private val _customTimestamp = MutableStateFlow(currentTimeMillis())
     val customTimestamp: StateFlow<Long> = _customTimestamp.asStateFlow()
 
     fun onTimestampChanged(timestamp: Long) {
@@ -176,7 +176,7 @@ class FoodLogViewModel(
         _searchState.update { it.copy(query = query, isServiceUnavailable = false) }
     }
 
-    fun onImageCaptured(uri: Uri) {
+    fun onImageCaptured(uri: String) {
         viewModelScope.launch {
             if (!premiumHelper.hasAccess(com.allergytrack.shared.domain.model.PremiumFeature.FOOD_PHOTO_RECOGNITION)) {
                 _uiState.value = FoodLogUiState.Error("Foto rozpoznávání vyžaduje Premium")
@@ -188,7 +188,7 @@ class FoodLogViewModel(
         }
     }
 
-    private fun processImage(uri: Uri) {
+    private fun processImage(uri: String) {
         viewModelScope.launch {
             try {
                 val results = recognizeFoodFromImageUseCase(uri)
@@ -231,7 +231,7 @@ class FoodLogViewModel(
                     foodName = food.name,
                     allergens = food.allergens,
                     ingredients = food.ingredients,
-                    imageUri = _capturedImageUri.value?.toString(),
+                    imageUri = _capturedImageUri.value,
                     notes = notes,
                     timestamp = _customTimestamp.value
                 )
@@ -248,6 +248,6 @@ class FoodLogViewModel(
         _uiState.value = FoodLogUiState.Idle
         _capturedImageUri.value = null
         _searchState.value = FoodSearchState()
-        _customTimestamp.value = System.currentTimeMillis()
+        _customTimestamp.value = currentTimeMillis()
     }
 }

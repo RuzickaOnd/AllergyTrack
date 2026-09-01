@@ -1,5 +1,6 @@
 package com.allergytrack.app.data.notifications
 
+import com.allergytrack.shared.platform.AppNotifications
 import android.app.NotificationChannel
 import android.app.NotificationManager as SystemNotificationManager
 import android.app.PendingIntent
@@ -21,7 +22,7 @@ import kotlinx.coroutines.flow.firstOrNull
 class NotificationManager(
     private val context: Context,
     private val userPreferences: UserPreferencesDataStore
-) {
+) : AppNotifications {
 
     companion object {
         const val REMINDER_CHANNEL_ID = "reminder_channel"
@@ -33,7 +34,7 @@ class NotificationManager(
      * Inicializuje všechny notifikační kanály.
      * Volá se při startu aplikace v AllergyTrackApplication.
      */
-    fun createNotificationChannels() {
+    override fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val systemManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as SystemNotificationManager
 
@@ -108,7 +109,7 @@ class NotificationManager(
     /**
      * Získá aktuální FCM token pro registraci zařízení.
      */
-    fun getFcmToken(onComplete: (String?) -> Unit) {
+    override fun getFcmToken(onComplete: (String?) -> Unit) {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 onComplete(task.result)

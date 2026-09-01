@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.work.Configuration
 import com.allergytrack.app.data.analytics.AnalyticsManager
 import com.allergytrack.shared.data.local.datastore.DebugPreferences
-import com.allergytrack.app.data.notifications.NotificationManager as AppNotificationManager
+import com.allergytrack.shared.platform.AppNotifications
 import com.allergytrack.app.di.koin.coreModule
 import com.allergytrack.app.di.koin.dataStoreModule
 import com.allergytrack.app.di.koin.databaseModule
@@ -35,7 +35,7 @@ class AllergyTrackApplication : Application(), Configuration.Provider {
 
     private val debugPreferences: DebugPreferences by inject()
     private val analyticsManager: AnalyticsManager by inject()
-    private val appNotificationManager: AppNotificationManager by inject()
+    private val appNotificationManager: AppNotifications by inject()
 
     override fun onCreate() {
         super.onCreate()

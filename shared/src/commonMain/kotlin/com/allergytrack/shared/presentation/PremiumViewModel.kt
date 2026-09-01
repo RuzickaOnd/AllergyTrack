@@ -1,8 +1,8 @@
-package com.allergytrack.app.ui.screens.profile
+package com.allergytrack.shared.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.allergytrack.app.data.analytics.AnalyticsManager
+import com.allergytrack.shared.platform.Analytics
 import com.allergytrack.shared.domain.model.PremiumStatus
 import com.allergytrack.shared.domain.premium.PremiumHelper
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class PremiumViewModel(
     private val premiumHelper: PremiumHelper,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: Analytics
 ) : ViewModel() {
 
     val premiumStatus: StateFlow<PremiumStatus> = premiumHelper

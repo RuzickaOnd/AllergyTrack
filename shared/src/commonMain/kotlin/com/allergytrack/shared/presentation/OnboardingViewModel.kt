@@ -1,10 +1,10 @@
-package com.allergytrack.app.ui.onboarding
+package com.allergytrack.shared.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
-import com.allergytrack.app.data.permissions.PermissionsHelper
-import com.allergytrack.app.data.permissions.PermissionsState
+import com.allergytrack.shared.platform.Permissions
+import com.allergytrack.shared.platform.PermissionsState
 import com.allergytrack.shared.domain.model.AllergyType
 import com.allergytrack.shared.domain.model.OnboardingStep
 import com.allergytrack.shared.domain.model.SymptomTypeOnboarding
@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.allergytrack.app.data.analytics.AnalyticsManager
+import com.allergytrack.shared.platform.Analytics
 import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
-import com.allergytrack.app.data.worker.WorkManagerScheduler
+import com.allergytrack.shared.platform.BackgroundScheduler
 
 data class OnboardingUiState(
     val currentStep: OnboardingStep = OnboardingStep.WELCOME,
@@ -35,11 +35,11 @@ data class OnboardingUiState(
 
 class OnboardingViewModel(
     private val onboardingDataStore: OnboardingDataStore,
-    private val permissionsHelper: PermissionsHelper,
+    private val permissionsHelper: Permissions,
     private val premiumHelper: PremiumHelper,
-    private val analyticsManager: AnalyticsManager,
+    private val analyticsManager: Analytics,
     private val userPreferencesDataStore: UserPreferencesDataStore,
-    private val workManagerScheduler: WorkManagerScheduler
+    private val workManagerScheduler: BackgroundScheduler
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OnboardingUiState())
@@ -51,7 +51,7 @@ class OnboardingViewModel(
             val hasPhotoAccess = premiumHelper.hasAccess(PremiumFeature.FOOD_PHOTO_RECOGNITION)
             _uiState.update { it.copy(isCameraPermissionVisible = hasPhotoAccess) }
         }
-        analyticsManager.logScreenView("onboarding_welcome", this::class.java.simpleName)
+        analyticsManager.logScreenView("onboarding_welcome", this::class.simpleName)
         analyticsManager.logOnboardingStep(1, "welcome")
     }
 
@@ -91,7 +91,7 @@ class OnboardingViewModel(
                 OnboardingStep.READY -> 4
                 else -> 1
             }
-            analyticsManager.logScreenView("onboarding_" + next.name.lowercase(), this::class.java.simpleName)
+            analyticsManager.logScreenView("onboarding_" + next.name.lowercase(), this::class.simpleName)
             analyticsManager.logOnboardingStep(stepNum, next.name.lowercase())
         }
     }
@@ -112,7 +112,7 @@ class OnboardingViewModel(
                 OnboardingStep.PERMISSIONS -> 3
                 OnboardingStep.READY -> 4
             }
-            analyticsManager.logScreenView("onboarding_" + previous.name.lowercase(), this::class.java.simpleName)
+            analyticsManager.logScreenView("onboarding_" + previous.name.lowercase(), this::class.simpleName)
             analyticsManager.logOnboardingStep(stepNum, previous.name.lowercase())
         }
     }
