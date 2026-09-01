@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.allergytrack.app.R
-import com.allergytrack.app.domain.model.OnboardingStep
+import com.allergytrack.shared.domain.model.OnboardingStep
 import com.allergytrack.app.ui.components.PrimaryButton
 import com.allergytrack.app.ui.theme.SerifFontFamily
 

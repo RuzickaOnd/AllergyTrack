@@ -1,6 +1,6 @@
-package com.allergytrack.app.domain.repository
+package com.allergytrack.shared.domain.repository
 
-import com.allergytrack.app.domain.model.PremiumStatus
+import com.allergytrack.shared.domain.model.PremiumStatus
 import kotlinx.coroutines.flow.Flow
 
 interface PremiumRepository {

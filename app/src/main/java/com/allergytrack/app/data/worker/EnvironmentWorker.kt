@@ -3,7 +3,7 @@ package com.allergytrack.app.data.worker
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.allergytrack.app.domain.repository.EnvironmentRepository
+import com.allergytrack.shared.domain.repository.EnvironmentRepository
 
 class EnvironmentWorker(
     context: Context,

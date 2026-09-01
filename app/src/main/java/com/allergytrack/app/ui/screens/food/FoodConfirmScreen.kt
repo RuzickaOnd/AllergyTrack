@@ -20,7 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.R
 import com.allergytrack.app.data.remote.food.FoodAllergenHelper
-import com.allergytrack.app.data.remote.food.RecognizedFood
+import com.allergytrack.shared.data.remote.food.RecognizedFood
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*

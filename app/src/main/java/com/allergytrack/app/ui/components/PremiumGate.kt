@@ -1,7 +1,7 @@
 package com.allergytrack.app.ui.components
 
 import androidx.compose.runtime.Composable
-import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.model.PremiumFeature
 
 /**
  * Třístavový wrapper:

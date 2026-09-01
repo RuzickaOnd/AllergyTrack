@@ -1,5 +1,7 @@
 package com.allergytrack.app.data.remote.food
 
+import com.allergytrack.shared.data.remote.food.SupabaseFoodProduct
+import com.allergytrack.shared.data.remote.food.SupabaseSearchResult
 import retrofit2.http.GET
 import retrofit2.http.Query
 

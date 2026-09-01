@@ -7,8 +7,8 @@ import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
 import com.allergytrack.app.data.local.datastore.OnboardingDataStore
 import com.allergytrack.app.domain.analysis.CorrelationEngine
-import com.allergytrack.app.domain.model.FoodReactionEvent
-import com.allergytrack.app.domain.model.FoodTrigger
+import com.allergytrack.shared.domain.model.FoodReactionEvent
+import com.allergytrack.shared.domain.model.FoodTrigger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

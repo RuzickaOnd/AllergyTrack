@@ -1,7 +1,7 @@
 package com.allergytrack.app.domain.usecase
 
-import com.allergytrack.app.domain.model.SymptomLog
-import com.allergytrack.app.domain.repository.SymptomRepository
+import com.allergytrack.shared.domain.model.SymptomLog
+import com.allergytrack.shared.domain.repository.SymptomRepository
 
 class SaveSymptomLogUseCase constructor(
     private val repository: SymptomRepository

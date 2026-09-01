@@ -28,7 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.allergytrack.app.domain.model.OnboardingStep
+import com.allergytrack.shared.domain.model.OnboardingStep
 
 /**
  * Progress dots — ukazatel aktuálního kroku podle wireframu.

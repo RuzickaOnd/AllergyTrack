@@ -2,7 +2,7 @@ package com.allergytrack.app.ui.screens.charts
 
 import com.allergytrack.app.data.local.database.entity.EnvironmentLogEntity
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
-import com.allergytrack.app.domain.model.SymptomType
+import com.allergytrack.shared.domain.model.SymptomType
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 

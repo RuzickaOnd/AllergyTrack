@@ -25,11 +25,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.R
 import com.allergytrack.app.data.remote.food.FoodAllergenHelper
-import com.allergytrack.app.domain.model.CorrelationSeverity
-import com.allergytrack.app.domain.model.FoodReactionEvent
-import com.allergytrack.app.domain.model.FoodTrigger
-import com.allergytrack.app.domain.model.SymptomInWindow
-import com.allergytrack.app.domain.model.SymptomType
+import com.allergytrack.shared.domain.model.CorrelationSeverity
+import com.allergytrack.shared.domain.model.FoodReactionEvent
+import com.allergytrack.shared.domain.model.FoodTrigger
+import com.allergytrack.shared.domain.model.SymptomInWindow
+import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.app.ui.theme.symptomColor
 import com.allergytrack.app.ui.theme.warningColor
 import com.allergytrack.app.ui.util.foodTriggerIcon
@@ -474,13 +474,16 @@ fun FoodEventCard(
                         )
                     }
                 }
-                if (event.hadReaction && event.maxIntensity != null) {
+                // Lokální proměnná kvůli smart castu — maxIntensity je property
+                // z jiného modulu (:shared), kde Kotlin smart cast nepovoluje.
+                val maxIntensity = event.maxIntensity
+                if (event.hadReaction && maxIntensity != null) {
                     Surface(
                         color = MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.15f),
                         shape = RoundedCornerShape(6.dp)
                     ) {
                         Text(
-                            stringResource(R.string.food_trigger_intensity_label, event.maxIntensity),
+                            stringResource(R.string.food_trigger_intensity_label, maxIntensity),
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.symptomColor

@@ -1,7 +1,7 @@
-package com.allergytrack.app.domain.repository
+package com.allergytrack.shared.domain.repository
 
-import com.allergytrack.app.domain.model.EnvironmentLog
-import com.allergytrack.app.domain.model.EnvironmentRegion
+import com.allergytrack.shared.domain.model.EnvironmentLog
+import com.allergytrack.shared.domain.model.EnvironmentRegion
 import kotlinx.coroutines.flow.Flow
 
 interface EnvironmentRepository {

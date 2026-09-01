@@ -5,11 +5,11 @@ import com.allergytrack.app.data.repository.EnvironmentRepositoryImpl
 import com.allergytrack.app.data.repository.FoodRepositoryImpl
 import com.allergytrack.app.data.repository.PremiumRepositoryImpl
 import com.allergytrack.app.data.repository.SymptomRepositoryImpl
-import com.allergytrack.app.domain.repository.AppUpdateRepository
-import com.allergytrack.app.domain.repository.EnvironmentRepository
-import com.allergytrack.app.domain.repository.FoodRepository
-import com.allergytrack.app.domain.repository.PremiumRepository
-import com.allergytrack.app.domain.repository.SymptomRepository
+import com.allergytrack.shared.domain.repository.AppUpdateRepository
+import com.allergytrack.shared.domain.repository.EnvironmentRepository
+import com.allergytrack.shared.domain.repository.FoodRepository
+import com.allergytrack.shared.domain.repository.PremiumRepository
+import com.allergytrack.shared.domain.repository.SymptomRepository
 import org.koin.dsl.module
 
 val repositoryModule = module {

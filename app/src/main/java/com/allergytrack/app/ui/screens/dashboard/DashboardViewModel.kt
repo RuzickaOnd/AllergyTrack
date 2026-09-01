@@ -12,10 +12,10 @@ import com.allergytrack.app.data.local.datastore.OnboardingDataStore
 import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.domain.analysis.CorrelationEngine
-import com.allergytrack.app.domain.model.EnvironmentLog
-import com.allergytrack.app.domain.model.EnvironmentRegion
-import com.allergytrack.app.domain.repository.EnvironmentRepository
-import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.model.EnvironmentLog
+import com.allergytrack.shared.domain.model.EnvironmentRegion
+import com.allergytrack.shared.domain.repository.EnvironmentRepository
+import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.app.domain.premium.PremiumHelper
 import com.allergytrack.app.data.analytics.AnalyticsManager
 import kotlinx.coroutines.flow.*

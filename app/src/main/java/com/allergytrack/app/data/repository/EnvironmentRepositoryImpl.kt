@@ -5,13 +5,16 @@ import com.allergytrack.app.data.local.database.entity.EnvironmentLogEntity
 import com.allergytrack.app.data.location.LocationProvider
 import com.allergytrack.app.data.remote.airquality.AirQualityApiService
 import com.allergytrack.app.data.remote.airquality.toPollenIndex
-import com.allergytrack.app.domain.model.EnvironmentLog
-import com.allergytrack.app.domain.model.EnvironmentRegion
-import com.allergytrack.app.domain.model.isEurope
-import com.allergytrack.app.domain.repository.EnvironmentRepository
+import com.allergytrack.shared.domain.model.EnvironmentLog
+import com.allergytrack.shared.domain.model.EnvironmentRegion
+import com.allergytrack.shared.domain.model.isEurope
+import com.allergytrack.shared.domain.repository.EnvironmentRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class EnvironmentRepositoryImpl constructor(
     private val environmentLogDao: EnvironmentLogDao,
     private val airQualityApi: AirQualityApiService,
@@ -104,7 +107,7 @@ class EnvironmentRepositoryImpl constructor(
 
     // Mapper: Entity → Domain (aktualizovaný pro nullable pyl)
     private fun EnvironmentLogEntity.toDomain() = EnvironmentLog(
-        id = java.util.UUID.fromString(this.id),
+        id = Uuid.parse(this.id),
         timestamp = this.timestamp,
         latitude = this.latitude,
         longitude = this.longitude,

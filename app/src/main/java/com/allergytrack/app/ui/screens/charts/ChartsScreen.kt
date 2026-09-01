@@ -44,12 +44,12 @@ import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
 import com.allergytrack.app.R
-import com.allergytrack.app.domain.model.SymptomType
+import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.theme.*
 import com.allergytrack.app.ui.util.icon
 import com.allergytrack.app.ui.util.labelRes
-import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.model.PremiumFeature
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan

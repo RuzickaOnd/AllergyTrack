@@ -27,7 +27,7 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.allergytrack.app.domain.model.AnalysisReadiness
+import com.allergytrack.shared.domain.model.AnalysisReadiness
 import com.allergytrack.app.R
 import com.allergytrack.app.ui.screens.analysis.AnalysisViewModel
 import com.allergytrack.app.ui.screens.dashboard.DashboardViewModel
@@ -37,7 +37,7 @@ import com.allergytrack.app.ui.util.AnalysisExportHandler
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainAppScaffold(appUpdateRepository: com.allergytrack.app.domain.repository.AppUpdateRepository) {
+fun MainAppScaffold(appUpdateRepository: com.allergytrack.shared.domain.repository.AppUpdateRepository) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

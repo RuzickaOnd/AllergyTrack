@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
-import com.allergytrack.app.domain.model.PremiumVisibilityMode
+import com.allergytrack.shared.domain.model.PremiumVisibilityMode
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 @Composable

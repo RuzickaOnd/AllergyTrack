@@ -14,9 +14,9 @@ import com.allergytrack.app.data.local.datastore.OnboardingDataStore
 import com.allergytrack.app.data.remote.ai.AiSummaryService
 import com.allergytrack.app.domain.analysis.CorrelationEngine
 import com.allergytrack.app.domain.export.MedicalReportExporter
-import com.allergytrack.app.domain.model.AnalysisReadiness
-import com.allergytrack.app.domain.model.Correlation
-import com.allergytrack.app.domain.model.FoodTrigger
+import com.allergytrack.shared.domain.model.AnalysisReadiness
+import com.allergytrack.shared.domain.model.Correlation
+import com.allergytrack.shared.domain.model.FoodTrigger
 import com.allergytrack.app.domain.premium.PremiumHelper
 import com.allergytrack.app.data.analytics.AnalyticsManager
 import kotlinx.coroutines.flow.*
@@ -58,19 +58,19 @@ class AnalysisViewModel constructor(
     val uiState: StateFlow<AnalysisUiState> = _uiState.asStateFlow()
 
     val isAnalysisVisible: StateFlow<Boolean> =
-        premiumHelper.observeVisible(com.allergytrack.app.domain.model.PremiumFeature.AI_CORRELATION_ANALYSIS)
+        premiumHelper.observeVisible(com.allergytrack.shared.domain.model.PremiumFeature.AI_CORRELATION_ANALYSIS)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val showAnalysisUpsell: StateFlow<Boolean> =
-        premiumHelper.observeShowUpsell(com.allergytrack.app.domain.model.PremiumFeature.AI_CORRELATION_ANALYSIS)
+        premiumHelper.observeShowUpsell(com.allergytrack.shared.domain.model.PremiumFeature.AI_CORRELATION_ANALYSIS)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val isExportVisible: StateFlow<Boolean> =
-        premiumHelper.observeVisible(com.allergytrack.app.domain.model.PremiumFeature.PDF_EXPORT)
+        premiumHelper.observeVisible(com.allergytrack.shared.domain.model.PremiumFeature.PDF_EXPORT)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val showExportUpsell: StateFlow<Boolean> =
-        premiumHelper.observeShowUpsell(com.allergytrack.app.domain.model.PremiumFeature.PDF_EXPORT)
+        premiumHelper.observeShowUpsell(com.allergytrack.shared.domain.model.PremiumFeature.PDF_EXPORT)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     init {

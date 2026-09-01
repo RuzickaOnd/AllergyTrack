@@ -5,19 +5,22 @@ import com.allergytrack.app.data.local.database.entity.FoodLogEntity
 import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.local.recognition.FoodImageRecognizer
 import com.allergytrack.app.data.remote.food.SupabaseFoodApiService
-import com.allergytrack.app.data.remote.food.RecognizedFood
-import com.allergytrack.app.data.remote.food.toRecognizedFood
-import com.allergytrack.app.domain.model.FoodLog
-import com.allergytrack.app.domain.repository.FoodRepository
+import com.allergytrack.shared.data.remote.food.RecognizedFood
+import com.allergytrack.shared.data.remote.food.toRecognizedFood
+import com.allergytrack.shared.data.remote.food.toRecognizedFood
+import com.allergytrack.shared.domain.model.FoodLog
+import com.allergytrack.shared.domain.repository.FoodRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import java.util.Calendar
 import java.util.Locale
-import java.util.UUID
 
+@OptIn(ExperimentalUuidApi::class)
 class FoodRepositoryImpl constructor(
     private val foodLogDao: FoodLogDao,
     private val supabaseFoodApi: SupabaseFoodApiService,   // ← Supabase místo OFF
@@ -134,7 +137,7 @@ class FoodRepositoryImpl constructor(
     // ── Mapper extension funkce (beze změny) ──────────────────────────────────
 
     private fun FoodLogEntity.toDomain(json: Json): FoodLog = FoodLog(
-        id = UUID.fromString(this.id),
+        id = Uuid.parse(this.id),
         timestamp = this.timestamp,
         foodName = this.foodName,
         allergens = if (this.allergens.isNotEmpty())

@@ -22,7 +22,7 @@ import androidx.navigation.NavController
 import androidx.compose.material3.Icon
 import com.allergytrack.app.R
 import com.allergytrack.app.ui.util.icon
-import com.allergytrack.app.domain.model.SymptomType
+import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*

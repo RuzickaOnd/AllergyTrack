@@ -1,7 +1,7 @@
 package com.allergytrack.app.data.repository
 
-import com.allergytrack.app.domain.model.PremiumStatus
-import com.allergytrack.app.domain.repository.PremiumRepository
+import com.allergytrack.shared.domain.model.PremiumStatus
+import com.allergytrack.shared.domain.repository.PremiumRepository
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.PeriodType
 import com.revenuecat.purchases.Purchases

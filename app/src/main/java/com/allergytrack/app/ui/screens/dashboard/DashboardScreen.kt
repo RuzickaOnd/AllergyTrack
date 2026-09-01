@@ -62,8 +62,8 @@ import androidx.navigation.NavController
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
-import com.allergytrack.app.domain.model.EnvironmentLog
-import com.allergytrack.app.domain.model.SymptomType
+import com.allergytrack.shared.domain.model.EnvironmentLog
+import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.app.ui.components.AiBadge
 import com.allergytrack.app.ui.components.AppCard
 import com.allergytrack.app.ui.components.CardTitle

@@ -8,7 +8,7 @@ import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
 import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.permissions.PermissionsHelper
-import com.allergytrack.app.domain.model.SymptomType
+import com.allergytrack.shared.domain.model.SymptomType
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
 import com.allergytrack.app.data.analytics.AnalyticsManager
@@ -52,31 +52,31 @@ class ChartsViewModel constructor(
     }
 
     val isExtendedChartsVisible: StateFlow<Boolean> =
-        premiumHelper.observeVisible(com.allergytrack.app.domain.model.PremiumFeature.EXTENDED_CHARTS)
+        premiumHelper.observeVisible(com.allergytrack.shared.domain.model.PremiumFeature.EXTENDED_CHARTS)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val canUseExtendedCharts: StateFlow<Boolean> =
-        premiumHelper.observeAccess(com.allergytrack.app.domain.model.PremiumFeature.EXTENDED_CHARTS)
+        premiumHelper.observeAccess(com.allergytrack.shared.domain.model.PremiumFeature.EXTENDED_CHARTS)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
 
     val showExtendedChartsBadge: StateFlow<Boolean> =
-        premiumHelper.observeShowBadge(com.allergytrack.app.domain.model.PremiumFeature.EXTENDED_CHARTS)
+        premiumHelper.observeShowBadge(com.allergytrack.shared.domain.model.PremiumFeature.EXTENDED_CHARTS)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val showExtendedChartsUpsell: StateFlow<Boolean> =
-        premiumHelper.observeShowUpsell(com.allergytrack.app.domain.model.PremiumFeature.EXTENDED_CHARTS)
+        premiumHelper.observeShowUpsell(com.allergytrack.shared.domain.model.PremiumFeature.EXTENDED_CHARTS)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val isPollenVisible: StateFlow<Boolean> =
-        premiumHelper.observeVisible(com.allergytrack.app.domain.model.PremiumFeature.POLLEN_DATA)
+        premiumHelper.observeVisible(com.allergytrack.shared.domain.model.PremiumFeature.POLLEN_DATA)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val canSeePollen: StateFlow<Boolean> =
-        premiumHelper.observeAccess(com.allergytrack.app.domain.model.PremiumFeature.POLLEN_DATA)
+        premiumHelper.observeAccess(com.allergytrack.shared.domain.model.PremiumFeature.POLLEN_DATA)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
 
     val showPollenUpsell: StateFlow<Boolean> =
-        premiumHelper.observeShowUpsell(com.allergytrack.app.domain.model.PremiumFeature.POLLEN_DATA)
+        premiumHelper.observeShowUpsell(com.allergytrack.shared.domain.model.PremiumFeature.POLLEN_DATA)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val uiState: StateFlow<ChartsUiState> = combine(

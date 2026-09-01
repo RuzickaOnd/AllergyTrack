@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.local.datastore.OnboardingDataStore
 import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.data.permissions.PermissionsState
-import com.allergytrack.app.domain.model.AllergyType
-import com.allergytrack.app.domain.model.OnboardingStep
-import com.allergytrack.app.domain.model.SymptomTypeOnboarding
+import com.allergytrack.shared.domain.model.AllergyType
+import com.allergytrack.shared.domain.model.OnboardingStep
+import com.allergytrack.shared.domain.model.SymptomTypeOnboarding
 import com.allergytrack.app.domain.premium.PremiumHelper
-import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.model.PremiumFeature
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

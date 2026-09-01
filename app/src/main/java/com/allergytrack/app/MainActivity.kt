@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
     private val workManagerScheduler: WorkManagerScheduler by inject()
     private val onboardingDataStore: OnboardingDataStore by inject()
     private val userPreferencesDataStore: UserPreferencesDataStore by inject()
-    private val appUpdateRepository: com.allergytrack.app.domain.repository.AppUpdateRepository by inject()
+    private val appUpdateRepository: com.allergytrack.shared.domain.repository.AppUpdateRepository by inject()
 
     private lateinit var appUpdateHelper: com.allergytrack.app.ui.util.AppUpdateHelper
 
@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppRoot(
     initialOnboardingCompleted: Boolean,
-    appUpdateRepository: com.allergytrack.app.domain.repository.AppUpdateRepository
+    appUpdateRepository: com.allergytrack.shared.domain.repository.AppUpdateRepository
 ) {
     var onboardingCompleted by remember { mutableStateOf(initialOnboardingCompleted) }
 

@@ -2,8 +2,8 @@ package com.allergytrack.app.ui.screens.symptom
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.allergytrack.app.domain.model.SymptomLog
-import com.allergytrack.app.domain.model.SymptomType
+import com.allergytrack.shared.domain.model.SymptomLog
+import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.app.domain.usecase.SaveSymptomLogUseCase
 import com.allergytrack.app.data.analytics.AnalyticsManager
 import kotlinx.coroutines.flow.*

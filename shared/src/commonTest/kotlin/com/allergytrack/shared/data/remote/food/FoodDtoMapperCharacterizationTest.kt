@@ -1,13 +1,13 @@
-package com.allergytrack.app.data.remote.food
+package com.allergytrack.shared.data.remote.food
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
  * Charakterizační testy lokalizačních mapperů.
- * Přesouvají se do shared/src/commonTest/ ve fázi 5 (s Ktor vrstvou).
+ * Přesunuty do commonTest spolu s FoodDto (fáze 3).
  */
 class FoodDtoMapperCharacterizationTest {
 

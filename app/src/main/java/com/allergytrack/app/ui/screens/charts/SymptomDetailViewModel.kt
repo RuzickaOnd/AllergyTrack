@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
-import com.allergytrack.app.domain.model.PremiumFeature
-import com.allergytrack.app.domain.model.SymptomType
+import com.allergytrack.shared.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.app.domain.premium.PremiumHelper
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit

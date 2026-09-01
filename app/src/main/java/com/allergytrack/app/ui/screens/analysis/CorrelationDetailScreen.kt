@@ -19,9 +19,9 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.allergytrack.app.R
 import com.allergytrack.app.data.remote.food.FoodAllergenHelper
-import com.allergytrack.app.domain.model.Correlation
-import com.allergytrack.app.domain.model.CorrelationSeverity
-import com.allergytrack.app.domain.model.TriggerType
+import com.allergytrack.shared.domain.model.Correlation
+import com.allergytrack.shared.domain.model.CorrelationSeverity
+import com.allergytrack.shared.domain.model.TriggerType
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.theme.*
 import com.allergytrack.app.ui.util.icon

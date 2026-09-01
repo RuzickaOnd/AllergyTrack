@@ -1,4 +1,4 @@
-package com.allergytrack.app.domain.repository
+package com.allergytrack.shared.domain.repository
 
 import kotlinx.coroutines.flow.StateFlow
 

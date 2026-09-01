@@ -2,15 +2,18 @@ package com.allergytrack.app.data.repository
 
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
-import com.allergytrack.app.domain.model.SymptomLog
-import com.allergytrack.app.domain.model.SymptomType
-import com.allergytrack.app.domain.repository.SymptomRepository
+import com.allergytrack.shared.domain.model.SymptomLog
+import com.allergytrack.shared.domain.model.SymptomType
+import com.allergytrack.shared.domain.repository.SymptomRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.Calendar
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class SymptomRepositoryImpl constructor(
     private val symptomLogDao: SymptomLogDao,
     private val json: Json
@@ -44,7 +47,7 @@ class SymptomRepositoryImpl constructor(
     }
 
     private fun SymptomLogEntity.toDomain(json: Json) = SymptomLog(
-        id = java.util.UUID.fromString(this.id),
+        id = Uuid.parse(this.id),
         timestamp = this.timestamp,
         type = SymptomType.valueOf(this.type),
         intensity = this.intensity,

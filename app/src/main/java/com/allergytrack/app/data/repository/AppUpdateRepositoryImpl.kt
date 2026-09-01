@@ -1,6 +1,6 @@
 package com.allergytrack.app.data.repository
 
-import com.allergytrack.app.domain.repository.AppUpdateRepository
+import com.allergytrack.shared.domain.repository.AppUpdateRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

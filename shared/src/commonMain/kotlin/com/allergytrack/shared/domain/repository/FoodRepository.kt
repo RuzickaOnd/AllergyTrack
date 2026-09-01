@@ -1,7 +1,7 @@
-package com.allergytrack.app.domain.repository
+package com.allergytrack.shared.domain.repository
 
-import com.allergytrack.app.data.remote.food.RecognizedFood
-import com.allergytrack.app.domain.model.FoodLog
+import com.allergytrack.shared.data.remote.food.RecognizedFood
+import com.allergytrack.shared.domain.model.FoodLog
 import kotlinx.coroutines.flow.Flow
 
 interface FoodRepository {

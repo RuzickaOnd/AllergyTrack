@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.allergytrack.app.R
-import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.app.ui.theme.*
 import com.allergytrack.app.ui.util.displayNameRes
 

@@ -3,7 +3,7 @@ package com.allergytrack.app.ui.screens.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.analytics.AnalyticsManager
-import com.allergytrack.app.domain.model.PremiumStatus
+import com.allergytrack.shared.domain.model.PremiumStatus
 import com.allergytrack.app.domain.premium.PremiumHelper
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

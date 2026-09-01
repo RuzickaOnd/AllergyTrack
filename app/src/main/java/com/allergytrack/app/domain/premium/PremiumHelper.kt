@@ -3,10 +3,10 @@ package com.allergytrack.app.domain.premium
 import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
 import com.allergytrack.app.data.local.datastore.DebugPreferences
-import com.allergytrack.app.domain.model.PremiumFeature
-import com.allergytrack.app.domain.model.PremiumStatus
-import com.allergytrack.app.domain.model.PremiumVisibilityMode
-import com.allergytrack.app.domain.repository.PremiumRepository
+import com.allergytrack.shared.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.model.PremiumStatus
+import com.allergytrack.shared.domain.model.PremiumVisibilityMode
+import com.allergytrack.shared.domain.repository.PremiumRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first

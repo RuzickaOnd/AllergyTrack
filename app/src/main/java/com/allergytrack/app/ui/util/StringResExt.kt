@@ -19,11 +19,11 @@ import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.allergytrack.app.R
-import com.allergytrack.app.domain.model.AllergyType
-import com.allergytrack.app.domain.model.TriggerType
-import com.allergytrack.app.domain.model.PremiumFeature
-import com.allergytrack.app.domain.model.SymptomType
-import com.allergytrack.app.domain.model.SymptomTypeOnboarding
+import com.allergytrack.shared.domain.model.AllergyType
+import com.allergytrack.shared.domain.model.TriggerType
+import com.allergytrack.shared.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.model.SymptomType
+import com.allergytrack.shared.domain.model.SymptomTypeOnboarding
 
 @StringRes
 fun SymptomType.labelRes(): Int = when (this) {

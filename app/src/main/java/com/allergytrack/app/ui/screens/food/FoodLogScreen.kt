@@ -33,7 +33,7 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.R
-import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.screens.profile.PremiumActivity

@@ -17,7 +17,7 @@ import com.allergytrack.app.domain.analysis.CorrelationEngine
 import com.allergytrack.app.domain.export.MedicalReportExporter
 import com.allergytrack.app.ui.util.AppLocaleHelper
 import com.allergytrack.app.domain.premium.PremiumHelper
-import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.app.data.notifications.NotificationManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

@@ -1,4 +1,4 @@
-package com.allergytrack.app.domain.model
+package com.allergytrack.shared.domain.model
 
 /** Typy alergií pro výběr v onboardingu */
 enum class AllergyType(val label: String) {

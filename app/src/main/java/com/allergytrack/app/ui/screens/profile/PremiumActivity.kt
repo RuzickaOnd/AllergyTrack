@@ -11,7 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.allergytrack.app.data.analytics.AnalyticsManager
-import com.allergytrack.app.domain.model.PremiumStatus
+import com.allergytrack.shared.domain.model.PremiumStatus
 import com.allergytrack.app.ui.theme.AllergyTrackTheme
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.Package

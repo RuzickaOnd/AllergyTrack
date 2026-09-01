@@ -1,4 +1,4 @@
-package com.allergytrack.app.domain.model
+package com.allergytrack.shared.domain.model
 
 enum class PremiumVisibilityMode {
     HIDDEN,   // funkce neexistují v UI

@@ -1,10 +1,13 @@
-package com.allergytrack.app.domain.model
+package com.allergytrack.shared.domain.model
 
-import java.util.UUID
+import com.allergytrack.shared.platform.currentTimeMillis
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 data class EnvironmentLog(
-    val id: UUID = UUID.randomUUID(),
-    val timestamp: Long = System.currentTimeMillis(),
+    val id: Uuid = Uuid.random(),
+    val timestamp: Long = currentTimeMillis(),
     val latitude: Double,
     val longitude: Double,
     // AQI — vždy dostupné globálně

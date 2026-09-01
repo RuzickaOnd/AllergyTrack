@@ -2,9 +2,9 @@ package com.allergytrack.app.domain.analysis
 
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
 import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
-import com.allergytrack.app.domain.model.AnalysisReadiness
-import com.allergytrack.app.domain.model.SymptomType
-import com.allergytrack.app.domain.model.TriggerType
+import com.allergytrack.shared.domain.model.AnalysisReadiness
+import com.allergytrack.shared.domain.model.SymptomType
+import com.allergytrack.shared.domain.model.TriggerType
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

@@ -4,10 +4,10 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.remote.food.FoodAllergenHelper
-import com.allergytrack.app.data.remote.food.RecognizedFood
-import com.allergytrack.app.domain.model.FoodLog
+import com.allergytrack.shared.data.remote.food.RecognizedFood
+import com.allergytrack.shared.domain.model.FoodLog
 import retrofit2.HttpException
-import com.allergytrack.app.domain.repository.FoodRepository
+import com.allergytrack.shared.domain.repository.FoodRepository
 import com.allergytrack.app.domain.usecase.RecognizeFoodFromImageUseCase
 import com.allergytrack.app.domain.usecase.SaveFoodLogUseCase
 import com.allergytrack.app.domain.usecase.SearchFoodUseCase
@@ -65,15 +65,15 @@ class FoodLogViewModel constructor(
     val capturedImageUri: StateFlow<Uri?> = _capturedImageUri.asStateFlow()
 
     val isPhotoVisible: StateFlow<Boolean> =
-        premiumHelper.observeVisible(com.allergytrack.app.domain.model.PremiumFeature.FOOD_PHOTO_RECOGNITION)
+        premiumHelper.observeVisible(com.allergytrack.shared.domain.model.PremiumFeature.FOOD_PHOTO_RECOGNITION)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val showPhotoUpsell: StateFlow<Boolean> =
-        premiumHelper.observeShowUpsell(com.allergytrack.app.domain.model.PremiumFeature.FOOD_PHOTO_RECOGNITION)
+        premiumHelper.observeShowUpsell(com.allergytrack.shared.domain.model.PremiumFeature.FOOD_PHOTO_RECOGNITION)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val showPhotoBadge: StateFlow<Boolean> =
-        premiumHelper.observeShowBadge(com.allergytrack.app.domain.model.PremiumFeature.FOOD_PHOTO_RECOGNITION)
+        premiumHelper.observeShowBadge(com.allergytrack.shared.domain.model.PremiumFeature.FOOD_PHOTO_RECOGNITION)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val recentFoodLogs: StateFlow<List<FoodLog>> =
@@ -167,7 +167,7 @@ class FoodLogViewModel constructor(
 
     fun onImageCaptured(uri: Uri) {
         viewModelScope.launch {
-            if (!premiumHelper.hasAccess(com.allergytrack.app.domain.model.PremiumFeature.FOOD_PHOTO_RECOGNITION)) {
+            if (!premiumHelper.hasAccess(com.allergytrack.shared.domain.model.PremiumFeature.FOOD_PHOTO_RECOGNITION)) {
                 _uiState.value = FoodLogUiState.Error("Foto rozpoznávání vyžaduje Premium")
                 return@launch
             }

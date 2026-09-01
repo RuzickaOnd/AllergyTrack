@@ -1,4 +1,4 @@
-package com.allergytrack.app.data.remote.food
+package com.allergytrack.shared.data.remote.food
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
