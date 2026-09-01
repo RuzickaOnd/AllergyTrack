@@ -26,157 +26,74 @@ UI jazyk:    Čeština
 |--------|-------------|-------|
 | UI | Jetpack Compose + Material 3 | BOM 2024.12.01 |
 | Architektura | Clean Architecture + MVVM | — |
-| DI | Hilt | 2.53.1 |
-| DB | Room | 2.6.1 |
+| DI | **Koin** | 4.1.0 |
+| DB | Room **KMP** | 2.8.4 |
 | Async | Kotlin Coroutines + StateFlow | 1.9.0 |
 | Navigace | Navigation Compose | 2.8.5 |
-| Síť | Retrofit 2 + Kotlin Serialization | 2.11.0 |
+| Síť | **Ktor client** + Kotlin Serialization | 3.1.3 |
 | Background | WorkManager | 2.10.0 |
 | Kamera | CameraX | 1.4.1 |
 | Grafy | Vico | 2.0.1 |
 | Barcode | ML Kit Barcode Scanning | 17.3.0 |
 | Analytics | Firebase Analytics + Crashlytics | BOM 34.13.0 |
 | Build | Gradle Kotlin DSL + Version Catalog | — |
+| Multiplatform | Kotlin Multiplatform (`:shared`) | 2.4.10 |
+| Resources | Compose Multiplatform Resources | 1.9.3 |
 
 ---
 
 ## ADRESÁŘOVÁ STRUKTURA
 
+Projekt je rozdělen na KMP modul `:shared` a Android aplikaci `:app`.
+Podrobný stav migrace a seznam omezení je v `docs/kmp-stav.md`.
+
 ```
-com.allergytrack.app/
-├── AllergyTrackApplication.kt
-├── MainActivity.kt
-├── di/
-│   ├── AppModule.kt           ← Hilt bindings (Repository interfaces)
-│   ├── DatabaseModule.kt      ← Room DAOs
-│   └── NetworkModule.kt       ← Retrofit instances (openmeteo, supabase)
-├── ui/
-│   ├── theme/                 ← Color, Theme, Type
-│   ├── navigation/
-│   │   ├── Screen.kt          ← Sealed class všech routes (viz Food sub-flow níže)
-│   │   ├── NavGraph.kt        ← AllergyNavGraph + MainAppScaffold
-│   │   └── MainAppScaffold.kt
-│   ├── util/
-│   │   ├── StringResExt.kt
-│   │   └── ExportUtils.kt     ← AnalysisExportHandler, sharePdfFile()
-│   ├── components/
-│   │   ├── CommonUI.kt        ← AppCard(contentPadding), AppSnackbarHost, CardTitle(icon), Pill(onClick), PrimaryButton,
-│   │   │                         SecondaryButton, SectionHeading, AiBadge (renderuje **bold** markdown)
-│   │   ├── BottomNavBar.kt
-│   │   ├── DateTimePickerRow.kt ← Výběr data a času pro logování jídla a příznaků
-│   │   ├── PremiumGate.kt     ← Třístavový wrapper (hidden/upsell/content)
-│   │   ├── PremiumUpsellCard.kt
-│   │   ├── PremiumBadge.kt
-│   │   └── PermissionsHandler.kt
-│   ├── onboarding/
-│   │   ├── OnboardingFlow.kt
-│   │   ├── OnboardingViewModel.kt
-│   │   ├── OnboardingComponents.kt
-│   │   ├── OnboardingWelcomeScreen.kt
-│   │   ├── OnboardingProfileScreen.kt
-│   │   ├── OnboardingPermissionsScreen.kt
-│   │   └── OnboardingReadyScreen.kt
-│   └── screens/
-│       ├── dashboard/
-│       │   ├── DashboardScreen.kt
-│       │   └── DashboardViewModel.kt
-│       ├── food/
-│       │   ├── FoodLogScreen.kt          ← Hub: foto/čárový kód/hlas/vyhledávání + recent pills
-│       │   ├── FoodLogViewModel.kt       ← Sdílený VM pro celý food sub-flow
-│       │   ├── CameraScreen.kt           ← mode="photo" nebo mode="barcode" (ML Kit)
-│       │   ├── FoodConfirmScreen.kt      ← Potvrzení + uložení záznamu
-│       │   ├── FoodManualSearchScreen.kt ← Vyhledávání v Supabase, info banner
-│       │   └── FoodManualEntryScreen.kt  ← Ruční zadání názvu + výběr alergenů ze 14 EU
-│       ├── symptom/
-│       │   ├── SymptomLogScreen.kt
-│       │   └── SymptomLogViewModel.kt
-│       ├── charts/
-│       │   ├── ChartsScreen.kt
-│       │   ├── ChartsViewModel.kt
-│       │   ├── ChartDataMapper.kt
-│       │   ├── SymptomDetailActivity.kt   ← vstupní bod detailu (samostatná Activity)
-│       │   ├── SymptomDetailScreen.kt     ← statistiky symptomů: count, avg/max intenzita, last occurrence
-│       │   └── SymptomDetailViewModel.kt  ← SymptomTypeStat, SymptomDetailUiState; respektuje EXTENDED_CHARTS
-│       ├── analysis/
-│       │   ├── AnalysisScreen.kt
-│       │   └── AnalysisViewModel.kt
-│       ├── profile/
-│       │   ├── ProfileScreen.kt       ← Avatar s pencil badge, inline editace jména
-│       │   ├── AvatarPickerScreen.kt  ← 12 presetů (LazyVerticalGrid 4 sl.) + galerie
-│       │   ├── ProfileViewModel.kt    ← UserPreferencesDataStore: userName, avatarSelection
-│       │   └── AboutScreen.kt
-│       ├── settings/
-│       │   ├── SettingsScreen.kt         ← Plně implementovaná nastavení (viz sekce 11)
-│       │   └── SettingsViewModel.kt      ← export, smazání dat, dark mode, notifikace, jazyk
-│       └── debug/
-│           ├── DebugMenuScreen.kt        ← Jen v BuildConfig.DEBUG; info chip + Crashlytics testovací tlačítka
-│           └── DebugMenuViewModel.kt     ← injektuje PremiumHelper pro currentVisibilityMode
-├── domain/
-│   ├── model/
-│   │   ├── FoodLog.kt
-│   │   ├── SymptomLog.kt
-│   │   ├── EnvironmentLog.kt
-│   │   ├── SymptomType.kt
-│   │   ├── Correlation.kt             ← TriggerType, CorrelationSeverity
-│   │   ├── PremiumConfig.kt           ← PremiumVisibilityMode, PremiumStatus, PremiumFeature
-│   │   ├── DataAvailability.kt        ← EnvironmentRegion, isEurope()
-│   │   └── OnboardingModels.kt        ← AllergyType, SymptomTypeOnboarding, OnboardingStep
-│   ├── repository/
-│   │   ├── FoodRepository.kt
-│   │   ├── SymptomRepository.kt
-│   │   ├── EnvironmentRepository.kt
-│   │   └── PremiumRepository.kt
-│   ├── premium/
-│   │   └── PremiumHelper.kt           ← Centrální správce přístupu k funkcím
-│   ├── export/
-│   │   └── MedicalReportExporter.kt   ← Generování PDF (A4, Canvas, MediaStore)
-│   ├── analysis/
-│   │   └── CorrelationEngine.kt       ← Pearsonova korelace, time window 2–72h
-│   └── usecase/
-│       ├── SaveFoodLogUseCase.kt
-│       ├── SaveSymptomLogUseCase.kt
-│       ├── SearchFoodUseCase.kt
-│       ├── GetTodayLogsUseCase.kt
-│       ├── GetCorrelationsUseCase.kt
-│       └── CheckPremiumAccessUseCase.kt
-├── data/
-│   ├── local/
-│   │   ├── database/
-│   │   │   ├── AllergyDatabase.kt     ← Room DB, version 2
-│   │   │   ├── entity/
-│   │   │   │   ├── FoodLogEntity.kt
-│   │   │   │   ├── SymptomLogEntity.kt
-│   │   │   │   └── EnvironmentLogEntity.kt
-│   │   │   └── dao/
-│   │   │       ├── FoodLogDao.kt
-│   │   │       ├── SymptomLogDao.kt
-│   │   │       └── EnvironmentLogDao.kt
-│   │   └── datastore/
-│   │       ├── OnboardingDataStore.kt       ← isCompleted, allergyProfile
-│   │       ├── UserPreferencesDataStore.kt  ← 5 klíčů: jazyk, jméno, avatar, dark mode, notifikace
-│   │       └── DebugPreferences.kt          ← debug_preferences, DebugPremiumOverride
-│   ├── remote/
-│   │   ├── ai/
-│   │   │   └── AiSummaryService.kt     ← Lokální šablona shrnutí; renderuje **bold** markdown
-│   │   ├── airquality/
-│   │   │   ├── AirQualityApiService.kt ← Open-Meteo, zdarma, bez klíče
-│   │   │   └── AirQualityDto.kt
-│   │   └── food/
-│   │       ├── SupabaseFoodApiService.kt   ← REST + RPC (search_products)
-│   │       ├── FoodDto.kt                  ← SupabaseFoodProduct, SupabaseSearchResult, RecognizedFood
-│   │       └── FoodAllergenHelper.kt       ← EU_14 definice + suggestFromName() heuristika
-│   ├── repository/
-│   │   ├── FoodRepositoryImpl.kt      ← Supabase integration, mapper funkce
-│   │   ├── SymptomRepositoryImpl.kt
-│   │   ├── EnvironmentRepositoryImpl.kt
-│   │   └── PremiumRepositoryImpl.kt   ← MVP: vždy FREE
-│   ├── permissions/
-│   │   └── PermissionsHelper.kt       ← GPS, kamera, notifikace, mikrofon
-│   └── worker/
-│       ├── EnvironmentWorker.kt       ← HiltWorker, GPS + AQI každých 30 min
-│       ├── ReminderWorker.kt          ← HiltWorker, večerní připomínka ~20:00
-│       └── WorkManagerScheduler.kt   ← scheduleReminder() + cancelReminder()
+AllergyTrack/
+├── shared/                         ← KMP modul (androidLibrary + iosArm64 + iosSimulatorArm64)
+│   └── src/
+│       ├── commonMain/kotlin/com/allergytrack/shared/
+│       │   ├── domain/
+│       │   │   ├── model/          ← 9 doménových modelů
+│       │   │   ├── repository/     ← 5 interfaces
+│       │   │   ├── usecase/        ← 4 use case + RecognizeFoodFromImage (interface)
+│       │   │   ├── analysis/       ← CorrelationEngine
+│       │   │   ├── premium/        ← PremiumHelper
+│       │   │   └── export/         ← ReportExporter (interface)
+│       │   ├── data/
+│       │   │   ├── local/database/ ← Room KMP: entity, DAO, AllergyDatabase, migrace
+│       │   │   ├── local/datastore/← 3 DataStore třídy + továrna
+│       │   │   ├── remote/         ← Ktor: SupabaseFoodApi, AirQualityApi, DTO, továrny
+│       │   │   └── repository/     ← Food/Symptom/Environment implementace
+│       │   ├── presentation/       ← 12 ViewModelů + ChartDataMapper
+│       │   ├── platform/           ← expect funkce + rozhraní platformních služeb
+│       │   ├── config/             ← AppConfig (náhrada BuildConfig)
+│       │   └── resources/          ← generovaná třída Res
+│       ├── commonMain/composeResources/
+│       │   ├── values/strings.xml      ← 423 stringů + plurals
+│       │   └── values-cs/strings.xml
+│       ├── androidMain/…/platform/ ← actual pro Android
+│       ├── iosMain/…/platform/     ← actual pro iOS (skutečné, ne stuby)
+│       └── commonTest/             ← 29 charakterizačních testů
+│
+└── app/                            ← Android aplikace
+    └── src/main/
+        ├── java/com/allergytrack/app/
+        │   ├── AllergyTrackApplication.kt   ← startKoin, initAndroidPlatform
+        │   ├── MainActivity.kt
+        │   ├── di/koin/            ← 8 Koin modulů
+        │   ├── platform/           ← AndroidDeviceInfo, MedicalReportExporter,
+        │   │                          RecognizeFoodFromImageUseCase
+        │   ├── data/               ← AnalyticsManager, PermissionsHelper, LocationProvider,
+        │   │                          FoodImageRecognizer, AiSummaryService, NotificationManager,
+        │   │                          workery, PremiumRepositoryImpl, AppUpdateRepositoryImpl
+        │   └── ui/                 ← celé Compose UI (theme, navigation, components,
+        │                              onboarding, screens) + DebugMenuViewModel
+        └── res/                    ← 26 stringů pro manifest a kód mimo Compose,
+                                       drawables, themes, ikony
 ```
+
+**Pravidlo pro nový kód:** doménová, datová a prezentační vrstva patří do
+`:shared/commonMain`. V `:app` zůstává jen Compose UI a platformní adaptéry.
 
 ---
 
@@ -184,7 +101,12 @@ com.allergytrack.app/
 
 ### 1. Food Log — celý flow zadávání jídla
 
-Vstupní bod je `FoodLogScreen`, sdílený ViewModel je `FoodLogViewModel`. Všechny pod-obrazovky food flow používají **stejnou instanci** `FoodLogViewModel` (Hilt scope = NavBackStackEntry).
+Vstupní bod je `FoodLogScreen`, ViewModel je `FoodLogViewModel`.
+
+**Pozor:** každá pod-obrazovka food flow má **vlastní instanci** `FoodLogViewModel` —
+volají `koinViewModel()` bez ownera, takže se scope váže na jejich vlastní
+`NavBackStackEntry`. Stav se mezi obrazovkami předává **navigačními argumenty**,
+ne sdíleným ViewModelem. (Dřívější verze tohoto dokumentu tvrdila opak.)
 
 #### Navigation routes (Screen.kt):
 ```
@@ -273,7 +195,7 @@ GET rest/v1/food_products?code=eq.{barcode}&select={PRODUCT_SELECT}&limit=1
 ### 3. Premium systém
 
 ```
-PremiumHelper.visibilityMode = HIDDEN  ← aktuální stav
+PremiumHelper.visibilityMode = VISIBLE  ← aktuální stav
 ```
 
 **HIDDEN** = prémiové funkce fyzicky neexistují v UI.
@@ -310,7 +232,7 @@ V DEBUG buildu: `DebugPreferences` přepisuje stav přes `DebugPremiumOverride` 
 Deserializace v DataStore má `catch (IllegalArgumentException)` → fallback na `USE_APP_STATE` (odolné vůči starým hodnotám).
 DebugMenuScreen zobrazuje aktuální `visibilityMode` jako info chip (šedý = HIDDEN, zelený = VISIBLE).
 
-**Prémiové funkce** (aktuálně všechny HIDDEN):
+**Prémiové funkce** (režim VISIBLE — free uživatel vidí upsell):
 - `FOOD_PHOTO_RECOGNITION` — foto rozpoznávání jídla
 - `POLLEN_DATA` — pylová data
 - `EXTENDED_CHARTS` — grafy 14+ dní (odemkne 14denní i 30denní rozsah)
@@ -354,7 +276,9 @@ Formát: čárkou oddělené enum názvy (např. `"FOOD,POLLEN"`).
 
 ### 7. Room DB
 
-Aktuální verze: **2**.
+Aktuální verze: **2**. Databáze i migrace žijí v `:shared/commonMain`.
+Na Androidu se používá `AndroidSQLiteDriver` (frameworkový SQLite),
+na iOS `BundledSQLiteDriver`.
 `MIGRATION_1_2`: přidává `no2`, `ozone`, `region`, `pollenAvailable` do `environment_logs`.
 Každá změna schématu = zvýšení verze + Migration objekt.
 
@@ -367,7 +291,7 @@ Každá změna schématu = zvýšení verze + Migration objekt.
 | `food_search_language` | String | `""` | Kód jazyka vyhledávání; prázdný = auto z `Locale.getDefault()` |
 | `user_name` | String | `""` | Zobrazované jméno uživatele; prázdný = nezadáno |
 | `avatar_selection` | String | `"person"` | ID presetu (např. `"pets"`) nebo `"gallery:<uri>"` pro obrázek z galerie |
-| `dark_mode` | Boolean | `true` | Tmavý/světlý režim; změna se projeví okamžitě — MainActivity sleduje tento flow |
+| `dark_mode` | Boolean | `false` | Tmavý/světlý režim; změna se projeví okamžitě — MainActivity sleduje tento flow |
 | notifications_enabled | Boolean | false | Večerní připomínka v 19:00; zapnutí/vypnutí řídí WorkManager; auto-zapnuto po onboardingu při uděleném oprávnění |
 
 ### 9. ProfileScreen — avatar a editace jména
@@ -602,23 +526,26 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 ```
 ✅ Kotlin 100% — žádný Java kód
 ✅ Jetpack Compose — žádný XML layout
-✅ Hilt DI — @HiltViewModel + @Inject constructor vždy
+✅ Koin DI — moduly v `app/di/koin/`, `koinViewModel()` v Compose
 ✅ StateFlow — žádný LiveData
 ✅ KSP — žádný KAPT
 ✅ Repository pattern — UI nikdy nevolá DAO přímo
 ✅ Kotlin Serialization — žádný Gson
 ✅ Version Catalog (libs.versions.toml) — závislosti nikdy jako string
 ✅ Premium check pouze přes PremiumHelper — nikde jinde
+✅ Nový kód doménové/datové/prezentační vrstvy patří do `:shared/commonMain`
+✅ Parametrizované stringy vždy `%1$s`, nikdy `%s` — Compose Resources
+   poziční tvar vyžadují a holý placeholder vypíšou doslova
 ✅ API klíče pouze v local.properties + BuildConfig
 ✅ Debug kód vždy obaleno if (BuildConfig.DEBUG)
 ✅ Všechny hlavní obrazovky mají horizontální padding 16.dp
 ✅ Veškerý text UI v češtině (resources values-cs/ jsou primární)
 ✅ foodName a allergens v navigaci vždy Uri.encode() před navigate()
-✅ HttpException ze síťových volání propagovat do ViewModelu — nekousat v repository
 ✅ Snackbary vždy přes AppSnackbarHost (CommonUI.kt) — nikdy raw SnackbarHost
 ✅ Ikony v UI vždy jako samostatné Icon() composable — nikdy emoji ani Unicode znaky vložené přímo do String resource nebo Text() tam, kde slouží jako ikona. Vizuální ikona a text musí být vždy oddělené composable elementy.
 
 ❌ runBlocking v produkčním kódu (výjimka: MainActivity onCreate)
+❌ Platformní API (android.*, java.*, javax.*) v `:shared/commonMain`
 ❌ Přímé volání DAO z ViewModelu
 ❌ Byznys logika v Composable funkcích
 ❌ Nullable !! operátor — vždy ?: return nebo ?.let
@@ -669,6 +596,12 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 | 30 | AiBadge + AiSummaryService: oprava výpisu klinického vhledu — bold markdown (**text**) v AiSummaryService i AiBadge composable renderován správně | ✅ |
 | 31 | Volba data a času: DateTimePickerRow pro vlastní datum/čas u logování jídla a příznaků | ✅ |
 | 32 | Bezpečnost: odstraněno ACCESS_BACKGROUND_LOCATION oprávnění, implementován fallback na poslední GPS souřadnice při chybě na pozadí | ✅ |
+| 33 | KMP fáze 0–2: charakterizační testy, kostra `:shared` s iOS canary, Hilt → Koin | ✅ |
+| 34 | KMP fáze 3–4: doménové modely, repository interfaces, use cases, AppConfig do commonMain | ✅ |
+| 35 | KMP fáze 5: Retrofit → Ktor, síťová vrstva do commonMain | ✅ |
+| 36 | KMP fáze 6: Room KMP + DataStore KMP, repository a CorrelationEngine do commonMain | ✅ |
+| 37 | KMP fáze 7: 423 stringů do Compose Resources | ✅ |
+| 38 | KMP fáze 8–9: 12 ViewModelů do commonMain, platformní rozhraní, dokumentace | ✅ |
 
 ---
 
@@ -701,6 +634,9 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 
 ## JAK PRACOVAT S TÍMTO DOKUMENTEM
 
+0. Pro cokoli kolem KMP (co je sdílené, jaká omezení platí, co čeká na iOS)
+   si přečti `docs/kmp-stav.md` — obsahuje i seznam zděděných chyb, které
+   migrace záměrně nechala být
 1. Vždy dodržuj pravidla z sekce **ZÁVAZNÁ PRAVIDLA**
 2. Před přidáním nové funkce zkontroluj **ADRESÁŘOVOU STRUKTURU** a zařaď správně
 3. Prémiové funkce přidávej do `PremiumFeature` enum a `PremiumHelper.premiumFeatures`

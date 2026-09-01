@@ -1,4 +1,4 @@
-package com.allergytrack.app.domain.usecase
+package com.allergytrack.app.platform
 
 import android.content.Context
 import android.net.Uri

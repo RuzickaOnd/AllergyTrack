@@ -1,4 +1,4 @@
-package com.allergytrack.app.domain.export
+package com.allergytrack.app.platform
 
 import android.content.ContentValues
 import android.content.Context

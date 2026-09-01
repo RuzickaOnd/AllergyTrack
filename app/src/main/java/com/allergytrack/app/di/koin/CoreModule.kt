@@ -8,7 +8,7 @@ import com.allergytrack.app.data.notifications.NotificationManager
 import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.data.remote.ai.AiSummaryService
 import com.allergytrack.app.data.worker.WorkManagerScheduler
-import com.allergytrack.app.domain.export.MedicalReportExporter
+import com.allergytrack.app.platform.MedicalReportExporter
 import com.allergytrack.shared.config.AppConfig
 import com.allergytrack.shared.domain.export.ReportExporter
 import com.allergytrack.shared.platform.AiSummaryGenerator

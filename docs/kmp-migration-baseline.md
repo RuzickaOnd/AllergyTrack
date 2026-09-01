@@ -385,3 +385,37 @@ takové místo přibude.
 
 `ChartDataMapper` šel do `commonMain` také — je to čistá datová transformace,
 kterou `ChartsViewModel` potřebuje.
+
+---
+
+## Fáze 9 — úklid a dokumentace
+
+- `:app` už nemá adresář `domain/` — platformní implementace
+  (`MedicalReportExporter`, `RecognizeFoodFromImageUseCase`) přesunuty
+  do `platform/`, čímž struktura poctivě říká, že doména žije v `:shared`
+- `docs/kmp-stav.md` — souhrn rozdělení, platformních rozhraní, narazených
+  omezení, zděděných chyb a neověřených míst
+- `CLAUDE.md` a `AGENTS.md` aktualizovány: technický stack, adresářová
+  struktura, závazná pravidla, opravena tvrzení o sdílené instanci
+  `FoodLogViewModel`, o `visibilityMode = HIDDEN` a o defaultu `dark_mode`
+
+### iosMain neobsahuje žádné TODO()
+
+Plán počítal s tím, že iOS `actual` implementace budou stuby s `TODO()`.
+Nakonec jsou všechny skutečné — `NSDate`, `NSCalendar`, `NSLocale`, `NSUUID`,
+`NSFileManager`, Darwin engine pro Ktor a `BundledSQLiteDriver` pro Room.
+Nikdy se nespouštějí, ale jsou napsané, takže iOS fáze začne o kus dál.
+
+### Závěrečná verifikace
+
+- [x] `./gradlew clean` + build všech targetů — zelené
+- [x] `:shared:allTests` — 58 testů (29 × 2 platformy), 0 chyb
+- [x] `:app:testDebugUnitTest` — 3 testy, 0 chyb
+- [x] Release build s R8 — zelený, **bez jediného keep pravidla pro Koin,
+      Ktor ani Room**
+- [x] Release build ověřen za běhu na emulátoru: onboarding se vykreslí,
+      Compose Resources fungují, Koin graf se rozřeší
+
+Release build není debuggable, takže do něj nešlo obnovit zálohovaná data
+(`run-as` odmítne). Ověřen tedy start a onboarding, ne shoda korelace —
+tu potvrdil debug build téhož commitu.

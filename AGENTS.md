@@ -39,15 +39,16 @@ závislosti bez explicitního pokynu uživatele.
 | State | StateFlow + UiState sealed class | Žádný LiveData |
 | Domain | Use Cases | Každá akce = samostatný UseCase |
 | Data | Repository pattern | UI nikdy nevolá DAO přímo |
-| DI | Hilt 2.53.1 | Žádný jiný DI framework |
+| DI | Koin 4.1.0 | Žádný jiný DI framework |
+| Multiplatform | Kotlin Multiplatform | Nový doménový/datový/prezentační kód patří do `:shared/commonMain` |
 
 ### Persistence & Síť
 | Technologie | Účel |
 |-------------|------|
-| Room 2.6.1 | Lokální databáze — KSP, ne KAPT |
-| DataStore Preferences | Uživatelská nastavení |
-| Retrofit 2.11.0 | HTTP klient |
-| OkHttp 4.12.0 | HTTP vrstva |
+| Room KMP 2.8.4 | Lokální databáze — KSP, ne KAPT |
+| DataStore Preferences (KMP) | Uživatelská nastavení |
+| Compose Multiplatform Resources 1.9.3 | Stringy — parametry vždy `%1$s`, nikdy `%s` |
+| Ktor client 3.1.3 | HTTP klient — max. 3.1.x, viz `docs/kmp-stav.md` |
 | Kotlin Serialization 1.7.3 | JSON parsing — žádný Gson ani Moshi |
 
 ### Background & Kamera
@@ -69,28 +70,39 @@ závislosti bez explicitního pokynu uživatele.
 ## 3. ARCHITEKTURA — PRAVIDLA
 
 ### Struktura balíčků (fixní)
+
+Projekt je rozdělen na KMP modul `:shared` a Android aplikaci `:app`.
+Detailní rozpis včetně omezení je v `docs/kmp-stav.md`.
+
 ```
-com.allergytrack.app/
-├── di/              Hilt moduly
-├── ui/
-│   ├── theme/
-│   ├── navigation/
-│   ├── components/  Sdílené Compose komponenty
-│   └── screens/     Jedna složka per obrazovka (Screen + ViewModel)
-│       └── profile/ ProfileScreen, AvatarPickerScreen (sdílí AVATAR_PRESETS + AvatarCircle), ProfileViewModel
+shared/src/commonMain/kotlin/com/allergytrack/shared/
 ├── domain/
 │   ├── model/       Čisté Kotlin datové třídy
 │   ├── repository/  Pouze interfaces
-│   └── usecase/     Jeden soubor per use case
-└── data/
-    ├── local/       Room (entity, dao, database)
-    ├── remote/      API services + DTO
-    ├── repository/  Implementace interfaces z domain/
-    └── worker/      WorkManager workers
+│   ├── usecase/     Jeden soubor per use case
+│   ├── analysis/    CorrelationEngine
+│   ├── premium/     PremiumHelper
+│   └── export/      ReportExporter (interface)
+├── data/
+│   ├── local/       Room KMP (entity, dao, database) + DataStore
+│   ├── remote/      Ktor API třídy + DTO + továrny
+│   └── repository/  Implementace interfaces z domain/
+├── presentation/    ViewModely + ChartDataMapper
+├── platform/        expect funkce a rozhraní platformních služeb
+└── config/          AppConfig (náhrada BuildConfig)
+
+app/src/main/java/com/allergytrack/app/
+├── di/koin/         Koin moduly
+├── platform/        Android implementace rozhraní z :shared
+├── data/            Platformní služby (Firebase, ML Kit, WorkManager, GPS, RevenueCat)
+└── ui/              Compose UI — theme, navigation, components, screens
 ```
 
 ### Povinná pravidla
-- **ViewModel** vždy `@HiltViewModel` + `@Inject constructor`
+- **ViewModel** patří do `:shared/commonMain/presentation`, registruje se
+  v `di/koin/ViewModelModule.kt` a v Compose se získává přes `koinViewModel()`
+- **Platformní služba** (Firebase, ML Kit, WorkManager, GPS) = rozhraní
+  v `:shared/platform`, implementace v `:app`
 - **Repository interface** v `domain/`, implementace v `data/`
 - **DTO ≠ Domain model** — nikdy nevracet DTO do UI, vždy mapovat
 - **Room Entity ≠ Domain model** — vždy mapovat přes extension funkce
@@ -202,7 +214,7 @@ Pro zadávání vlastního data a času u logování jídla a příznaků:
 
 | Klíč | Umístění | Použití |
 |------|----------|---------|
-| `SUPABASE_URL` | `local.properties` + `BuildConfig` | Base URL pro Retrofit |
+| `SUPABASE_URL` | `local.properties` → `BuildConfig` → `AppConfig` | Base URL pro Ktor |
 | `SUPABASE_ANON_KEY` | `local.properties` + `BuildConfig` | Android — pouze čtení (RLS) |
 | `SUPABASE_SERVICE_KEY` | GitHub Actions Secrets **POUZE** | Import skript — plný přístup |
 
@@ -225,7 +237,7 @@ GitHub Actions — scripts/import_off.py
          ↓
 Supabase PostgreSQL — tabulka food_products
          ↓  REST API + RPC search_products()
-Android — SupabaseFoodApiService (Retrofit)
+Android — SupabaseFoodApi (Ktor, v :shared)
          ↓
 FoodRepositoryImpl → RecognizedFood
 ```
@@ -234,11 +246,11 @@ FoodRepositoryImpl → RecognizedFood
 
 | Soubor | Role |
 |--------|------|
-| `data/remote/food/SupabaseFoodApiService.kt` | Retrofit interface — barcode + search |
+| `shared/.../data/remote/food/SupabaseFoodApi.kt` | Ktor klient — barcode + search |
 | `data/remote/food/FoodDto.kt` | DTO: `SupabaseFoodProduct`, `SupabaseSearchResult`, `RecognizedFood` + mapper funkce |
 | `data/remote/food/FoodAllergenHelper.kt` | EU 14 alergenů + heuristika návrhu |
 | `data/repository/FoodRepositoryImpl.kt` | Integrace Supabase + lokalizace |
-| `di/NetworkModule.kt` | `@Named("supabase")` Retrofit instance |
+| `shared/.../data/remote/ApiFactory.kt` | Továrny na Ktor klienty (Ktor nejde do :app) |
 | `scripts/import_off.py` | Python import skript (mimo Android projekt) |
 | `.github/workflows/off_import.yml` | GitHub Actions cron |
 

@@ -3,7 +3,7 @@ package com.allergytrack.app.di.koin
 import com.allergytrack.shared.domain.analysis.CorrelationEngine
 import com.allergytrack.shared.domain.premium.PremiumHelper
 import com.allergytrack.shared.domain.usecase.CheckPremiumAccessUseCase
-import com.allergytrack.app.domain.usecase.RecognizeFoodFromImageUseCase
+import com.allergytrack.app.platform.RecognizeFoodFromImageUseCase
 import com.allergytrack.shared.domain.usecase.RecognizeFoodFromImage
 import com.allergytrack.shared.domain.usecase.SaveFoodLogUseCase
 import com.allergytrack.shared.domain.usecase.SaveSymptomLogUseCase
