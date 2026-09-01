@@ -536,6 +536,10 @@ SELECT pg_size_pretty(pg_database_size(current_database()));
 ✅ Nový kód doménové/datové/prezentační vrstvy patří do `:shared/commonMain`
 ✅ Parametrizované stringy vždy `%1$s`, nikdy `%s` — Compose Resources
    poziční tvar vyžadují a holý placeholder vypíšou doslova
+✅ Ve stringech pro Compose Resources žádné escapování po vzoru Android
+   resources — apostrof piš přímo (`'`, ne `\'`) a procento jako jedno `%`
+   (ne `%%`). Compose Resources je neunescapují a vypíšou doslova.
+   Kopie v `app/src/main/res/` naopak `%%` a `\'` vyžadují.
 ✅ API klíče pouze v local.properties + BuildConfig
 ✅ Debug kód vždy obaleno if (BuildConfig.DEBUG)
 ✅ Všechny hlavní obrazovky mají horizontální padding 16.dp

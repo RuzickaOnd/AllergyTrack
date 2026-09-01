@@ -98,21 +98,46 @@ Databáze i migrace žijí v `:shared` za `createAllergyDatabase()`.
 Resources neumí, takže klíče pro labely Activit a pro kód mimo Compose
 zůstaly i v `app/src/main/res/`. **Při změně textu je nutné upravit obě místa.**
 
-## Známé zděděné chyby — neopraveny záměrně
+## Zděděné chyby — opraveny
 
-Migrace zachovala chování beze změny. Tyto věci byly rozbité už před ní:
+Migrace sama chování nezměnila. Následující chyby byly rozbité už před ní
+a opraveny samostatně po jejím dokončení (commity `0c77cd8` a `1c198bd`):
 
-1. **Ošetření HTTP 503 je mrtvý kód.** `FoodRepositoryImpl.searchFoodByName()`
-   chytá `Exception` a vrací `emptyList()`, takže se výjimka nikdy nedostane
-   do `FoodLogViewModel`, kde se testuje status 503. `isServiceUnavailable`
-   se nikdy nenastaví.
-2. **Food sub-flow nesdílí instanci `FoodLogViewModel`** — každá obrazovka má
-   vlastní, stav se předává nav argumenty. CLAUDE.md tvrdil opak.
-3. **`AnalysisReadiness` a `AiSummaryService` mají natvrdo zadrátované české
-   texty** mimo resources (`AnalysisReadiness.kt:26`, `AiSummaryService.kt:90`).
-   `AnalysisReadiness` je v `commonMain`, takže tam ten český text šel s ním.
-4. **`AirQualityApi.getHourlyHistory()` je mrtvý kód** — nevolá se nikde
-   a nevolal se ani v Retrofit verzi.
+1. **Ošetření HTTP 503 bylo mrtvé.** Ktor má ve výchozím stavu
+   `expectSuccess = false`, takže chybové odpovědi vůbec nevyhazoval —
+   kód se je pokusil deserializovat a spadl na
+   `NoTransformationFoundException`, kde se status kód ztratil.
+   Opraveno: `createHttpClient` zapíná `expectSuccess`, `SupabaseFoodApi`
+   převádí `ResponseException` na `ApiHttpException` a
+   `FoodRepositoryImpl` ji propouští. Offline a timeout dál končí jako
+   „žádné výsledky". Pokryto 5 testy s Ktor MockEngine.
+2. **`AnalysisReadiness` nesl české texty.** Zrušeny `Locked.message`
+   a `Partial.disclaimer`, text skládá UI z `requiredCount`,
+   `remainingToFull` a `hasEnvironmentData`.
+3. **`AiSummaryService` byl celý česky** (23 literálů). Lokalizován
+   včetně promptu pro Gemini — instrukce o jazyce je samostatný klíč
+   `ai_prompt_language`, takže model odpovídá jazykem aplikace.
+4. **`AirQualityApi.getHourlyHistory()` byl mrtvý kód.** Smazán.
+   Zůstal po něm nepoužitý DTO `AirQualityHourly`; jeho odstranění
+   je samostatná drobnost.
+
+### Dvě regrese z fáze 7, odhalené až při těchto opravách
+
+Doslovný přesun stringů do Compose Resources přenesl i escapovací
+konvence Android resources, které Compose Resources neznají:
+
+- **`%%` se nekolabuje na `%`** — v UI se objevilo „100%% případů".
+  Opraveno v 7 stringech; tři z nich (`interpretation_food`,
+  `interpretation_environment`, `faq_a_correlation_percent`) byly
+  rozbité od okamžiku přesunu. Kopie v `res/` `%%` zachovávají,
+  tam ho Android formátování vyžaduje.
+- **`\'` se neunescapuje** — v UI se objevilo „don\'t". Opraveno
+  v 9 anglických stringech.
+
+**Ponaučení:** Compose Resources escapování Android resources nesdílejí.
+Nový string patří psát bez escapů (`'` přímo) a s pozičními parametry
+(`%1$s`), procento jako jedno `%`. Kompilátor ani testy to nezachytí —
+odhalí to jedině pohled na obrazovku.
 
 ## Neověřeno
 
