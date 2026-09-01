@@ -60,6 +60,12 @@ Celkem 16 216 LOC ve 119 souborech. 423 string resources ve 2 jazycích.
 - `java.util.UUID` v 6 souborech, `java.util.Calendar` ve 3, `TimeUnit` ve 2.
 - `BuildConfig.*` na 22 místech ve 12 souborech.
 - Projekt nemá testy (jen 2 vygenerované šablony) a je živý na Google Play (verze 1.0.3).
+- `CorrelationEngine.analyze()` přijímá Room `FoodLogEntity`/`SymptomLogEntity`/`EnvironmentLogEntity`,
+  ne doménové modely. **Nemůže tedy do `commonMain` dřív než entity (fáze 6).**
+- `FoodAllergenHelper` importuje `com.allergytrack.app.R` — `AllergenDefinition` nese `displayRes: Int`.
+  **Nemůže do `commonMain` dřív než stringy (fáze 7).**
+- 8 z 13 ViewModelů volá DAO přímo, mimo repository pattern. Migrace to nemění,
+  ale fáze 8 tím tvrdě závisí na fázi 6.
 
 ---
 
@@ -158,8 +164,11 @@ Kompilují se, nikdy se nespouštějí.
 | `R.string` / `androidx.compose.ui.res.stringResource` | **Compose Resources** `Res.string.*` | |
 | `@StringRes Int` | `StringResource` | |
 
-**Beze změny:** kotlinx.serialization, coroutines/StateFlow, všechny DTO,
-`FoodAllergenHelper`, `ui/theme`, Vico, Coil.
+**Beze změny:** kotlinx.serialization, coroutines/StateFlow, všechny DTO, `ui/theme`, Vico, Coil.
+
+`FoodAllergenHelper` beze změny **není** — `AllergenDefinition.displayRes: Int` a
+`keyToDisplayRes: Map<String, Int>` jsou odkazy na `R.string`. Přepíše se na
+`StringResource` ve fázi 7.
 
 ### 4.1 Volba SQLite driveru
 
@@ -180,8 +189,10 @@ Projekt nemá testy a je živý na Play. Tohle je největší riziko celé migra
 
 - Větev `feature/kmp-migration`
 - Charakterizační testy proti **současnému** kódu: `CorrelationEngine`,
-  `FoodAllergenHelper.suggestFromName()`, mappery ve `FoodDto`, `ChartDataMapper`.
-  Cca 10 testů. Později se přesunou do `commonTest` a musí dávat stejné výsledky.
+  `FoodAllergenHelper.suggestFromName()` a lokalizační mappery ve `FoodDto`.
+  Cca 25 testů. Později se přesunou do `commonTest` a musí dávat stejné výsledky.
+  `ChartDataMapper` testy nedostává — zůstává v `ui/screens/charts/` (`:app`)
+  po celou migraci, protože krmí Vico, a není tedy vystavený riziku přesunu.
 - Stáhnout zálohu reálné databáze ze zařízení (pro ověření ve fázi 6)
 - Zaznamenat baseline smoke průchod (§7)
 - Úklid rootu: `temp_classes/`, `temp_classes.jar`, `temp_classes_m3.jar`, `.DS_Store`
@@ -216,15 +227,18 @@ Jediná změna: `java.util.UUID` → `kotlin.uuid.Uuid` (6 souborů).
 
 **Hotovo když:** iOS target kompiluje, appka běží, testy zelené.
 
-### Fáze 4 — Use cases, `CorrelationEngine`, `PremiumHelper`, `AppConfig` *(~1 den)*
+### Fáze 4 — Use cases, `PremiumHelper`, `AppConfig` *(~1 den)*
 
-- `TimeUnit` → kotlinx-datetime
 - 22 výskytů `BuildConfig.*` → `AppConfig` data class předaná z `:app` přes Koin
 - `PremiumHelper`: `BuildConfig.DEBUG` → `isDebugBuild` z `platform/`
 - `MedicalReportExporter` se rozdělí: interface do `shared`, implementace v `:app`
-- Charakterizační testy z fáze 0 → `commonTest`, očekávané hodnoty se nemění
+- 4 use case: `SaveFoodLogUseCase`, `SaveSymptomLogUseCase`, `SearchFoodUseCase`,
+  `CheckPremiumAccessUseCase` (`RecognizeFoodFromImageUseCase` zůstává v `:app`)
 
-**Hotovo když:** `commonTest` běží pro JVM i iOS a dává identické výsledky jako ve fázi 0.
+`CorrelationEngine` **zde nejde** — přijímá Room entity, přesouvá se až ve fázi 6.
+`FoodAllergenHelper` **zde nejde** — odkazuje na `R.string`, přesouvá se až ve fázi 7.
+
+**Hotovo když:** `commonTest` běží pro JVM i iOS; aplikace funguje beze změny chování.
 
 ### Fáze 5 — Síť: Retrofit → Ktor *(~1–2 dny)*
 
@@ -247,6 +261,10 @@ ošetření chyby 503 ověřeno (např. dočasnou změnou URL na neplatnou).
 - DataStore: 3 soubory, `expect fun dataStorePath(name)`
 - `FoodRepositoryImpl`, `SymptomRepositoryImpl`, `EnvironmentRepositoryImpl` → `commonMain`
   (`java.util.Calendar` → kotlinx-datetime)
+- `CorrelationEngine` → `commonMain` (až teď, protože přijímá Room entity;
+  `TimeUnit` → kotlinx-datetime)
+- Charakterizační testy `CorrelationEngine` z fáze 0 → `commonTest`,
+  očekávané hodnoty se nesmí změnit
 
 **Hotovo když:** aplikace nainstalovaná přes existující build otevře zálohovanou DB
 a všechna data jsou viditelná v Dashboardu i Grafech.
@@ -257,6 +275,9 @@ a všechna data jsou viditelná v Dashboardu i Grafech.
 - 425 volání v UI: `androidx.compose.ui.res.stringResource` →
   `org.jetbrains.compose.resources.stringResource`, `R.string.x` → `Res.string.x`.
   Většina mechanická, `StringResExt.kt` (123 LOC) ručně.
+- `FoodAllergenHelper` → `commonMain`: `AllergenDefinition.displayRes: Int` →
+  `StringResource`, totéž `keyToDisplayRes`. Teprve teď je soubor platformně čistý.
+- Charakterizační testy `suggestFromName()` z fáze 0 → `commonTest`
 
 **Hotovo když:** přepínání jazyka přes `AppLocaleHelper` funguje pro češtinu i angličtinu,
 včetně plurálů.
