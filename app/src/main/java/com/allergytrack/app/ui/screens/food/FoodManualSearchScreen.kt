@@ -42,7 +42,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.R
@@ -55,7 +55,7 @@ import com.allergytrack.app.ui.theme.MonoFontFamily
 fun FoodManualSearchScreen(
     navController: NavController,
     initialQuery: String = "",
-    viewModel: FoodLogViewModel = hiltViewModel()
+    viewModel: FoodLogViewModel = koinViewModel()
 ) {
     val searchState by viewModel.searchState.collectAsStateWithLifecycle()
     val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()

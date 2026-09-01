@@ -3,17 +3,13 @@ package com.allergytrack.app.data.analytics
 import android.content.Context
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Manažer pro správu a odesílání analytických událostí do Firebase Analytics.
  * Inicializace probíhá efektivně (lazy inicializace na pozadí), aby se neblokovalo hlavní vlákno při startu aplikace.
  */
-@Singleton
-class AnalyticsManager @Inject constructor(
-    @ApplicationContext private val context: Context
+class AnalyticsManager constructor(
+    private val context: Context
 ) {
 
     // Lazy inicializace Firebase Analytics - zabrání zbytečnému I/O čtení na hlavním vlákně při startu

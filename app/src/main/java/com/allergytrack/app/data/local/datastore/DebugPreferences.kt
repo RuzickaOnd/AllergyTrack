@@ -8,11 +8,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
 private val Context.debugDataStore: DataStore<Preferences>
     by preferencesDataStore(name = "debug_preferences")
@@ -24,9 +21,8 @@ private val Context.debugDataStore: DataStore<Preferences>
  * Používá se POUZE v BuildConfig.DEBUG buildu.
  * V release buildu jsou tyto hodnoty ignorovány (viz PremiumHelper).
  */
-@Singleton
-class DebugPreferences @Inject constructor(
-    @ApplicationContext private val context: Context
+class DebugPreferences constructor(
+    private val context: Context
 ) {
     companion object {
         private val KEY_PREMIUM_OVERRIDE = stringPreferencesKey("debug_premium_override")

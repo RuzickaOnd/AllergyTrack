@@ -11,11 +11,9 @@ import com.allergytrack.app.domain.repository.FoodRepository
 import com.allergytrack.app.domain.usecase.RecognizeFoodFromImageUseCase
 import com.allergytrack.app.domain.usecase.SaveFoodLogUseCase
 import com.allergytrack.app.domain.usecase.SearchFoodUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import com.allergytrack.app.data.analytics.AnalyticsManager
 
 // ---- UI State ----
@@ -44,8 +42,7 @@ data class FoodSearchState(
 
 // ---- ViewModel ----
 
-@HiltViewModel
-class FoodLogViewModel @Inject constructor(
+class FoodLogViewModel constructor(
     private val saveFoodLogUseCase: SaveFoodLogUseCase,
     private val searchFoodUseCase: SearchFoodUseCase,
     private val recognizeFoodFromImageUseCase: RecognizeFoodFromImageUseCase,

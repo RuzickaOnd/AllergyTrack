@@ -11,10 +11,8 @@ import com.allergytrack.app.domain.model.isEurope
 import com.allergytrack.app.domain.repository.EnvironmentRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
-class EnvironmentRepositoryImpl @Inject constructor(
+class EnvironmentRepositoryImpl constructor(
     private val environmentLogDao: EnvironmentLogDao,
     private val airQualityApi: AirQualityApiService,
     private val locationProvider: LocationProvider

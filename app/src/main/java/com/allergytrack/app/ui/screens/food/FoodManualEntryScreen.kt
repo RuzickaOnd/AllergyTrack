@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.R
@@ -30,7 +30,7 @@ import com.allergytrack.app.ui.theme.MonoFontFamily
 fun FoodManualEntryScreen(
     navController: NavController,
     initialName: String,
-    viewModel: FoodLogViewModel = hiltViewModel()
+    viewModel: FoodLogViewModel = koinViewModel()
 ) {
     var name by remember { mutableStateOf(initialName) }
     var selectedAllergens by remember { mutableStateOf<Set<String>>(emptySet()) }

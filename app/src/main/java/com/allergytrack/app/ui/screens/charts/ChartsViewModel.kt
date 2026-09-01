@@ -9,10 +9,8 @@ import com.allergytrack.app.data.local.database.dao.SymptomLogDao
 import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.domain.model.SymptomType
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import com.allergytrack.app.data.analytics.AnalyticsManager
 
 enum class TimeRange(val days: Int, @StringRes val labelRes: Int) {
@@ -31,8 +29,7 @@ data class ChartsUiState(
     val avgDailyIntensity: Float = 0f
 )
 
-@HiltViewModel
-class ChartsViewModel @Inject constructor(
+class ChartsViewModel constructor(
     private val symptomLogDao: SymptomLogDao,
     private val environmentLogDao: EnvironmentLogDao,
     private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper,

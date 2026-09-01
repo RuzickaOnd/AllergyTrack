@@ -6,13 +6,10 @@ import com.google.mlkit.vision.label.ImageLabel
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import kotlinx.coroutines.suspendCancellableCoroutine
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-@Singleton
-class FoodImageRecognizer @Inject constructor() {
+class FoodImageRecognizer {
 
     suspend fun recognize(imageBytes: ByteArray): List<ImageLabel> {
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)

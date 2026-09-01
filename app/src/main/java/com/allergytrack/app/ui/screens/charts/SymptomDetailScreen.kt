@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.allergytrack.app.R
 import com.allergytrack.app.ui.components.AppCard
@@ -33,7 +33,7 @@ import com.allergytrack.app.ui.util.labelRes
 @Composable
 fun SymptomDetailScreen(
     onBack: () -> Unit,
-    viewModel: SymptomDetailViewModel = hiltViewModel()
+    viewModel: SymptomDetailViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val canUseExtendedCharts by viewModel.canUseExtendedCharts.collectAsStateWithLifecycle()

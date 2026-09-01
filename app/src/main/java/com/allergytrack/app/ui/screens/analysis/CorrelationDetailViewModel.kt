@@ -11,22 +11,19 @@ import com.allergytrack.app.domain.analysis.CorrelationEngine
 import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.domain.model.TriggerType
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class CorrelationDetailUiState(
     val correlation: Correlation? = null,
     val isLoading: Boolean = true
 )
 
-@HiltViewModel
-class CorrelationDetailViewModel @Inject constructor(
+class CorrelationDetailViewModel constructor(
     savedStateHandle: SavedStateHandle,
     private val symptomLogDao: SymptomLogDao,
     private val foodLogDao: FoodLogDao,

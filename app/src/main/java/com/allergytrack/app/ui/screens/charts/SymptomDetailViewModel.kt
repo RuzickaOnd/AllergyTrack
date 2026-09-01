@@ -7,10 +7,8 @@ import com.allergytrack.app.data.local.database.dao.SymptomLogDao
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.domain.premium.PremiumHelper
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 data class SymptomTypeStat(
     val type: SymptomType,
@@ -27,8 +25,7 @@ data class SymptomDetailUiState(
     val maxCount: Int = 0
 )
 
-@HiltViewModel
-class SymptomDetailViewModel @Inject constructor(
+class SymptomDetailViewModel constructor(
     private val symptomLogDao: SymptomLogDao,
     private val premiumHelper: PremiumHelper,
     savedStateHandle: SavedStateHandle

@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.navigation.NavController
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
@@ -27,7 +27,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 @Composable
 fun DebugMenuScreen(
     navController: NavController,
-    viewModel: DebugMenuViewModel = hiltViewModel()
+    viewModel: DebugMenuViewModel = koinViewModel()
 ) {
     val premiumOverride by viewModel.premiumOverride.collectAsState()
     val currentMode = viewModel.currentVisibilityMode

@@ -6,15 +6,12 @@ import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.domain.premium.PremiumHelper
 import com.allergytrack.app.data.analytics.AnalyticsManager
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class ProfileViewModel @Inject constructor(
+class ProfileViewModel constructor(
     private val userPreferencesDataStore: UserPreferencesDataStore,
     private val premiumHelper: PremiumHelper,
     private val analyticsManager: AnalyticsManager

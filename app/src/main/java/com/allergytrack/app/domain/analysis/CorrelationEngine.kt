@@ -13,10 +13,9 @@ import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.domain.model.TriggerType
 import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlin.math.sqrt
 
-class CorrelationEngine @Inject constructor(
+class CorrelationEngine constructor(
     private val json: Json
 ) {
     // ─── Konstanty pro potravinovou korelaci ──────────────────────────────────────

@@ -13,17 +13,13 @@ import com.allergytrack.app.MainActivity
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.google.firebase.messaging.FirebaseMessaging
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.firstOrNull
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Centrální manažer pro správu, konfiguraci a zobrazování notifikací (lokálních i FCM push notifikací).
  */
-@Singleton
-class NotificationManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+class NotificationManager constructor(
+    private val context: Context,
     private val userPreferences: UserPreferencesDataStore
 ) {
 

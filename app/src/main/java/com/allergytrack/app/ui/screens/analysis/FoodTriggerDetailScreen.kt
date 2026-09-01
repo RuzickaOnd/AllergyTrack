@@ -20,7 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.allergytrack.app.R
@@ -41,7 +41,7 @@ import java.util.*
 @Composable
 fun FoodTriggerDetailScreenRoot(
     onBack: () -> Unit,
-    viewModel: FoodTriggerDetailViewModel = hiltViewModel()
+    viewModel: FoodTriggerDetailViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

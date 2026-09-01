@@ -5,15 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.analytics.AnalyticsManager
 import com.allergytrack.app.domain.model.PremiumStatus
 import com.allergytrack.app.domain.premium.PremiumHelper
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class PremiumViewModel @Inject constructor(
+class PremiumViewModel constructor(
     private val premiumHelper: PremiumHelper,
     private val analyticsManager: AnalyticsManager
 ) : ViewModel() {

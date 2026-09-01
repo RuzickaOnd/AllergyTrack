@@ -5,17 +5,13 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Centrální správce runtime oprávnění aplikace.
  * Zjišťuje aktuální stav — request provádí UI vrstva přes Compose launcher.
  */
-@Singleton
-class PermissionsHelper @Inject constructor(
-    @ApplicationContext private val context: Context
+class PermissionsHelper constructor(
+    private val context: Context
 ) {
     /** Je uděleno oprávnění k přibližné GPS poloze? */
     fun hasLocationPermission(): Boolean =

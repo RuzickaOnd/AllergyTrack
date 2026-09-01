@@ -10,13 +10,11 @@ import com.allergytrack.app.domain.model.OnboardingStep
 import com.allergytrack.app.domain.model.SymptomTypeOnboarding
 import com.allergytrack.app.domain.premium.PremiumHelper
 import com.allergytrack.app.domain.model.PremiumFeature
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import com.allergytrack.app.data.analytics.AnalyticsManager
 import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.worker.WorkManagerScheduler
@@ -35,8 +33,7 @@ data class OnboardingUiState(
     val isCameraPermissionVisible: Boolean = false
 )
 
-@HiltViewModel
-class OnboardingViewModel @Inject constructor(
+class OnboardingViewModel constructor(
     private val onboardingDataStore: OnboardingDataStore,
     private val permissionsHelper: PermissionsHelper,
     private val premiumHelper: PremiumHelper,

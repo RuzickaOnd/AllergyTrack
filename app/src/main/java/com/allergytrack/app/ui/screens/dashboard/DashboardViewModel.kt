@@ -18,12 +18,10 @@ import com.allergytrack.app.domain.repository.EnvironmentRepository
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.domain.premium.PremiumHelper
 import com.allergytrack.app.data.analytics.AnalyticsManager
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.inject.Inject
 
 sealed interface DashboardInsight {
     data class HighPollen(val maxLevel: Int) : DashboardInsight
@@ -53,8 +51,7 @@ data class DashboardUiState(
     val error: String? = null
 )
 
-@HiltViewModel
-class DashboardViewModel @Inject constructor(
+class DashboardViewModel constructor(
     private val foodLogDao: FoodLogDao,
     private val symptomLogDao: SymptomLogDao,
     private val environmentRepository: EnvironmentRepository,

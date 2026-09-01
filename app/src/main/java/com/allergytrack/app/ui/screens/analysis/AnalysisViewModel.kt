@@ -19,11 +19,9 @@ import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.FoodTrigger
 import com.allergytrack.app.domain.premium.PremiumHelper
 import com.allergytrack.app.data.analytics.AnalyticsManager
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
-import javax.inject.Inject
 
 data class AnalysisUiState(
     val isLoading: Boolean = true,
@@ -39,8 +37,7 @@ data class AnalysisUiState(
     val exportedFile: File? = null
 )
 
-@HiltViewModel
-class AnalysisViewModel @Inject constructor(
+class AnalysisViewModel constructor(
     private val symptomLogDao: SymptomLogDao,
     private val foodLogDao: FoodLogDao,
     private val environmentLogDao: EnvironmentLogDao,

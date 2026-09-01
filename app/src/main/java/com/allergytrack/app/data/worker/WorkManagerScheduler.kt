@@ -2,15 +2,11 @@ package com.allergytrack.app.data.worker
 
 import android.content.Context
 import androidx.work.*
-import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class WorkManagerScheduler @Inject constructor(
-    @ApplicationContext private val context: Context
+class WorkManagerScheduler constructor(
+    private val context: Context
 ) {
     fun scheduleEnvironmentTracking() {
         val constraints = Constraints.Builder()

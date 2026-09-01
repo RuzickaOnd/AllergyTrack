@@ -17,9 +17,8 @@ import kotlinx.serialization.json.Json
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
-import javax.inject.Inject
 
-class FoodRepositoryImpl @Inject constructor(
+class FoodRepositoryImpl constructor(
     private val foodLogDao: FoodLogDao,
     private val supabaseFoodApi: SupabaseFoodApiService,   // ← Supabase místo OFF
     private val json: Json,

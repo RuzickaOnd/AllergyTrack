@@ -6,10 +6,8 @@ import com.allergytrack.app.domain.model.SymptomLog
 import com.allergytrack.app.domain.model.SymptomType
 import com.allergytrack.app.domain.usecase.SaveSymptomLogUseCase
 import com.allergytrack.app.data.analytics.AnalyticsManager
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class SymptomLogUiState(
     val selectedType: SymptomType? = null,
@@ -22,8 +20,7 @@ data class SymptomLogUiState(
     val error: String? = null
 )
 
-@HiltViewModel
-class SymptomLogViewModel @Inject constructor(
+class SymptomLogViewModel constructor(
     private val saveSymptomLogUseCase: SaveSymptomLogUseCase,
     private val analyticsManager: AnalyticsManager
 ) : ViewModel() {

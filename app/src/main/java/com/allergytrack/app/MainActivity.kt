@@ -16,18 +16,16 @@ import com.allergytrack.app.ui.navigation.MainAppScaffold
 import com.allergytrack.app.ui.onboarding.OnboardingFlow
 import com.allergytrack.app.ui.theme.AllergyTrackTheme
 import com.allergytrack.app.ui.util.AppLocaleHelper
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject lateinit var workManagerScheduler: WorkManagerScheduler
-    @Inject lateinit var onboardingDataStore: OnboardingDataStore
-    @Inject lateinit var userPreferencesDataStore: UserPreferencesDataStore
-    @Inject lateinit var appUpdateRepository: com.allergytrack.app.domain.repository.AppUpdateRepository
+    private val workManagerScheduler: WorkManagerScheduler by inject()
+    private val onboardingDataStore: OnboardingDataStore by inject()
+    private val userPreferencesDataStore: UserPreferencesDataStore by inject()
+    private val appUpdateRepository: com.allergytrack.app.domain.repository.AppUpdateRepository by inject()
 
     private lateinit var appUpdateHelper: com.allergytrack.app.ui.util.AppUpdateHelper
 

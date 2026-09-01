@@ -9,7 +9,6 @@ import com.allergytrack.app.data.local.datastore.OnboardingDataStore
 import com.allergytrack.app.domain.analysis.CorrelationEngine
 import com.allergytrack.app.domain.model.FoodReactionEvent
 import com.allergytrack.app.domain.model.FoodTrigger
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 data class FoodTriggerDetailUiState(
     val trigger: FoodTrigger? = null,
@@ -26,8 +24,7 @@ data class FoodTriggerDetailUiState(
     val isLoading: Boolean = true
 )
 
-@HiltViewModel
-class FoodTriggerDetailViewModel @Inject constructor(
+class FoodTriggerDetailViewModel constructor(
     savedStateHandle: SavedStateHandle,
     private val foodLogDao: FoodLogDao,
     private val symptomLogDao: SymptomLogDao,

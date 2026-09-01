@@ -23,7 +23,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -42,15 +42,15 @@ fun MainAppScaffold(appUpdateRepository: com.allergytrack.app.domain.repository.
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val dashboardViewModel: DashboardViewModel = hiltViewModel()
+    val dashboardViewModel: DashboardViewModel = koinViewModel()
     val dashboardState by dashboardViewModel.uiState.collectAsStateWithLifecycle()
 
-    val analysisViewModel: AnalysisViewModel = hiltViewModel()
+    val analysisViewModel: AnalysisViewModel = koinViewModel()
     val analysisState by analysisViewModel.uiState.collectAsStateWithLifecycle()
     val isExportVisible by analysisViewModel.isExportVisible.collectAsStateWithLifecycle()
     val showExportUpsell by analysisViewModel.showExportUpsell.collectAsStateWithLifecycle()
 
-    val debugViewModel: DebugMenuViewModel = hiltViewModel()
+    val debugViewModel: DebugMenuViewModel = koinViewModel()
 
     // Unifikované zpracování exportu (funguje pro TopBar i AnalysisScreen)
     AnalysisExportHandler(viewModel = analysisViewModel)

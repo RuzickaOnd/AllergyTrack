@@ -13,7 +13,6 @@ import com.allergytrack.app.R
 import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.FoodTrigger
 import com.allergytrack.app.ui.util.labelRes
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -21,10 +20,9 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import javax.inject.Inject
 
-class MedicalReportExporter @Inject constructor(
-    @ApplicationContext private val context: Context
+class MedicalReportExporter constructor(
+    private val context: Context
 ) {
     suspend fun generatePdfReport(
         correlations: List<Correlation>,

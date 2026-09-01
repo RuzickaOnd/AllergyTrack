@@ -3,21 +3,18 @@ package com.allergytrack.app.data.notifications
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 /**
  * Služba na pozadí, která přijímá zprávy a tokeny z Firebase Cloud Messaging (FCM).
  */
-@AndroidEntryPoint
 class AppFirebaseMessagingService : FirebaseMessagingService() {
 
-    @Inject
-    lateinit var notificationManager: NotificationManager
+    private val notificationManager: NotificationManager by inject()
 
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)

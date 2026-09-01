@@ -11,13 +11,10 @@ import com.revenuecat.purchases.interfaces.UpdatedCustomerInfoListener
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-@Singleton
-class PremiumRepositoryImpl @Inject constructor() : PremiumRepository {
+class PremiumRepositoryImpl : PremiumRepository {
 
     private val ENTITLEMENT_ID = "AllergyTrack Premium"
 

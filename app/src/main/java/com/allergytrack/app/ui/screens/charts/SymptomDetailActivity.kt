@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.allergytrack.app.ui.theme.AllergyTrackTheme
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class SymptomDetailActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

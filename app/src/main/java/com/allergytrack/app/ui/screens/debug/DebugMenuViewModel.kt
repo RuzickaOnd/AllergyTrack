@@ -18,7 +18,6 @@ import com.allergytrack.app.domain.premium.PremiumHelper
 import com.allergytrack.app.domain.repository.EnvironmentRepository
 import com.allergytrack.app.domain.repository.FoodRepository
 import com.allergytrack.app.domain.repository.SymptomRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,10 +25,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import javax.inject.Inject
 
-@HiltViewModel
-class DebugMenuViewModel @Inject constructor(
+class DebugMenuViewModel constructor(
     private val debugPreferences: DebugPreferences,
     private val onboardingDataStore: OnboardingDataStore,
     private val foodRepository: FoodRepository,

@@ -7,18 +7,14 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
 private val Context.userPreferencesDataStore: DataStore<Preferences>
     by preferencesDataStore(name = "user_preferences")
 
-@Singleton
-class UserPreferencesDataStore @Inject constructor(
-    @ApplicationContext private val context: Context
+class UserPreferencesDataStore constructor(
+    private val context: Context
 ) {
     companion object {
         private val KEY_FOOD_LANGUAGE = stringPreferencesKey("food_search_language")

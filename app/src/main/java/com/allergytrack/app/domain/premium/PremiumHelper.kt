@@ -12,11 +12,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class PremiumHelper @Inject constructor(
+class PremiumHelper constructor(
     private val premiumRepository: PremiumRepository,
     private val debugPreferences: DebugPreferences
 ) {

@@ -2,7 +2,6 @@ package com.allergytrack.app.ui.screens.settings
 
 import android.content.Context
 import android.os.Build
-import dagger.hilt.android.qualifiers.ApplicationContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
@@ -20,7 +19,6 @@ import com.allergytrack.app.ui.util.AppLocaleHelper
 import com.allergytrack.app.domain.premium.PremiumHelper
 import com.allergytrack.app.domain.model.PremiumFeature
 import com.allergytrack.app.data.notifications.NotificationManager
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +28,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
-import javax.inject.Inject
 
 data class FoodLanguageOption(val code: String, val nativeName: String)
 
@@ -50,9 +47,8 @@ val FOOD_LANGUAGE_OPTIONS = listOf(
     FoodLanguageOption("ro", "Română")
 )
 
-@HiltViewModel
-class SettingsViewModel @Inject constructor(
-    @ApplicationContext private val appContext: Context,
+class SettingsViewModel constructor(
+    private val appContext: Context,
     private val permissionsHelper: PermissionsHelper,
     private val userPreferencesDataStore: UserPreferencesDataStore,
     private val workManagerScheduler: WorkManagerScheduler,

@@ -10,9 +10,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.Calendar
-import javax.inject.Inject
 
-class SymptomRepositoryImpl @Inject constructor(
+class SymptomRepositoryImpl constructor(
     private val symptomLogDao: SymptomLogDao,
     private val json: Json
 ) : SymptomRepository {

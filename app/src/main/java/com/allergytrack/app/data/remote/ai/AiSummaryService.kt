@@ -6,9 +6,6 @@ import com.allergytrack.app.domain.model.Correlation
 import com.allergytrack.app.domain.model.CorrelationSeverity
 import com.allergytrack.app.domain.model.TriggerType
 import com.allergytrack.app.ui.util.labelRes
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
 import com.google.mlkit.genai.prompt.Generation
 import com.google.mlkit.genai.prompt.GenerativeModel
@@ -19,9 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import android.util.Log
 
-@Singleton
-class AiSummaryService @Inject constructor(
-    @ApplicationContext private val context: Context
+class AiSummaryService constructor(
+    private val context: Context
 ) {
 
     private val generativeModel: GenerativeModel by lazy {

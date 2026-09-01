@@ -21,14 +21,11 @@ import com.revenuecat.purchases.ui.revenuecatui.Paywall
 import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
 import com.revenuecat.purchases.ui.revenuecatui.PaywallOptions
 import com.revenuecat.purchases.ui.revenuecatui.customercenter.CustomerCenter
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class PremiumActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var analyticsManager: AnalyticsManager
+    private val analyticsManager: AnalyticsManager by inject()
 
     private val viewModel: PremiumViewModel by viewModels()
 
