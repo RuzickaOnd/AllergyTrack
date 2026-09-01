@@ -3,6 +3,7 @@ package com.allergytrack.app.di.koin
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.work.WorkerParameters
+import io.ktor.client.HttpClient
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.module
@@ -27,6 +28,7 @@ import org.koin.test.verify.verify
  *   WorkerParameters  — z WorkerFactory
  *   String, Boolean   — konstruktor AppConfig bere literály z lambdy;
  *                       verify() čte konstruktor reflexí a lambdu nevidí
+ *   HttpClient        — vzniká uvnitř továren v :shared, ne jako definice
  */
 @OptIn(KoinExperimentalAPI::class)
 class KoinModuleGraphTest {
@@ -52,7 +54,8 @@ class KoinModuleGraphTest {
                 SavedStateHandle::class,
                 WorkerParameters::class,
                 String::class,
-                Boolean::class
+                Boolean::class,
+                HttpClient::class
             )
         )
     }

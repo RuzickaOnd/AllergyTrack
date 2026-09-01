@@ -3,8 +3,8 @@ package com.allergytrack.app.data.repository
 import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
 import com.allergytrack.app.data.local.database.entity.EnvironmentLogEntity
 import com.allergytrack.app.data.location.LocationProvider
-import com.allergytrack.app.data.remote.airquality.AirQualityApiService
-import com.allergytrack.app.data.remote.airquality.toPollenIndex
+import com.allergytrack.shared.data.remote.airquality.AirQualityApi
+import com.allergytrack.shared.data.remote.airquality.toPollenIndex
 import com.allergytrack.shared.domain.model.EnvironmentLog
 import com.allergytrack.shared.domain.model.EnvironmentRegion
 import com.allergytrack.shared.domain.model.isEurope
@@ -17,7 +17,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 class EnvironmentRepositoryImpl(
     private val environmentLogDao: EnvironmentLogDao,
-    private val airQualityApi: AirQualityApiService,
+    private val airQualityApi: AirQualityApi,
     private val locationProvider: LocationProvider
 ) : EnvironmentRepository {
 

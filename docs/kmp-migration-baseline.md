@@ -162,3 +162,64 @@ apksigner sign --ks ~/.android/debug.keystore --ks-pass pass:android \
 **KoinModuleGraphTest.** Graf závislostí hlídá unit test s Koin `verify()`.
 Při každé změně Koin modulů musí seznam v testu zůstat shodný se seznamem
 v `AllergyTrackApplication.startKoin`.
+
+---
+
+## Fáze 5 — Retrofit → Ktor
+
+### Ktor 3.2.0 nelze použít s minSdk < 35
+
+Build selže při dexování s chybou:
+
+```
+D8: Space characters in SimpleName 'use streaming syntax' are not allowed
+prior to DEX version 040 (field name `use streaming syntax`
+on class io.ktor.client.plugins.Messages)
+```
+
+Ktor 3.2.0 má pole pojmenované přes backticky s mezerami. DEX to povoluje
+až od verze 040, což odpovídá API 35+. Projekt má `minSdk = 26`.
+
+**Projekt je tím omezen na Ktor 3.1.x**, dokud se buď nezvýší minSdk,
+nebo to Ktor neopraví. Použitá verze: **3.1.3**.
+
+### Hranice modulu: Ktor zůstává uvnitř :shared
+
+`:app` nemá Ktor v produkčních závislostech. Klienti se vytvářejí
+továrnami `createAirQualityApi()` a `createSupabaseFoodApi()`
+v `shared/data/remote/ApiFactory.kt`, takže do DI v `:app` se
+žádný Ktor typ nedostane.
+
+První pokus přidat `implementation(libs.ktor.client.core)` do `:app`
+kvůli jednomu nedosažitelnému catch bloku vedl přesně na chybu dexování
+popsanou výše. Místo toho vznikl v `:shared` typ `ApiHttpException`,
+který platformní vrstvě umožní reagovat na HTTP stavy bez Ktoru
+na classpath.
+
+`testImplementation(libs.ktor.client.core)` v `:app` zůstává — testy
+běží na JVM, do APK nejdou, a `KoinModuleGraphTest` potřebuje vidět
+typ `HttpClient`.
+
+### Co bylo ověřeno
+
+- [x] **Supabase přes Ktor** — vyhledávání „jogurt" vrátilo výsledky
+      s českými názvy a alergenovými odznaky. Prokazuje funkční Ktor
+      klient, hlavičky `apikey`/`Authorization`, RPC endpoint
+      `search_products` i lokalizační mappery.
+- [x] **Open-Meteo kontrakt** — přímé volání URL, jaké staví
+      `AirQualityApi`, vrací pole přesně odpovídající `AirQualityDto`
+      (`european_aqi`, `pm2_5`, `pm10`, `nitrogen_dioxide`, `ozone`
+      + pylová pole).
+- [x] Analýza vrací shodnou hodnotu Milk → Eczema 100 % (8/8)
+- [x] iOS targety kompilují, `:shared:allTests` zelené
+
+### Co ověřeno NEBYLO
+
+**Celý řetězec EnvironmentWorker → Open-Meteo → databáze na zařízení.**
+Worker je periodický (30 min) a nepodařilo se ho vynutit — JobScheduler
+joby aplikace nevidí a Debug menu umí jen vygenerovat falešná data,
+živý fetch nespouští. Ověřen tedy transport (přes Supabase) a kontrakt
+(přímým voláním), ne však jejich spojení za běhu.
+
+`AirQualityApi.getHourlyHistory()` je mrtvý kód — nevolá se nikde
+a nevolal se ani v Retrofit verzi. Přenesen beze změny.

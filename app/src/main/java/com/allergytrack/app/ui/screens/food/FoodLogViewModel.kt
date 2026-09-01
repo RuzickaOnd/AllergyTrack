@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.remote.food.FoodAllergenHelper
 import com.allergytrack.shared.data.remote.food.RecognizedFood
 import com.allergytrack.shared.domain.model.FoodLog
-import retrofit2.HttpException
+import com.allergytrack.shared.data.remote.ApiHttpException
 import com.allergytrack.shared.domain.repository.FoodRepository
 import com.allergytrack.app.domain.usecase.RecognizeFoodFromImageUseCase
 import com.allergytrack.shared.domain.usecase.SaveFoodLogUseCase
@@ -151,9 +151,20 @@ class FoodLogViewModel(
                     val results = searchFoodUseCase(query)
                     emit(results)
                     _searchState.update { it.copy(isSearching = false, results = results) }
-                } catch (e: HttpException) {
+                } catch (e: ApiHttpException) {
+                    // POZOR: tento blok je nedosažitelný — FoodRepositoryImpl
+                    // .searchFoodByName() chytá Exception a vrací emptyList(),
+                    // takže sem výjimka nikdy nedoteče a isServiceUnavailable
+                    // se nikdy nenastaví. Platilo to i před KMP migrací
+                    // (tehdy s retrofit2.HttpException). Zachováno záměrně,
+                    // aby migrace nezměnila chování — oprava je samostatná změna.
+                    // ApiHttpException je typ z :shared; díky němu nepotřebuje
+                    // :app mít na classpath Ktor.
                     _searchState.update {
-                        it.copy(isSearching = false, isServiceUnavailable = e.code() == 503)
+                        it.copy(
+                            isSearching = false,
+                            isServiceUnavailable = e.statusCode == 503
+                        )
                     }
                     emit(emptyList())
                 }

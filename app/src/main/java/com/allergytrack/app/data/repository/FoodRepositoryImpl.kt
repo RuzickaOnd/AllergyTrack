@@ -4,7 +4,7 @@ import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
 import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.local.recognition.FoodImageRecognizer
-import com.allergytrack.app.data.remote.food.SupabaseFoodApiService
+import com.allergytrack.shared.data.remote.food.SupabaseFoodApi
 import com.allergytrack.shared.data.remote.food.RecognizedFood
 import com.allergytrack.shared.data.remote.food.toRecognizedFood
 import com.allergytrack.shared.data.remote.food.toRecognizedFood
@@ -23,7 +23,7 @@ import java.util.Locale
 @OptIn(ExperimentalUuidApi::class)
 class FoodRepositoryImpl(
     private val foodLogDao: FoodLogDao,
-    private val supabaseFoodApi: SupabaseFoodApiService,   // ← Supabase místo OFF
+    private val supabaseFoodApi: SupabaseFoodApi,   // ← Supabase místo OFF
     private val json: Json,
     private val foodImageRecognizer: FoodImageRecognizer,
     private val userPreferencesDataStore: UserPreferencesDataStore
@@ -110,7 +110,7 @@ class FoodRepositoryImpl(
         return try {
             val (lc, _) = resolvedLocale()
             supabaseFoodApi
-                .getProductByBarcode(barcodeFilter = "eq.$barcode")
+                .getProductByBarcode(barcode = barcode)
                 .firstOrNull()
                 ?.toRecognizedFood(languageCode = lc)
         } catch (e: Exception) {

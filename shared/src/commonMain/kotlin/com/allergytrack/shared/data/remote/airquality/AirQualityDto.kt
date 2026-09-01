@@ -1,4 +1,4 @@
-package com.allergytrack.app.data.remote.airquality
+package com.allergytrack.shared.data.remote.airquality
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

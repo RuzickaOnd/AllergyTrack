@@ -91,10 +91,6 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
-    implementation(libs.retrofit.core)
-    implementation(libs.retrofit.kotlinx.serialization)
-    implementation(libs.okhttp.core)
-    implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.work.runtime.ktx)
@@ -139,6 +135,10 @@ dependencies {
     testImplementation(libs.testing.coroutines)
     testImplementation(platform(libs.koin.bom))
     testImplementation(libs.koin.test)
+    // Jen pro KoinModuleGraphTest — verify() čte konstruktory reflexí
+    // a potřebuje vidět typ HttpClient. Testy běží na JVM, do APK to nejde,
+    // takže se to netýká dexování (Ktor 3.2+ tam má problém, viz níže).
+    testImplementation(libs.ktor.client.core)
     androidTestImplementation(libs.testing.androidx.junit)
     androidTestImplementation(libs.testing.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
