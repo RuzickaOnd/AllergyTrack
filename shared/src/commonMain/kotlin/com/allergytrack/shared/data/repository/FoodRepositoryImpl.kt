@@ -1,5 +1,6 @@
 package com.allergytrack.shared.data.repository
 
+import com.allergytrack.shared.data.remote.ApiHttpException
 import com.allergytrack.shared.data.local.database.dao.FoodLogDao
 import com.allergytrack.shared.data.local.database.entity.FoodLogEntity
 import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
@@ -94,6 +95,11 @@ class FoodRepositoryImpl(
                         originalQuery = query
                     )
                 }
+        } catch (e: ApiHttpException) {
+            // HTTP chyby propouštíme — ViewModel na stav 503 zobrazuje
+            // vlastní hlášku. Ostatní chyby (offline, timeout, rozbitý JSON)
+            // dál polykáme a vracíme prázdný seznam, tedy "žádné výsledky".
+            throw e
         } catch (e: Exception) {
             emptyList()
         }

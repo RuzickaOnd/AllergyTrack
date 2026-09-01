@@ -152,14 +152,9 @@ class FoodLogViewModel(
                     emit(results)
                     _searchState.update { it.copy(isSearching = false, results = results) }
                 } catch (e: ApiHttpException) {
-                    // POZOR: tento blok je nedosažitelný — FoodRepositoryImpl
-                    // .searchFoodByName() chytá Exception a vrací emptyList(),
-                    // takže sem výjimka nikdy nedoteče a isServiceUnavailable
-                    // se nikdy nenastaví. Platilo to i před KMP migrací
-                    // (tehdy s retrofit2.HttpException). Zachováno záměrně,
-                    // aby migrace nezměnila chování — oprava je samostatná změna.
-                    // ApiHttpException je typ z :shared; díky němu nepotřebuje
-                    // :app mít na classpath Ktor.
+                    // Repository HTTP chyby propouští; ostatní (offline, timeout)
+                    // polyká a vrací prázdný seznam. Sem se tedy dostane jen
+                    // skutečná odpověď serveru se status kódem.
                     _searchState.update {
                         it.copy(
                             isSearching = false,

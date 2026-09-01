@@ -1,11 +1,13 @@
 package com.allergytrack.shared.data.remote.food
 
 import com.allergytrack.shared.config.AppConfig
+import com.allergytrack.shared.data.remote.ApiHttpException
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.parameter
 
 /**
@@ -27,12 +29,14 @@ class SupabaseFoodApi(
      * Supabase REST filtr má tvar code=eq.{hodnota}.
      */
     suspend fun getProductByBarcode(barcode: String): List<SupabaseFoodProduct> =
-        client.get("${config.supabaseUrl}/rest/v1/food_products") {
-            supabaseHeaders()
-            parameter("code", "eq.$barcode")
-            parameter("select", PRODUCT_SELECT)
-            parameter("limit", 1)
-        }.body()
+        withHttpErrors {
+            client.get("${config.supabaseUrl}/rest/v1/food_products") {
+                supabaseHeaders()
+                parameter("code", "eq.$barcode")
+                parameter("select", PRODUCT_SELECT)
+                parameter("limit", 1)
+            }.body()
+        }
 
     /**
      * Full-text vyhledávání přes PostgreSQL funkci search_products().
@@ -42,11 +46,24 @@ class SupabaseFoodApi(
         query: String,
         limit: Int = 20
     ): List<SupabaseSearchResult> =
-        client.get("${config.supabaseUrl}/rest/v1/rpc/search_products") {
-            supabaseHeaders()
-            parameter("query", query)
-            parameter("result_limit", limit)
-        }.body()
+        withHttpErrors {
+            client.get("${config.supabaseUrl}/rest/v1/rpc/search_products") {
+                supabaseHeaders()
+                parameter("query", query)
+                parameter("result_limit", limit)
+            }.body()
+        }
+
+    /**
+     * Převádí Ktor ResponseException na ApiHttpException, aby se status kód
+     * dostal až k volajícímu bez toho, aby musel znát Ktor.
+     */
+    private suspend fun <T> withHttpErrors(block: suspend () -> T): T =
+        try {
+            block()
+        } catch (e: ResponseException) {
+            throw ApiHttpException(e.response.status.value, e)
+        }
 
     private fun HttpRequestBuilder.supabaseHeaders() {
         header("apikey", config.supabaseKey)
