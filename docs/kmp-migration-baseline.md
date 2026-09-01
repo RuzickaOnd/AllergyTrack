@@ -1,6 +1,7 @@
 # Baseline před KMP migrací
 
-Zaznamenáno: _(nevyplněno — čeká na zařízení)_
+Zaznamenáno: 2026-09-01
+Zařízení: emulátor `sdk_gphone64_arm64`, Android 16 (API 36), locale **en**
 Build: versionName 1.0.3, versionCode 1000302, commit `2a5b46a`
 Větev: `feature/AT_migrace_do_KMP`
 Záloha DB: `baseline/allergy_track.db` (necommitovaná, viz .gitignore)
@@ -10,9 +11,16 @@ Záloha DB: `baseline/allergy_track.db` (necommitovaná, viz .gitignore)
 | Část | Stav |
 |---|---|
 | Charakterizační testy | ✅ hotovo — 29 testů, viz níže |
-| Záloha databáze | ⏳ čeká na připojené zařízení |
-| Smoke průchod | ⏳ čeká na připojené zařízení |
-| Zaznamenané hodnoty | ⏳ čeká na připojené zařízení |
+| Záloha databáze | ✅ hotovo — viz níže |
+| Smoke průchod | ◐ částečně — ověřen Dashboard, Analýza, Grafy |
+| Zaznamenané hodnoty | ✅ hotovo |
+
+**Pozor na povahu dat.** Aplikace na emulátoru byla prázdná (WAL 53 kB obsahoval
+jen schéma, nula řádků). Data jsou proto **syntetická**, vložená přímo do SQLite:
+8× jogurt s alergenem `Milk`, po každém do 4 h ekzém; 4× rýže bez alergenu jako
+kontrolní vzorek; 8 environment záznamů. Schéma i migrační cesta jsou skutečné,
+takže pro ověření Room KMP ve fázi 6 to slouží dobře — ale nejde o reálná
+uživatelská data.
 
 ## Charakterizační testy (hotovo)
 
@@ -39,15 +47,33 @@ Spuštění: `./gradlew :app:testDebugUnitTest`
 
 ## Obsah databáze
 
-_(vyplnit po vytažení zálohy)_
-
 | Tabulka | Počet záznamů |
 |---|---|
-| `food_logs` | |
-| `symptom_logs` | |
-| `environment_logs` | |
+| `food_logs` | 12 |
+| `symptom_logs` | 8 |
+| `environment_logs` | 8 |
 
-`PRAGMA user_version` =
+`PRAGMA user_version` = **2**
+
+**Past při tahání zálohy:** data byla ve WAL, ne v hlavním souboru
+(`allergy_track.db` 4 kB, `-wal` 53 kB). Kopírovat samotný `.db` vrátí prázdnou
+databázi. Buď zkopíruj všechny tři soubory (`.db`, `-shm`, `-wal`), nebo nejdřív
+proveď `PRAGMA wal_checkpoint(TRUNCATE)`.
+
+**Cesty k DataStore souborům** (ověřeno na zařízení, klíčové pro fázi 6):
+
+```
+files/datastore/user_preferences.preferences_pb
+files/datastore/onboarding_preferences.preferences_pb
+```
+
+Soubor onboardingu se jmenuje **`onboarding_preferences`**, ne `onboarding_prefs`,
+jak spec předpokládal. `debug_preferences.preferences_pb` zatím neexistuje —
+vznikne až při prvním zápisu z Debug menu.
+
+Onboarding profil v době záznamu:
+`selected_allergy_types = POLLEN,DUST,FOOD,ANIMAL`,
+`selected_symptom_types = EYE_ITCHING,ITCHING,ECZEMA,DIGESTIVE`
 
 ## Smoke průchod
 
@@ -58,17 +84,39 @@ Každý bod projít a zaškrtnout. Opakuje se po každé fázi migrace.
 - [ ] Záznam jídla čárovým kódem
 - [ ] Záznam jídla ručním zadáním + tlačítko „Navrhnout alergeny"
 - [ ] Záznam příznaku včetně změny data a času
-- [ ] Dashboard — dnešní záznamy se zobrazí
-- [ ] Grafy — přepnutí časového rozsahu a filtru příznaků
-- [ ] Analýza — korelace + AI shrnutí
+- [x] Dashboard — načte data z DB, zobrazí AQI, premium upsell, clinical insight
+- [x] Grafy — vykreslí AQI vs. symptomy, filtr příznaků, premium brány
+- [x] Analýza — korelace i AI shrnutí
 - [ ] Export PDF a sdílení
 - [ ] Nastavení — tmavý režim, notifikace, přepnutí jazyka
 - [ ] Profil — změna avataru a jména
+
+Nezaškrtnuté body vyžadují ruční interakci (zadávání textu, kamera, systémové
+dialogy). Zaškrtnuté byly ověřeny screenshotem přes `adb`.
 
 ## Zaznamenané konkrétní hodnoty
 
 Slouží ke srovnání po migraci — musí zůstat identické.
 
-- Nejvyšší korelace v Analýze: _(spouštěč, skóre %)_
-- Počet karet na Dashboardu:
-- Text AI shrnutí (první věta):
+| Hodnota | Baseline |
+|---|---|
+| Nejvyšší korelace v Analýze | **Milk → Eczema, 100 %, 8/8** |
+| Druhý spouštěč v seznamu | Rýže basmati (zamčený, premium) |
+| Readiness disclaimer | „zaznamenej ještě 2 symptomů" (8 symptomů = Partial) |
+| Grafy, 7denní rozsah | 2 symptomy, průměr 3.5, nejčastější Eczema |
+| Dashboard — AQI | 49 |
+| Dashboard — dnešní záznamy | „No records today yet" (data jsou 6–13 dní stará) |
+| AI shrnutí, první věta | „Na základě tvých záznamů jsem identifikoval hlavní spouštěč: **Milk** koreluje s Eczema v 100 % případů" |
+
+### Zjištění: hardcoded české řetězce mimo resources
+
+UI běželo v angličtině, ale disclaimer i AI shrnutí byly česky. Jsou zadrátované
+přímo v kódu, ne ve `strings.xml`:
+
+- `AnalysisReadiness.kt:26` — `"Zaznamenej alespoň $requiredCount symptomy pro první analýzu"`
+- `AiSummaryService.kt:90` — `"Na základě tvých záznamů jsem identifikoval hlavní spouštěč: "`
+
+**Dopad na fázi 7:** migrace `strings.xml` do Compose Resources je nezachytí.
+Navíc `AnalysisReadiness` je doménový model, který jde do `commonMain` už ve
+fázi 3 — český text tam půjde s ním. Není to blokující, ale patří to do seznamu
+technického dluhu.
