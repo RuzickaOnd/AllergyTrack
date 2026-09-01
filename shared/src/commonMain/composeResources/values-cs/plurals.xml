@@ -3,10 +3,10 @@
 
     <!-- Přehled příznaků -->
     <plurals name="symptom_occurrences">
-        <item quantity="one">%d výskyt</item>
-        <item quantity="few">%d výskyty</item>
-        <item quantity="many">%d výskytů</item>
-        <item quantity="other">%d výskytů</item>
+        <item quantity="one">%1$d výskyt</item>
+        <item quantity="few">%1$d výskyty</item>
+        <item quantity="many">%1$d výskytů</item>
+        <item quantity="other">%1$d výskytů</item>
     </plurals>
 
 </resources>

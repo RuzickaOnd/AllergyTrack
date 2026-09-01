@@ -3,8 +3,8 @@
 
     <!-- Symptom detail -->
     <plurals name="symptom_occurrences">
-        <item quantity="one">%d occurrence</item>
-        <item quantity="other">%d occurrences</item>
+        <item quantity="one">%1$d occurrence</item>
+        <item quantity="other">%1$d occurrences</item>
     </plurals>
 
 </resources>
