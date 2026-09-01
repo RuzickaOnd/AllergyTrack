@@ -2,7 +2,7 @@ package com.allergytrack.app.data.repository
 
 import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.entity.FoodLogEntity
-import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
+import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.local.recognition.FoodImageRecognizer
 import com.allergytrack.shared.data.remote.food.SupabaseFoodApi
 import com.allergytrack.shared.data.remote.food.RecognizedFood

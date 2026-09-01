@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.R
 import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
-import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
+import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.shared.domain.model.SymptomType
 import kotlinx.coroutines.flow.*
@@ -32,7 +32,7 @@ data class ChartsUiState(
 class ChartsViewModel(
     private val symptomLogDao: SymptomLogDao,
     private val environmentLogDao: EnvironmentLogDao,
-    private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper,
+    private val premiumHelper: com.allergytrack.shared.domain.premium.PremiumHelper,
     private val permissionsHelper: PermissionsHelper,
     private val userPreferencesDataStore: UserPreferencesDataStore,
     private val analyticsManager: AnalyticsManager

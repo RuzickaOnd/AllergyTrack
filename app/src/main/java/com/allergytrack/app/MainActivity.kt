@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.allergytrack.app.data.local.datastore.OnboardingDataStore
-import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
+import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
+import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.worker.WorkManagerScheduler
 import com.allergytrack.app.ui.navigation.MainAppScaffold
 import com.allergytrack.app.ui.onboarding.OnboardingFlow

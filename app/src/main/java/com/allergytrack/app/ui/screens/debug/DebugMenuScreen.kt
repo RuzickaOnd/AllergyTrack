@@ -20,7 +20,7 @@ import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import com.allergytrack.app.BuildConfig
 import com.allergytrack.app.R
-import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
+import com.allergytrack.shared.data.local.datastore.DebugPremiumOverride
 import com.allergytrack.shared.domain.model.PremiumVisibilityMode
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 

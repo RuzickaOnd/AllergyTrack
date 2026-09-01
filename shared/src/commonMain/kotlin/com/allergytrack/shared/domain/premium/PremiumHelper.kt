@@ -1,8 +1,8 @@
-package com.allergytrack.app.domain.premium
+package com.allergytrack.shared.domain.premium
 
 import com.allergytrack.shared.config.AppConfig
-import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
-import com.allergytrack.app.data.local.datastore.DebugPreferences
+import com.allergytrack.shared.data.local.datastore.DebugPremiumOverride
+import com.allergytrack.shared.data.local.datastore.DebugPreferences
 import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.shared.domain.model.PremiumStatus
 import com.allergytrack.shared.domain.model.PremiumVisibilityMode

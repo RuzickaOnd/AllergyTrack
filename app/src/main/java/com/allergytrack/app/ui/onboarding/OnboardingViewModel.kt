@@ -2,13 +2,13 @@ package com.allergytrack.app.ui.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.allergytrack.app.data.local.datastore.OnboardingDataStore
+import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
 import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.data.permissions.PermissionsState
 import com.allergytrack.shared.domain.model.AllergyType
 import com.allergytrack.shared.domain.model.OnboardingStep
 import com.allergytrack.shared.domain.model.SymptomTypeOnboarding
-import com.allergytrack.app.domain.premium.PremiumHelper
+import com.allergytrack.shared.domain.premium.PremiumHelper
 import com.allergytrack.shared.domain.model.PremiumFeature
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.allergytrack.app.data.analytics.AnalyticsManager
-import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
+import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.worker.WorkManagerScheduler
 
 data class OnboardingUiState(

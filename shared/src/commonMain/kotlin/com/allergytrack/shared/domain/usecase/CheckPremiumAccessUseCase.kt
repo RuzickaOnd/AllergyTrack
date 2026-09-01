@@ -1,7 +1,7 @@
-package com.allergytrack.app.domain.usecase
+package com.allergytrack.shared.domain.usecase
 
 import com.allergytrack.shared.domain.model.PremiumFeature
-import com.allergytrack.app.domain.premium.PremiumHelper
+import com.allergytrack.shared.domain.premium.PremiumHelper
 import kotlinx.coroutines.flow.Flow
 
 class CheckPremiumAccessUseCase(

@@ -1,18 +1,14 @@
-package com.allergytrack.app.data.local.datastore
+package com.allergytrack.shared.data.local.datastore
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-private val Context.debugDataStore: DataStore<Preferences>
-    by preferencesDataStore(name = "debug_preferences")
 
 /**
  * Nastavení debug override pro testování různých stavů aplikace.
@@ -22,9 +18,11 @@ private val Context.debugDataStore: DataStore<Preferences>
  * V release buildu jsou tyto hodnoty ignorovány (viz PremiumHelper).
  */
 class DebugPreferences(
-    private val context: Context
+    private val dataStore: DataStore<Preferences>
 ) {
     companion object {
+        const val FILE_NAME = "debug_preferences"
+
         private val KEY_PREMIUM_OVERRIDE = stringPreferencesKey("debug_premium_override")
         private val KEY_SYMPTOM_COUNT_OVERRIDE = intPreferencesKey("debug_symptom_count_override")
         private val KEY_ANALYTICS_ENABLED = booleanPreferencesKey("debug_analytics_enabled")
@@ -33,43 +31,43 @@ class DebugPreferences(
 
     /** -1 = použít skutečná data, jinak override */
     val symptomCountOverride: Flow<Int> =
-        context.debugDataStore.data.map { prefs ->
+        dataStore.data.map { prefs ->
             prefs[KEY_SYMPTOM_COUNT_OVERRIDE] ?: -1
         }
 
     suspend fun setSymptomCountOverride(count: Int) {
-        context.debugDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_SYMPTOM_COUNT_OVERRIDE] = count
         }
     }
 
     /** Výslovné povolení Firebase Analytics v debug verzi */
     val analyticsEnabled: Flow<Boolean> =
-        context.debugDataStore.data.map { prefs ->
+        dataStore.data.map { prefs ->
             prefs[KEY_ANALYTICS_ENABLED] ?: false
         }
 
     suspend fun setAnalyticsEnabled(enabled: Boolean) {
-        context.debugDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_ANALYTICS_ENABLED] = enabled
         }
     }
 
     /** Výslovné povolení Firebase Crashlytics v debug verzi */
     val crashlyticsEnabled: Flow<Boolean> =
-        context.debugDataStore.data.map { prefs ->
+        dataStore.data.map { prefs ->
             prefs[KEY_CRASHLYTICS_ENABLED] ?: false
         }
 
     suspend fun setCrashlyticsEnabled(enabled: Boolean) {
-        context.debugDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_CRASHLYTICS_ENABLED] = enabled
         }
     }
 
     /** Aktuální debug override stav prémiového předplatného */
     val premiumOverride: Flow<DebugPremiumOverride> =
-        context.debugDataStore.data.map { prefs ->
+        dataStore.data.map { prefs ->
             val raw = prefs[KEY_PREMIUM_OVERRIDE] ?: DebugPremiumOverride.USE_APP_STATE.name
             try {
                 DebugPremiumOverride.valueOf(raw)
@@ -80,14 +78,14 @@ class DebugPreferences(
 
     /** Uloží nový override stav */
     suspend fun setPremiumOverride(override: DebugPremiumOverride) {
-        context.debugDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_PREMIUM_OVERRIDE] = override.name
         }
     }
 
     /** Resetuje všechna debug nastavení na výchozí hodnoty */
     suspend fun resetAll() {
-        context.debugDataStore.edit { it.clear() }
+        dataStore.edit { it.clear() }
     }
 }
 

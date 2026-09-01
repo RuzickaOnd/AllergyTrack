@@ -1,8 +1,8 @@
 package com.allergytrack.app.di.koin
 
 import com.allergytrack.app.domain.analysis.CorrelationEngine
-import com.allergytrack.app.domain.premium.PremiumHelper
-import com.allergytrack.app.domain.usecase.CheckPremiumAccessUseCase
+import com.allergytrack.shared.domain.premium.PremiumHelper
+import com.allergytrack.shared.domain.usecase.CheckPremiumAccessUseCase
 import com.allergytrack.app.domain.usecase.RecognizeFoodFromImageUseCase
 import com.allergytrack.shared.domain.usecase.SaveFoodLogUseCase
 import com.allergytrack.shared.domain.usecase.SaveSymptomLogUseCase

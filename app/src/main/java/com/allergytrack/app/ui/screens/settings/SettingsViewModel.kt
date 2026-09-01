@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
 import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
-import com.allergytrack.app.data.local.datastore.OnboardingDataStore
-import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
+import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
+import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.app.data.permissions.PermissionsState
 import com.allergytrack.app.data.worker.WorkManagerScheduler
@@ -16,7 +16,7 @@ import com.allergytrack.app.data.remote.ai.AiSummaryService
 import com.allergytrack.app.domain.analysis.CorrelationEngine
 import com.allergytrack.app.domain.export.MedicalReportExporter
 import com.allergytrack.app.ui.util.AppLocaleHelper
-import com.allergytrack.app.domain.premium.PremiumHelper
+import com.allergytrack.shared.domain.premium.PremiumHelper
 import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.app.data.notifications.NotificationManager
 import kotlinx.coroutines.flow.MutableStateFlow

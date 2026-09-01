@@ -47,7 +47,7 @@ class FoodLogViewModel(
     private val searchFoodUseCase: SearchFoodUseCase,
     private val recognizeFoodFromImageUseCase: RecognizeFoodFromImageUseCase,
     private val foodRepository: FoodRepository,
-    private val premiumHelper: com.allergytrack.app.domain.premium.PremiumHelper,
+    private val premiumHelper: com.allergytrack.shared.domain.premium.PremiumHelper,
     private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 

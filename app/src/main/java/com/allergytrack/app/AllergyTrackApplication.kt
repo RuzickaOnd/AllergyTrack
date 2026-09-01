@@ -3,7 +3,7 @@ package com.allergytrack.app
 import android.app.Application
 import androidx.work.Configuration
 import com.allergytrack.app.data.analytics.AnalyticsManager
-import com.allergytrack.app.data.local.datastore.DebugPreferences
+import com.allergytrack.shared.data.local.datastore.DebugPreferences
 import com.allergytrack.app.data.notifications.NotificationManager as AppNotificationManager
 import com.allergytrack.app.di.koin.coreModule
 import com.allergytrack.app.di.koin.dataStoreModule
@@ -18,6 +18,7 @@ import com.revenuecat.purchases.PurchasesConfiguration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import com.allergytrack.shared.platform.initAndroidPlatform
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -39,6 +40,10 @@ class AllergyTrackApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         instance = this
+
+        // MUSÍ být před startKoin — dataStorePath() i databaseBuilder()
+        // z něj berou application context.
+        initAndroidPlatform(this)
 
         startKoin {
             if (BuildConfig.DEBUG) androidLogger(Level.ERROR)

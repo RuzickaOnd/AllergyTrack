@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.data.local.database.dao.FoodLogDao
 import com.allergytrack.app.data.local.database.dao.SymptomLogDao
-import com.allergytrack.app.data.local.datastore.OnboardingDataStore
+import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
 import com.allergytrack.app.domain.analysis.CorrelationEngine
 import com.allergytrack.shared.domain.model.FoodReactionEvent
 import com.allergytrack.shared.domain.model.FoodTrigger

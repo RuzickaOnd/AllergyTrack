@@ -2,6 +2,7 @@ package com.allergytrack.app.di.koin
 
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
+import androidx.datastore.core.DataStore
 import androidx.work.WorkerParameters
 import io.ktor.client.HttpClient
 import org.junit.Test
@@ -29,6 +30,7 @@ import org.koin.test.verify.verify
  *   String, Boolean   — konstruktor AppConfig bere literály z lambdy;
  *                       verify() čte konstruktor reflexí a lambdu nevidí
  *   HttpClient        — vzniká uvnitř továren v :shared, ne jako definice
+ *   DataStore         — totéž, vzniká v createDataStore()
  */
 @OptIn(KoinExperimentalAPI::class)
 class KoinModuleGraphTest {
@@ -55,7 +57,8 @@ class KoinModuleGraphTest {
                 WorkerParameters::class,
                 String::class,
                 Boolean::class,
-                HttpClient::class
+                HttpClient::class,
+                DataStore::class
             )
         )
     }
