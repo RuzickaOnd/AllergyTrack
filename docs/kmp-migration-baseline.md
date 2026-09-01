@@ -120,3 +120,45 @@ přímo v kódu, ne ve `strings.xml`:
 Navíc `AnalysisReadiness` je doménový model, který jde do `commonMain` už ve
 fázi 3 — český text tam půjde s ním. Není to blokující, ale patří to do seznamu
 technického dluhu.
+
+---
+
+## Po fázi 2 (Hilt → Koin)
+
+Ověřeno: 2026-09-01, na commitu předcházejícím `3ad2c40`
+Zařízení: emulátor `sdk_gphone64_arm64`, Android 16 (API 36)
+
+- [x] Aplikace startuje bez `NoDefinitionFoundException`
+- [x] Nejvyšší korelace v Analýze: **Milk → Eczema, 100 %, 8/8** — shodné s baseline
+- [x] AI shrnutí a readiness disclaimer — shodný text
+- [x] Dashboard, Grafy, Profil, Nastavení, Food log se vykreslují správně
+- [x] Recently logged pills rozlišují alergeny barvou (Jogurt červeně, Rýže šedě)
+- [x] `SettingsViewModel` se 14 závislostmi se rozřeší
+- [x] Release build s R8 funkční — **bez jakýchkoli keep pravidel pro Koin**
+- [x] Release build ověřen i za běhu, Analýza vrací shodnou hodnotu
+- [x] `:shared` — všechny tři iOS targety kompilují, `allTests` zelené
+- [x] 31 unit testů zelených
+
+### Poznámky k prostředí
+
+**Instalace na emulátoru vyžaduje omezení ABI.** `/data` je z 93 % plné a debug
+APK má 98 MB (60 MB z toho jsou nativní knihovny pro čtyři ABI). Řešení bez
+zásahu do build souboru:
+
+```
+./gradlew :app:installDebug -Pandroid.injected.build.abi=arm64-v8a
+```
+
+**Release build není podepsaný.** Projekt nemá `signingConfig` pro release,
+vzniká `app-release-unsigned.apk`. Pro ověření R8 na zařízení je potřeba ho
+podepsat — pro test stačí debug keystore:
+
+```
+zipalign -f -p 4 app-release-unsigned.apk out.aligned
+apksigner sign --ks ~/.android/debug.keystore --ks-pass pass:android \
+  --ks-key-alias androiddebugkey --key-pass pass:android --out out.apk out.aligned
+```
+
+**KoinModuleGraphTest.** Graf závislostí hlídá unit test s Koin `verify()`.
+Při každé změně Koin modulů musí seznam v testu zůstat shodný se seznamem
+v `AllergyTrackApplication.startKoin`.
