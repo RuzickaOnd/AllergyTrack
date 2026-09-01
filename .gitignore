@@ -84,3 +84,7 @@ profiling/
 # - AndroidManifest.xml
 # - veškerý zdrojový kód v src/
 # - AGENTS.md, CLAUDE.md, PROJECT dokumenty
+
+# Dočasné artefakty z experimentů
+temp_classes/
+temp_classes*.jar
