@@ -17,7 +17,8 @@ hlídá, že do `commonMain` nepropadne nic androidního.
 
 ### V rozsahu
 
-- Nový KMP modul `:shared` s targety `androidTarget()`, `iosArm64`, `iosX64`, `iosSimulatorArm64`
+- Nový KMP modul `:shared` s targety `androidLibrary { }`, `iosArm64`, `iosSimulatorArm64`
+  (`iosX64` odpadl — `androidx.sqlite:sqlite-bundled` pro něj nepublikuje variantu)
 - Přesun `domain/` a `data/` (kromě platformních adaptérů) do `commonMain`
 - Přesun 12 z 13 ViewModelů do `commonMain` (`DebugMenuViewModel` zůstává v `:app`)
 - Přesun 423 string resources do Compose Resources
@@ -77,7 +78,7 @@ AllergyTrack/
 ├── gradle/libs.versions.toml
 │
 ├── shared/                                ← KMP modul
-│   ├── build.gradle.kts                   androidTarget() + iosArm64/iosX64/iosSimulatorArm64
+│   ├── build.gradle.kts                   androidLibrary { } + iosArm64/iosSimulatorArm64
 │   └── src/
 │       ├── commonMain/kotlin/com/allergytrack/shared/
 │       │   ├── domain/
