@@ -16,6 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.allergytrack.app.BuildConfig
+import com.allergytrack.shared.resources.Res
+import com.allergytrack.shared.resources.about_section_what_title
 import com.allergytrack.app.R
 import com.allergytrack.app.ui.theme.SerifFontFamily
 
@@ -62,7 +64,7 @@ fun AboutScreen(navController: NavController) {
         HorizontalDivider()
 
         AboutSection(
-            title = stringResource(R.string.about_section_what_title),
+            title = org.jetbrains.compose.resources.stringResource(Res.string.about_section_what_title),
             content = stringResource(R.string.about_section_what_content)
         )
         AboutSection(

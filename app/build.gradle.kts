@@ -82,6 +82,7 @@ dependencies {
     // Samotná databáze i migrace žijí v :shared; tohle je jen kvůli typům.
     // Odstranitelné až po fázi 8, kdy ViewModely odejdou do commonMain.
     implementation(libs.room.runtime)
+    implementation(libs.compose.components.resources)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

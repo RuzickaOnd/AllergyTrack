@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.compose.multiplatform)
 }
 
 kotlin {
@@ -40,6 +42,10 @@ kotlin {
             implementation(libs.datastore.preferences.core)
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
+            // api, ne implementation — generovaná třída Res musí být
+            // viditelná z :app, kde zatím zůstává Compose UI.
+            api(compose.runtime)
+            api(compose.components.resources)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
@@ -55,6 +61,15 @@ kotlin {
 
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+/**
+ * publicResClass = true — generovaná třída Res musí být viditelná z :app,
+ * protože Compose UI tam zatím zůstává.
+ */
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.allergytrack.shared.resources"
 }
 
 dependencies {
