@@ -172,7 +172,9 @@ fun AnalysisScreen(
             ) {
                 if (uiState.showDisclaimer) {
                     item {
-                        AnalysisDisclaimerBanner(disclaimer = uiState.disclaimer)
+                        (uiState.readiness as? AnalysisReadiness.Partial)?.let {
+                            AnalysisDisclaimerBanner(readiness = it)
+                        }
                     }
                 }
 
@@ -493,7 +495,9 @@ fun AnalysisScreen(
         ) {
             if (uiState.showDisclaimer) {
                 item {
-                    AnalysisDisclaimerBanner(disclaimer = uiState.disclaimer)
+                    (uiState.readiness as? AnalysisReadiness.Partial)?.let {
+                            AnalysisDisclaimerBanner(readiness = it)
+                        }
                 }
             }
 
@@ -792,7 +796,7 @@ fun AnalysisLockedScreen(readiness: AnalysisReadiness.Locked) {
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            readiness.message,
+            stringResource(Res.string.analysis_locked_message, readiness.requiredCount),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -837,7 +841,16 @@ fun AnalysisLockedScreen(readiness: AnalysisReadiness.Locked) {
 }
 
 @Composable
-fun AnalysisDisclaimerBanner(disclaimer: String) {
+fun AnalysisDisclaimerBanner(readiness: AnalysisReadiness.Partial) {
+    // Text se skládá tady, ne v doménovém modelu — ten je v commonMain
+    // a nemůže sahat na lokalizované stringy.
+    val disclaimer = buildString {
+        append(stringResource(Res.string.analysis_partial_disclaimer, readiness.remainingToFull))
+        if (!readiness.hasEnvironmentData) {
+            append(" ")
+            append(stringResource(Res.string.analysis_partial_no_env))
+        }
+    }
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(

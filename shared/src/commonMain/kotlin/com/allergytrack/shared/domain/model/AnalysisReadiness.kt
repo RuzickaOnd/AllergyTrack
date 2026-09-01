@@ -18,23 +18,29 @@ sealed class AnalysisReadiness {
      * @param symptomCount Aktuální počet symptomů
      * @param requiredCount Minimální počet pro odemčení (vždy 5)
      * @param progress 0.0–1.0 pro progress bar
+     *
+     * Text hlášky sem nepatří — je to doménový model v commonMain a text
+     * by nešel lokalizovat. Vykresluje ho AnalysisScreen z requiredCount.
      */
     data class Locked(
         val symptomCount: Int,
         val requiredCount: Int = MIN_SYMPTOMS,
-        val progress: Float = (symptomCount.toFloat() / requiredCount).coerceIn(0f, 1f),
-        val message: String = "Zaznamenej alespoň $requiredCount symptomy pro první analýzu"
+        val progress: Float = (symptomCount.toFloat() / requiredCount).coerceIn(0f, 1f)
     ) : AnalysisReadiness()
 
     /**
      * Základní analýza dostupná — zobrazit s disclaimerem o přesnosti.
      * Nastane při 5–9 symptomech.
      * @param hasEnvironmentData Jsou dostupná env. data pro korelaci?
+     * @param remainingToFull Kolik symptomů zbývá do plné analýzy
+     *
+     * Text disclaimeru sem nepatří — vykresluje ho AnalysisScreen
+     * z remainingToFull a hasEnvironmentData.
      */
     data class Partial(
         val symptomCount: Int,
         val hasEnvironmentData: Boolean,
-        val disclaimer: String = buildDisclaimer(symptomCount, hasEnvironmentData)
+        val remainingToFull: Int = FULL_SYMPTOMS - symptomCount
     ) : AnalysisReadiness()
 
     /**
@@ -71,18 +77,5 @@ sealed class AnalysisReadiness {
             }
         }
 
-        private fun buildDisclaimer(
-            symptomCount: Int,
-            hasEnvironmentData: Boolean
-        ): String {
-            val remaining = FULL_SYMPTOMS - symptomCount
-            return buildString {
-                append("Analýza je orientační — přesnost poroste s dalšími záznamy. ")
-                append("Pro spolehlivé výsledky zaznamenej ještě $remaining symptomů.")
-                if (!hasEnvironmentData) {
-                    append(" Environmentální korelace se zobrazí až po nasbírání GPS dat.")
-                }
-            }
-        }
     }
 }

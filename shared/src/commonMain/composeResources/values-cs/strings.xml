@@ -200,11 +200,11 @@
     <string name="export_pdf_date_label">Vygenerováno dne: %1$s</string>
     <string name="export_pdf_summary_header">Klinické shrnutí (AI)</string>
     <string name="export_pdf_correlations_header">Identifikované korelace</string>
-    <string name="export_pdf_confidence_label">Spolehlivost: %1$d%%</string>
+    <string name="export_pdf_confidence_label">Spolehlivost: %1$d%</string>
     <string name="export_pdf_symptom_label">Příznak: %1$s</string>
     <string name="export_pdf_occurrences_label">Zaznamenáno v %1$d z %2$d případů.</string>
     <string name="export_pdf_food_triggers_header">Podezřelé potraviny a alergeny</string>
-    <string name="export_pdf_reaction_label">Reakce: %1$d/%2$d konzumací (%3$d%%)</string>
+    <string name="export_pdf_reaction_label">Reakce: %1$d/%2$d konzumací (%3$d%)</string>
     <string name="export_pdf_symptoms_list_label">Příznaky: %1$s</string>
     <string name="export_pdf_disclaimer">Tento report je generován AI na základě uživatelských dat a slouží pouze jako podklad pro lékaře.</string>
     <string name="export_share_chooser_title">Sdílet lékařský report</string>
@@ -227,8 +227,8 @@
     <string name="recommendation_food">Zvaž 14denní eliminační test pro %1$s a sleduj, zda se příznaky zlepší.</string>
     <string name="recommendation_environment">Snaž se minimalizovat pobyt venku, když je hladina %1$s vysoká, nebo používej čističku vzduchu.</string>
     <string name="recommendation_combined">Tato kombinace naznačuje více faktorů. Konzultuj tento report se svým alergologem.</string>
-    <string name="interpretation_food">%1$s byl identifikován jako silný spouštěč pro %2$s s %3$d%% jistotou. Příznaky se typicky objevují ~%4$dh po konzumaci.</string>
-    <string name="interpretation_environment">Vysoké hladiny %1$s silně korelují s tvými epizodami %2$s. Tento vzorec jsme detekovali v %3$d%% sledovaných dnů.</string>
+    <string name="interpretation_food">%1$s byl identifikován jako silný spouštěč pro %2$s s %3$d% jistotou. Příznaky se typicky objevují ~%4$dh po konzumaci.</string>
+    <string name="interpretation_environment">Vysoké hladiny %1$s silně korelují s tvými epizodami %2$s. Tento vzorec jsme detekovali v %3$d% sledovaných dnů.</string>
     <string name="interpretation_combined">Detekován synergický efekt: Kombinace %1$s a nedávných faktorů prostředí výrazně zvyšuje intenzitu reakce.</string>
 
     <!-- Grafy -->
@@ -450,7 +450,7 @@
     <string name="faq_q_how_correlations">Jak aplikace pozná, co způsobuje mé alergie?</string>
     <string name="faq_a_how_correlations">Aplikace sleduje, jestli po konzumaci určitého jídla nebo alergenu do 72 hodin nastane alergická reakce. Čím víckrát se to opakuje, tím vyšší je skóre korelace. Podobně porovnává tvoje příznaky se změnami kvality vzduchu a hladinami pylu pomocí matematické metody zvané Pearsonova korelace.</string>
     <string name="faq_q_correlation_percent">Co znamená procento u korelace?</string>
-    <string name="faq_a_correlation_percent">Procento říká, jak často se po výskytu daného spouštěče (jídla nebo alergenu) objevila alergická reakce. Například 75 %% u mléka znamená, že ze 4 zaznamenaných konzumací mléka 3× následoval příznak. Čím vyšší číslo, tím silnější a spolehlivější je vazba.</string>
+    <string name="faq_a_correlation_percent">Procento říká, jak často se po výskytu daného spouštěče (jídla nebo alergenu) objevila alergická reakce. Například 75 % u mléka znamená, že ze 4 zaznamenaných konzumací mléka 3× následoval příznak. Čím vyšší číslo, tím silnější a spolehlivější je vazba.</string>
     <string name="faq_q_match_badge">Co znamená štítek SHODA?</string>
     <string name="faq_a_match_badge">Štítek SHODA se zobrazí u korelací, které odpovídají tvému alergickému profilu nastavenému při prvním spuštění aplikace. Pokud jsi uvedl/a pylovou alergii a aplikace najde korelaci s pylem, označí ji jako shodu — takové výsledky se v analýze zobrazují výše.</string>
     <string name="faq_q_food_database">Odkud pocházejí informace o potravinách?</string>
@@ -499,4 +499,33 @@
     <!-- Analýza — glimpse &amp; lock (mode VISIBLE + FREE) -->
     <string name="analysis_free_ai_locked">Kompletní AI přehled v Premium</string>
     <string name="analysis_free_more_triggers">+ %1$d dalších spouštěčů za Premium</string>
+    <string name="analysis_locked_message">Zaznamenej alespoň %1$d symptomy pro první analýzu</string>
+    <string name="analysis_partial_disclaimer">Analýza je orientační — přesnost poroste s dalšími záznamy. Pro spolehlivé výsledky zaznamenej ještě %1$d symptomů.</string>
+    <string name="analysis_partial_no_env">Environmentální korelace se zobrazí až po nasbírání GPS dat.</string>
+    <string name="ai_prompt_role">Jsi klinický asistent pro analýzu alergií v aplikaci AllergyTrack. </string>
+    <string name="ai_prompt_task">Na základě naměřených korelací mezi jídlem/prostředím a symptomy uživatele vygeneruj stručné, </string>
+    <string name="ai_prompt_style">srozumitelné a personalizované shrnutí (maximálně 4-5 vět) %1$s. </string>
+    <string name="ai_prompt_language">v češtině</string>
+    <string name="ai_prompt_no_preamble">Nepoužívej úvodní fráze jako 'Zde je shrnutí'. Jdi přímo k věci. </string>
+    <string name="ai_prompt_markdown">Důležité spouštěče a symptomy označ tučně pomocí markdownu (**text**). </string>
+    <string name="ai_prompt_closing">Na konci doporuč konzultaci s lékařem/alergologem.</string>
+    <string name="ai_prompt_data_header">Naměřená data:</string>
+    <string name="ai_prompt_data_row">- %1$s + %2$s: korelace %3$d% (%4$s významnost)%5$s%6$s</string>
+    <string name="ai_prompt_delay"> (reakce za %1$dh)</string>
+    <string name="ai_prompt_expected"> [shoda s alergickým profilem]</string>
+    <string name="ai_severity_high">vysoká</string>
+    <string name="ai_severity_medium">střední</string>
+    <string name="ai_severity_low">nízká</string>
+    <string name="ai_summary_main_trigger">Na základě tvých záznamů jsem identifikoval hlavní spouštěč: **%1$s** koreluje s %2$s v %3$d % případů</string>
+    <string name="ai_summary_delay">, typicky s odstupem %1$d–%2$d hodin</string>
+    <string name="ai_summary_second_factor"> Dalším významným faktorem je %1$s.</string>
+    <string name="ai_summary_synergy"> Pozoroval jsem také synergický efekt — symptomy jsou intenzivnější, když se potravinový spouštěč kombinuje s vysokou hladinou pylu.</string>
+    <string name="ai_summary_consult"> Doporučuji tato zjištění probrat s alergologem.</string>
+    <string name="trigger_grass_pollen">travní pyl</string>
+    <string name="trigger_birch_pollen">březový pyl</string>
+    <string name="trigger_pm25">prachové částice PM2.5</string>
+    <string name="trigger_ozone">ozón</string>
+    <string name="trigger_no2">oxid dusičitý</string>
+    <string name="trigger_aqi">index kvality ovzduší (AQI)</string>
+    <string name="ai_summary_not_enough_data">Zatím nemám dostatek dat pro analýzu. Pokračuj v zaznamenávání jídla a symptomů.</string>
 </resources>

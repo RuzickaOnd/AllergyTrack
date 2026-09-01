@@ -1,5 +1,6 @@
 package com.allergytrack.app.data.remote.ai
 
+import com.allergytrack.shared.resources.*
 import com.allergytrack.shared.platform.AiSummaryGenerator
 import org.jetbrains.compose.resources.getString
 import android.content.Context
@@ -28,7 +29,7 @@ class AiSummaryService(
 
     override suspend fun generateSummary(correlations: List<Correlation>): String = withContext(Dispatchers.Default) {
         if (correlations.isEmpty()) {
-            return@withContext "Zatím nemám dostatek dat pro analýzu. Pokračuj v zaznamenávání jídla a symptomů."
+            return@withContext getString(Res.string.ai_summary_not_enough_data)
         }
 
         try {
@@ -51,27 +52,47 @@ class AiSummaryService(
         return@withContext generateRuleBasedSummary(correlations)
     }
 
+    /**
+     * Prompt se skládá z resources včetně instrukce o jazyce
+     * (`ai_prompt_language`), takže model odpovídá jazykem aplikace
+     * a jazyk není potřeba nikde detekovat.
+     */
     private suspend fun buildPrompt(correlations: List<Correlation>): String {
         return buildString {
-            append("Jsi klinický asistent pro analýzu alergií v aplikaci AllergyTrack. ")
-            append("Na základě naměřených korelací mezi jídlem/prostředím a symptomy uživatele vygeneruj stručné, ")
-            append("srozumitelné a personalizované shrnutí (maximálně 4-5 vět) v češtině. ")
-            append("Nepoužívej úvodní fráze jako 'Zde je shrnutí'. Jdi přímo k věci. ")
-            append("Důležité spouštěče a symptomy označ tučně pomocí markdownu (**text**). ")
-            append("Na konci doporuč konzultaci s lékařem/alergologem.\n\n")
-            append("Naměřená data:\n")
+            append(getString(Res.string.ai_prompt_role))
+            append(getString(Res.string.ai_prompt_task))
+            append(getString(Res.string.ai_prompt_style, getString(Res.string.ai_prompt_language)))
+            append(getString(Res.string.ai_prompt_no_preamble))
+            append(getString(Res.string.ai_prompt_markdown))
+            append(getString(Res.string.ai_prompt_closing))
+            append("\n\n")
+            append(getString(Res.string.ai_prompt_data_header))
+            append("\n")
             for (corr in correlations) {
-                val triggerName = localizedTriggerName(corr)
-                val symptomName = getString(corr.symptomType.labelRes())
-                val severityLabel = when (corr.severity) {
-                    CorrelationSeverity.HIGH -> "vysoká"
-                    CorrelationSeverity.MEDIUM -> "střední"
-                    CorrelationSeverity.LOW -> "nízká"
-                }
-                val delayInfo = if (corr.avgDelayHours > 0) " (reakce za ${corr.avgDelayHours.toInt()}h)" else ""
-                val expectedInfo = if (corr.isExpected) " [shoda s alergickým profilem]" else ""
-                
-                append("- $triggerName + $symptomName: korelace ${(corr.score * 100).toInt()}% ($severityLabel významnost)$delayInfo$expectedInfo\n")
+                val severityLabel = getString(
+                    when (corr.severity) {
+                        CorrelationSeverity.HIGH -> Res.string.ai_severity_high
+                        CorrelationSeverity.MEDIUM -> Res.string.ai_severity_medium
+                        CorrelationSeverity.LOW -> Res.string.ai_severity_low
+                    }
+                )
+                val delayInfo = if (corr.avgDelayHours > 0)
+                    getString(Res.string.ai_prompt_delay, corr.avgDelayHours.toInt()) else ""
+                val expectedInfo = if (corr.isExpected)
+                    getString(Res.string.ai_prompt_expected) else ""
+
+                append(
+                    getString(
+                        Res.string.ai_prompt_data_row,
+                        localizedTriggerName(corr),
+                        getString(corr.symptomType.labelRes()),
+                        (corr.score * 100).toInt(),
+                        severityLabel,
+                        delayInfo,
+                        expectedInfo
+                    )
+                )
+                append("\n")
             }
         }
     }
@@ -82,31 +103,43 @@ class AiSummaryService(
 
         return buildString {
             if (topTrigger != null) {
-                val scorePercent = (topTrigger.score * 100).toInt()
-                val triggerName = localizedTriggerName(topTrigger)
-                val symptomName = getString(topTrigger.symptomType.labelRes())
-                append("Na základě tvých záznamů jsem identifikoval hlavní spouštěč: ")
-                append("**$triggerName** koreluje s $symptomName ")
-                append("v $scorePercent % případů")
+                append(
+                    getString(
+                        Res.string.ai_summary_main_trigger,
+                        localizedTriggerName(topTrigger),
+                        getString(topTrigger.symptomType.labelRes()),
+                        (topTrigger.score * 100).toInt()
+                    )
+                )
                 if (topTrigger.avgDelayHours > 0) {
-                    append(", typicky s odstupem ${topTrigger.avgDelayHours.toInt()}–${(topTrigger.avgDelayHours * 1.5).toInt()} hodin")
+                    append(
+                        getString(
+                            Res.string.ai_summary_delay,
+                            topTrigger.avgDelayHours.toInt(),
+                            (topTrigger.avgDelayHours * 1.5).toInt()
+                        )
+                    )
                 }
                 append(".")
             }
 
             if (highCorrelations.size > 1) {
-                val secondName = localizedTriggerName(highCorrelations[1])
-                append(" Dalším významným faktorem je $secondName.")
+                append(
+                    getString(
+                        Res.string.ai_summary_second_factor,
+                        localizedTriggerName(highCorrelations[1])
+                    )
+                )
             }
 
             val foodTriggers = correlations.filter { it.triggerType == TriggerType.FOOD }
             val envTriggers = correlations.filter { it.triggerType == TriggerType.ENVIRONMENT }
 
             if (foodTriggers.isNotEmpty() && envTriggers.isNotEmpty()) {
-                append(" Pozoroval jsem také synergický efekt — symptomy jsou intenzivnější, když se potravinový spouštěč kombinuje s vysokou hladinou pylu.")
+                append(getString(Res.string.ai_summary_synergy))
             }
 
-            append(" Doporučuji tato zjištění probrat s alergologem.")
+            append(getString(Res.string.ai_summary_consult))
         }
     }
 
@@ -117,12 +150,12 @@ class AiSummaryService(
                 ?: correlation.trigger
         } else {
             when (correlation.trigger) {
-                "grass_pollen" -> "travní pyl"
-                "birch_pollen" -> "březový pyl"
-                "pm2_5" -> "prachové částice PM2.5"
-                "ozone" -> "ozón"
-                "no2" -> "oxid dusičitý"
-                "european_aqi" -> "index kvality ovzduší (AQI)"
+                "grass_pollen" -> getString(Res.string.trigger_grass_pollen)
+                "birch_pollen" -> getString(Res.string.trigger_birch_pollen)
+                "pm2_5" -> getString(Res.string.trigger_pm25)
+                "ozone" -> getString(Res.string.trigger_ozone)
+                "no2" -> getString(Res.string.trigger_no2)
+                "european_aqi" -> getString(Res.string.trigger_aqi)
                 else -> correlation.trigger
             }
         }

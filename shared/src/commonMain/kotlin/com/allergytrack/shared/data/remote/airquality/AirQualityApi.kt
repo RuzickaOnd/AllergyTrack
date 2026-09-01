@@ -36,24 +36,6 @@ class AirQualityApi(
             parameter("timezone", "auto")
         }.body()
 
-    /**
-     * Hodinová historická data pro grafy (posledních 5 dní).
-     *
-     * POZOR: tato metoda se v aplikaci nikde nevolá — byla nepoužitá už
-     * v Retrofit verzi. Přenesena beze změny, aby migrace nezměnila API.
-     */
-    suspend fun getHourlyHistory(
-        latitude: Double,
-        longitude: Double
-    ): AirQualityResponse =
-        client.get("$BASE_URL/v1/air-quality") {
-            parameter("latitude", latitude)
-            parameter("longitude", longitude)
-            parameter("hourly", HOURLY_FIELDS)
-            parameter("past_days", 5)
-            parameter("forecast_days", 1)
-            parameter("timezone", "auto")
-        }.body()
 
     companion object {
         private const val BASE_URL = "https://air-quality-api.open-meteo.com"
@@ -62,8 +44,5 @@ class AirQualityApi(
             "european_aqi,pm2_5,pm10,nitrogen_dioxide,ozone," +
             "grass_pollen,birch_pollen,alder_pollen,mugwort_pollen,ragweed_pollen"
 
-        private const val HOURLY_FIELDS =
-            "european_aqi,pm2_5,grass_pollen,birch_pollen," +
-            "alder_pollen,mugwort_pollen,ragweed_pollen"
     }
 }

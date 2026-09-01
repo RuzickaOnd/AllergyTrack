@@ -31,7 +31,6 @@ data class AnalysisUiState(
     val selectedTrigger: FoodTrigger? = null,
     val aiSummary: String = "",
     val showDisclaimer: Boolean = false,
-    val disclaimer: String = "",
     val isExporting: Boolean = false,
     val exportedFilePath: String? = null
 )
@@ -174,8 +173,7 @@ class AnalysisViewModel(
                                 readiness = readiness,
                                 correlations = correlations,
                                 aiSummary = summary,
-                                showDisclaimer = true,
-                                disclaimer = readiness.disclaimer
+                                showDisclaimer = true
                             )
                         }
                     }
