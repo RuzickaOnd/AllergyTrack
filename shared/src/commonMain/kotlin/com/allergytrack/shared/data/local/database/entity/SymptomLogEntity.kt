@@ -1,14 +1,15 @@
-package com.allergytrack.app.data.local.database.entity
+package com.allergytrack.shared.data.local.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.UUID
+import com.allergytrack.shared.platform.currentTimeMillis
+import com.allergytrack.shared.platform.randomUuidString
 
 @Entity(tableName = "symptom_logs")
 data class SymptomLogEntity(
     @PrimaryKey
-    val id: String = UUID.randomUUID().toString(),
-    val timestamp: Long = System.currentTimeMillis(),
+    val id: String = randomUuidString(),
+    val timestamp: Long = currentTimeMillis(),
     val type: String,       // SymptomType.name
     val intensity: Int,
     val bodyParts: String = "",  // JSON string

@@ -1,10 +1,10 @@
 package com.allergytrack.app.di.koin
 
 import com.allergytrack.app.data.repository.AppUpdateRepositoryImpl
-import com.allergytrack.app.data.repository.EnvironmentRepositoryImpl
-import com.allergytrack.app.data.repository.FoodRepositoryImpl
+import com.allergytrack.shared.data.repository.EnvironmentRepositoryImpl
+import com.allergytrack.shared.data.repository.FoodRepositoryImpl
 import com.allergytrack.app.data.repository.PremiumRepositoryImpl
-import com.allergytrack.app.data.repository.SymptomRepositoryImpl
+import com.allergytrack.shared.data.repository.SymptomRepositoryImpl
 import com.allergytrack.shared.domain.repository.AppUpdateRepository
 import com.allergytrack.shared.domain.repository.EnvironmentRepository
 import com.allergytrack.shared.domain.repository.FoodRepository

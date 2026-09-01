@@ -1,14 +1,14 @@
-package com.allergytrack.app.domain.analysis
+package com.allergytrack.shared.domain.analysis
 
-import com.allergytrack.app.data.local.database.entity.FoodLogEntity
-import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
+import com.allergytrack.shared.data.local.database.entity.FoodLogEntity
+import com.allergytrack.shared.data.local.database.entity.SymptomLogEntity
 import com.allergytrack.shared.domain.model.AnalysisReadiness
 import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.shared.domain.model.TriggerType
 import kotlinx.serialization.json.Json
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Charakterizační testy — zapisují SOUČASNÉ chování CorrelationEngine,
@@ -69,10 +69,10 @@ class CorrelationEngineCharacterizationTest {
         )
 
         val milk = result.firstOrNull { it.trigger == "Milk" }
-        assertTrue("Očekávána korelace pro Milk, dostal jsem: $result", milk != null)
+        assertTrue(milk != null, "Očekávána korelace pro Milk, dostal jsem: $result")
         assertEquals(TriggerType.FOOD, milk!!.triggerType)
         assertEquals(SymptomType.ECZEMA, milk.symptomType)
-        assertTrue("Skóre má být > 0.3, je ${milk.score}", milk.score > 0.3f)
+        assertTrue(milk.score > 0.3f, "Skóre má být > 0.3, je ${milk.score}")
     }
 
     /**
@@ -95,7 +95,7 @@ class CorrelationEngineCharacterizationTest {
         )
 
         val milk = result.first { it.trigger == "Milk" }
-        assertTrue("isExpected mělo být true pro knownAllergies=[FOOD]", milk.isExpected)
+        assertTrue(milk.isExpected, "isExpected mělo být true pro knownAllergies=[FOOD]")
     }
 
     @Test
@@ -112,8 +112,8 @@ class CorrelationEngineCharacterizationTest {
 
         val milk = result.first { it.trigger == "Milk" }
         assertTrue(
-            "isExpected má být false — engine porovnává s \"FOOD\", ne s klíčem alergenu",
-            !milk.isExpected
+            !milk.isExpected,
+            "isExpected má být false — engine porovnává s \"FOOD\", ne s klíčem alergenu"
         )
     }
 
@@ -130,7 +130,7 @@ class CorrelationEngineCharacterizationTest {
         )
 
         val milk = result.first { it.trigger == "Milk" }
-        assertTrue("isExpected mělo být true pro knownSymptoms=[ECZEMA]", milk.isExpected)
+        assertTrue(milk.isExpected, "isExpected mělo být true pro knownSymptoms=[ECZEMA]")
     }
 
     @Test
@@ -145,11 +145,11 @@ class CorrelationEngineCharacterizationTest {
 
         val result = engine.analyze(foods, symptoms, emptyList())
 
-        assertTrue("Nejvýše 10 výsledků, dostal jsem ${result.size}", result.size <= 10)
+        assertTrue(result.size <= 10, "Nejvýše 10 výsledků, dostal jsem ${result.size}")
         val scores = result.map { it.score }
         assertEquals(
-            "Výsledky musí být seřazené sestupně",
-            scores.sortedDescending(), scores
+            scores.sortedDescending(), scores,
+            "Výsledky musí být seřazené sestupně"
         )
     }
 
@@ -161,8 +161,8 @@ class CorrelationEngineCharacterizationTest {
         val result = engine.analyze(foods, symptoms, emptyList())
 
         assertTrue(
-            "Očekáván prázdný nebo bezglutenový výsledek, dostal jsem: $result",
-            result.none { it.trigger == "Gluten" }
+            result.none { it.trigger == "Gluten" },
+            "Očekáván prázdný nebo bezglutenový výsledek, dostal jsem: $result"
         )
     }
 
@@ -173,18 +173,18 @@ class CorrelationEngineCharacterizationTest {
             environmentLogCount = 0
         )
         assertTrue(
-            "Pod 5 symptomy má být Locked, je $readiness",
-            readiness is AnalysisReadiness.Locked
+            readiness is AnalysisReadiness.Locked,
+            "Pod 5 symptomy má být Locked, je $readiness"
         )
-        assertTrue("canAnalyze mělo být false", !engine.canAnalyze(readiness))
+        assertTrue(!engine.canAnalyze(readiness), "canAnalyze mělo být false")
     }
 
     @Test
     fun `evaluateReadiness na 5 az 9 symptomech vrati Partial`() {
         val readiness = engine.evaluateReadiness(symptomCount = 6, environmentLogCount = 0)
         assertTrue(
-            "Při 6 symptomech má být Partial, je $readiness",
-            readiness is AnalysisReadiness.Partial
+            readiness is AnalysisReadiness.Partial,
+            "Při 6 symptomech má být Partial, je $readiness"
         )
     }
 
@@ -192,8 +192,8 @@ class CorrelationEngineCharacterizationTest {
     fun `evaluateReadiness od 10 symptomu vrati Full`() {
         val readiness = engine.evaluateReadiness(symptomCount = 12, environmentLogCount = 7)
         assertTrue(
-            "Při 12 symptomech má být Full, je $readiness",
-            readiness is AnalysisReadiness.Full
+            readiness is AnalysisReadiness.Full,
+            "Při 12 symptomech má být Full, je $readiness"
         )
     }
 }

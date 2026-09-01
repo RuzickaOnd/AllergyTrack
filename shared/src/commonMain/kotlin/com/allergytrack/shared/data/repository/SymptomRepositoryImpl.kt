@@ -1,7 +1,8 @@
-package com.allergytrack.app.data.repository
+package com.allergytrack.shared.data.repository
 
-import com.allergytrack.app.data.local.database.dao.SymptomLogDao
-import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
+import com.allergytrack.shared.platform.startOfToday
+import com.allergytrack.shared.data.local.database.dao.SymptomLogDao
+import com.allergytrack.shared.data.local.database.entity.SymptomLogEntity
 import com.allergytrack.shared.domain.model.SymptomLog
 import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.shared.domain.repository.SymptomRepository
@@ -9,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.util.Calendar
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -20,14 +20,7 @@ class SymptomRepositoryImpl(
 ) : SymptomRepository {
 
     private val startOfDay: Long
-        get() {
-            val cal = Calendar.getInstance()
-            cal.set(Calendar.HOUR_OF_DAY, 0)
-            cal.set(Calendar.MINUTE, 0)
-            cal.set(Calendar.SECOND, 0)
-            cal.set(Calendar.MILLISECOND, 0)
-            return cal.timeInMillis
-        }
+        get() = startOfToday()
 
     override fun getAllLogs(): Flow<List<SymptomLog>> =
         symptomLogDao.getAllLogs().map { it.map { e -> e.toDomain(json) } }

@@ -1,8 +1,8 @@
-package com.allergytrack.app.data.repository
+package com.allergytrack.shared.data.repository
 
-import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
-import com.allergytrack.app.data.local.database.entity.EnvironmentLogEntity
-import com.allergytrack.app.data.location.LocationProvider
+import com.allergytrack.shared.data.local.database.dao.EnvironmentLogDao
+import com.allergytrack.shared.data.local.database.entity.EnvironmentLogEntity
+import com.allergytrack.shared.platform.LocationSource
 import com.allergytrack.shared.data.remote.airquality.AirQualityApi
 import com.allergytrack.shared.data.remote.airquality.toPollenIndex
 import com.allergytrack.shared.domain.model.EnvironmentLog
@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
 class EnvironmentRepositoryImpl(
     private val environmentLogDao: EnvironmentLogDao,
     private val airQualityApi: AirQualityApi,
-    private val locationProvider: LocationProvider
+    private val locationProvider: LocationSource
 ) : EnvironmentRepository {
 
     override fun getAllLogs(): Flow<List<EnvironmentLog>> =
@@ -43,11 +43,9 @@ class EnvironmentRepositoryImpl(
     }
 
     override suspend fun fetchAndSaveCurrentEnvironment(): EnvironmentLog? {
-        val location = try {
-            locationProvider.getCurrentLocation()
-        } catch (e: SecurityException) {
-            null
-        }
+        // LocationSource vrací null i při chybějícím oprávnění — platformní
+        // implementace si SecurityException odchytí sama, commonMain ji nezná.
+        val location = locationProvider.getCurrentLocation()
 
         val lat: Double
         val lon: Double

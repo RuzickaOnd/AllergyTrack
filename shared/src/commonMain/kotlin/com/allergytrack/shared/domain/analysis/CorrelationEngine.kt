@@ -1,8 +1,8 @@
-package com.allergytrack.app.domain.analysis
+package com.allergytrack.shared.domain.analysis
 
-import com.allergytrack.app.data.local.database.entity.EnvironmentLogEntity
-import com.allergytrack.app.data.local.database.entity.FoodLogEntity
-import com.allergytrack.app.data.local.database.entity.SymptomLogEntity
+import com.allergytrack.shared.data.local.database.entity.EnvironmentLogEntity
+import com.allergytrack.shared.data.local.database.entity.FoodLogEntity
+import com.allergytrack.shared.data.local.database.entity.SymptomLogEntity
 import com.allergytrack.shared.domain.model.AnalysisReadiness
 import com.allergytrack.shared.domain.model.Correlation
 import com.allergytrack.shared.domain.model.CorrelationSeverity
@@ -12,7 +12,6 @@ import com.allergytrack.shared.domain.model.SymptomInWindow
 import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.shared.domain.model.TriggerType
 import kotlinx.serialization.json.Json
-import java.util.concurrent.TimeUnit
 import kotlin.math.sqrt
 
 class CorrelationEngine(
@@ -34,7 +33,7 @@ class CorrelationEngine(
     // Časová okna pro hledání korelace (ms)
     private val TIME_WINDOWS = listOf(
         2L, 4L, 8L, 12L, 24L, 48L, 72L
-    ).map { TimeUnit.HOURS.toMillis(it) }
+    ).map { it * 60 * 60 * 1000 }   // hodiny -> ms (TimeUnit není v commonMain)
 
     fun analyze(
         foodLogs: List<FoodLogEntity>,
@@ -131,7 +130,9 @@ class CorrelationEngine(
 
         var score = matchCount.toFloat() / foodEventsWithAllergen.size.toFloat()
         val avgDelayHours = if (matchCount > 0)
-            TimeUnit.MILLISECONDS.toHours(totalDelayMs / matchCount).toFloat()
+            // Přesný ekvivalent TimeUnit.MILLISECONDS.toHours() —
+            // celočíselné dělení, tedy stejné zaokrouhlování jako dřív.
+            ((totalDelayMs / matchCount) / 3_600_000L).toFloat()
         else 0f
 
         // Lehký boost pro očekávané korelace, aby se dostaly výše

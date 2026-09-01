@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -19,7 +21,11 @@ kotlin {
 
     // iOS targety jsou CANARY — nikdy se nespouštějí, jen musí zkompilovat.
     // Tím kompilátor hlídá, že do commonMain nepropadne nic androidního.
-    iosX64()
+    //
+    // iosX64 (simulátor na Intel Macích) chybí záměrně: androidx.sqlite
+    // :sqlite-bundled:2.7.0 pro něj nepublikuje variantu. Není to volba —
+    // s Room KMP ten target prostě nejde sestavit. Vývoj běží na Apple
+    // Siliconu, kde simulátor pokrývá iosSimulatorArm64.
     iosArm64()
     iosSimulatorArm64()
 
@@ -32,6 +38,8 @@ kotlin {
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.client.logging)
             implementation(libs.datastore.preferences.core)
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
@@ -43,4 +51,14 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+    add("kspAndroid", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
 }

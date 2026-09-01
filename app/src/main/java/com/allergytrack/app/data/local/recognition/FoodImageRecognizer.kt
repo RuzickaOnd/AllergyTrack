@@ -7,11 +7,17 @@ import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import com.allergytrack.shared.platform.ImageRecognizer
+import com.allergytrack.shared.platform.RecognizedLabel
 import kotlin.coroutines.resumeWithException
 
-class FoodImageRecognizer {
+class FoodImageRecognizer : ImageRecognizer {
 
-    suspend fun recognize(imageBytes: ByteArray): List<ImageLabel> {
+    override suspend fun recognize(imageBytes: ByteArray): List<RecognizedLabel> =
+        recognizeInternal(imageBytes).map { RecognizedLabel(it.text, it.confidence) }
+
+
+    private suspend fun recognizeInternal(imageBytes: ByteArray): List<ImageLabel> {
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
             ?: return emptyList()
 

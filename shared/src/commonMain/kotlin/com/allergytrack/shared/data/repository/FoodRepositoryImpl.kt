@@ -1,9 +1,12 @@
-package com.allergytrack.app.data.repository
+package com.allergytrack.shared.data.repository
 
-import com.allergytrack.app.data.local.database.dao.FoodLogDao
-import com.allergytrack.app.data.local.database.entity.FoodLogEntity
+import com.allergytrack.shared.data.local.database.dao.FoodLogDao
+import com.allergytrack.shared.data.local.database.entity.FoodLogEntity
 import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
-import com.allergytrack.app.data.local.recognition.FoodImageRecognizer
+import com.allergytrack.shared.platform.ImageRecognizer
+import com.allergytrack.shared.platform.deviceCountry
+import com.allergytrack.shared.platform.deviceLanguage
+import com.allergytrack.shared.platform.startOfToday
 import com.allergytrack.shared.data.remote.food.SupabaseFoodApi
 import com.allergytrack.shared.data.remote.food.RecognizedFood
 import com.allergytrack.shared.data.remote.food.toRecognizedFood
@@ -17,15 +20,13 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-import java.util.Calendar
-import java.util.Locale
 
 @OptIn(ExperimentalUuidApi::class)
 class FoodRepositoryImpl(
     private val foodLogDao: FoodLogDao,
     private val supabaseFoodApi: SupabaseFoodApi,   // ← Supabase místo OFF
     private val json: Json,
-    private val foodImageRecognizer: FoodImageRecognizer,
+    private val foodImageRecognizer: ImageRecognizer,
     private val userPreferencesDataStore: UserPreferencesDataStore
 ) : FoodRepository {
 
@@ -48,22 +49,14 @@ class FoodRepositoryImpl(
     private suspend fun resolvedLocale(): Pair<String, String> {
         val saved = userPreferencesDataStore.foodSearchLanguage.first()
         return if (saved.isEmpty()) {
-            val locale = Locale.getDefault()
-            Pair(locale.language.lowercase(), locale.country.lowercase())
+            Pair(deviceLanguage(), deviceCountry())
         } else {
-            Pair(saved, LANGUAGE_TO_COUNTRY.getOrDefault(saved, saved))
+            Pair(saved, LANGUAGE_TO_COUNTRY.getOrElse(saved) { saved })
         }
     }
 
     private val startOfDay: Long
-        get() {
-            val cal = Calendar.getInstance()
-            cal.set(Calendar.HOUR_OF_DAY, 0)
-            cal.set(Calendar.MINUTE, 0)
-            cal.set(Calendar.SECOND, 0)
-            cal.set(Calendar.MILLISECOND, 0)
-            return cal.timeInMillis
-        }
+        get() = startOfToday()
 
     // ── DAO operace (beze změny) ───────────────────────────────────────────────
 

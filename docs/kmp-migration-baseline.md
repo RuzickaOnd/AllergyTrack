@@ -223,3 +223,58 @@ joby aplikace nevidí a Debug menu umí jen vygenerovat falešná data,
 
 `AirQualityApi.getHourlyHistory()` je mrtvý kód — nevolá se nikde
 a nevolal se ani v Retrofit verzi. Přenesen beze změny.
+
+---
+
+## Fáze 6 — Room KMP a DataStore KMP
+
+### Ověřeno
+
+- [x] **Existující databáze se otevře beze změny** — 12/8/8 záznamů,
+      `user_version` = 2, žádná chyba v logu
+- [x] **Migrace 1→2 funguje** — vyrobena umělá v1 databáze (odstraněny
+      sloupce `no2`, `ozone`, `region`, `pollenAvailable`, `user_version=1`).
+      Po startu aplikace: `user_version` = 2, všechny čtyři sloupce přidané,
+      defaulty přesně dle migrace (`no2=0.0`, `ozone=0.0`, `region='UNKNOWN'`,
+      `pollenAvailable=0`), původní data zachována.
+- [x] **Nastavení uživatele zachována** — onboarding se po přeinstalaci
+      nespustil, tedy `onboarding_preferences` se přečetlo
+- [x] **Analýza vrací shodnou hodnotu** Milk → Eczema 100 % (8/8)
+- [x] `CorrelationEngineCharacterizationTest` běží na Androidu **i iOS
+      simulátoru** — 10 testů na každé platformě, shodné výsledky
+
+### Uzavřená mezera z fáze 5
+
+Po udělení oprávnění k poloze a nastavení mock souřadnic přibyl
+v `environment_logs` nový záznam s živými hodnotami z Open-Meteo:
+`aqi=28, pm25=4.90, no2=7.7, ozone=71.0, region=EUROPE, pollenAvailable=1`.
+
+Tím je **celý řetězec EnvironmentWorker → Open-Meteo → databáze ověřen
+za běhu**, což se ve fázi 5 nepodařilo.
+
+### iosX64 target odebrán
+
+`androidx.sqlite:sqlite-bundled:2.7.0` nepublikuje variantu pro `iosX64`
+(simulátor na Intel Macích). Není to volba — s Room KMP ten target nejde
+sestavit. Zbývají `iosArm64` a `iosSimulatorArm64`, což na Apple Siliconu
+pokrývá zařízení i simulátor.
+
+### Past při čtení databáze ze zařízení
+
+Na emulátoru **není `sqlite3`**, takže `run-as ... sqlite3 'PRAGMA
+wal_checkpoint'` tiše selže a data zůstanou ve WAL. Kopírovat samotný
+`.db` pak ukáže starý stav — což při ověřování migrace vypadá jako by
+migrace neproběhla. **Vždy kopíruj všechny tři soubory:**
+
+```bash
+for f in allergy_track.db allergy_track.db-shm allergy_track.db-wal; do
+  adb exec-out run-as com.allergytrack.app cat "databases/$f" > "/tmp/out${f#allergy_track.db}"
+done
+```
+
+### Room zůstává na classpath :app
+
+Osm ViewModelů volá DAO přímo, mimo repository pattern (starší nedostatek,
+viz seznam zděděných chyb). `:app` proto potřebuje `room-runtime` kvůli
+typům. Databáze i migrace žijí v `:shared` za továrnou `createAllergyDatabase()`.
+Odstranitelné až po fázi 8.

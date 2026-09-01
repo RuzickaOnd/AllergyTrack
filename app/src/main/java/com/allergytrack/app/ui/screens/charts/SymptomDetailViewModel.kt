@@ -3,7 +3,7 @@ package com.allergytrack.app.ui.screens.charts
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.allergytrack.app.data.local.database.dao.SymptomLogDao
+import com.allergytrack.shared.data.local.database.dao.SymptomLogDao
 import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.shared.domain.premium.PremiumHelper

@@ -8,3 +8,12 @@ expect fun deviceLanguage(): String
 
 /** ISO 3166-1 kód země zařízení, malými písmeny (např. "cz"). Prázdný, pokud není známa. */
 expect fun deviceCountry(): String
+
+/** Náhodné UUID jako řetězec — pro primární klíče Room entit. */
+expect fun randomUuidString(): String
+
+/**
+ * Půlnoc dnešního dne v místní zóně, v milisekundách od epochy.
+ * Náhrada za Calendar.getInstance() s vynulovanými poli.
+ */
+expect fun startOfToday(): Long

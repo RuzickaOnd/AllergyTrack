@@ -3,11 +3,11 @@ package com.allergytrack.app.ui.screens.analysis
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
-import com.allergytrack.app.data.local.database.dao.FoodLogDao
-import com.allergytrack.app.data.local.database.dao.SymptomLogDao
+import com.allergytrack.shared.data.local.database.dao.EnvironmentLogDao
+import com.allergytrack.shared.data.local.database.dao.FoodLogDao
+import com.allergytrack.shared.data.local.database.dao.SymptomLogDao
 import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
-import com.allergytrack.app.domain.analysis.CorrelationEngine
+import com.allergytrack.shared.domain.analysis.CorrelationEngine
 import com.allergytrack.shared.domain.model.Correlation
 import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.shared.domain.model.TriggerType

@@ -4,8 +4,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.allergytrack.app.R
-import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
-import com.allergytrack.app.data.local.database.dao.SymptomLogDao
+import com.allergytrack.shared.data.local.database.dao.EnvironmentLogDao
+import com.allergytrack.shared.data.local.database.dao.SymptomLogDao
 import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
 import com.allergytrack.app.data.permissions.PermissionsHelper
 import com.allergytrack.shared.domain.model.SymptomType

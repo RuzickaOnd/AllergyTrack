@@ -10,6 +10,8 @@ import com.allergytrack.app.data.remote.ai.AiSummaryService
 import com.allergytrack.app.data.worker.WorkManagerScheduler
 import com.allergytrack.app.domain.export.MedicalReportExporter
 import com.allergytrack.shared.config.AppConfig
+import com.allergytrack.shared.platform.ImageRecognizer
+import com.allergytrack.shared.platform.LocationSource
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -40,11 +42,11 @@ val coreModule = module {
     }
 
     single { PermissionsHelper(androidContext()) }
-    single { LocationProvider(androidContext()) }
+    single<LocationSource> { LocationProvider(androidContext()) }
     single { WorkManagerScheduler(androidContext()) }
     single { AnalyticsManager(androidContext()) }
     single { AiSummaryService(androidContext()) }
     single { MedicalReportExporter(androidContext()) }
-    single { FoodImageRecognizer() }
+    single<ImageRecognizer> { FoodImageRecognizer() }
     single { NotificationManager(androidContext(), get()) }
 }

@@ -1,7 +1,7 @@
-package com.allergytrack.app.data.local.database.dao
+package com.allergytrack.shared.data.local.database.dao
 
 import androidx.room.*
-import com.allergytrack.app.data.local.database.entity.EnvironmentLogEntity
+import com.allergytrack.shared.data.local.database.entity.EnvironmentLogEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

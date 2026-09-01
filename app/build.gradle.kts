@@ -76,6 +76,12 @@ android {
 
 dependencies {
     implementation(project(":shared"))
+
+    // Room zůstává na classpath :app, protože 8 ViewModelů volá DAO přímo
+    // (porušení repository patternu, které je starší než tato migrace).
+    // Samotná databáze i migrace žijí v :shared; tohle je jen kvůli typům.
+    // Odstranitelné až po fázi 8, kdy ViewModely odejdou do commonMain.
+    implementation(libs.room.runtime)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -88,9 +94,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.work.runtime.ktx)
