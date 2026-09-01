@@ -1,0 +1,38 @@
+package com.allergytrack.app.di.koin
+
+import com.allergytrack.app.data.analytics.AnalyticsManager
+import com.allergytrack.app.data.local.recognition.FoodImageRecognizer
+import com.allergytrack.app.data.location.LocationProvider
+import com.allergytrack.app.data.notifications.NotificationManager
+import com.allergytrack.app.data.permissions.PermissionsHelper
+import com.allergytrack.app.data.remote.ai.AiSummaryService
+import com.allergytrack.app.data.worker.WorkManagerScheduler
+import com.allergytrack.app.domain.export.MedicalReportExporter
+import kotlinx.serialization.json.Json
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
+
+/**
+ * Platformní služby a sdílené nástroje.
+ *
+ * Odpovídá bývalému Hilt SingletonComponent bez vlastního @Module —
+ * třídy se dřív injektovaly konstruktorem s @ApplicationContext.
+ */
+val coreModule = module {
+
+    single {
+        Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+        }
+    }
+
+    single { PermissionsHelper(androidContext()) }
+    single { LocationProvider(androidContext()) }
+    single { WorkManagerScheduler(androidContext()) }
+    single { AnalyticsManager(androidContext()) }
+    single { AiSummaryService(androidContext()) }
+    single { MedicalReportExporter(androidContext()) }
+    single { FoodImageRecognizer() }
+    single { NotificationManager(androidContext(), get()) }
+}
