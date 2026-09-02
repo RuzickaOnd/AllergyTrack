@@ -1,7 +1,7 @@
 package com.allergytrack.app.data.repository
 
-import com.allergytrack.app.domain.model.PremiumStatus
-import com.allergytrack.app.domain.repository.PremiumRepository
+import com.allergytrack.shared.domain.model.PremiumStatus
+import com.allergytrack.shared.domain.repository.PremiumRepository
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.PeriodType
 import com.revenuecat.purchases.Purchases
@@ -11,13 +11,10 @@ import com.revenuecat.purchases.interfaces.UpdatedCustomerInfoListener
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-@Singleton
-class PremiumRepositoryImpl @Inject constructor() : PremiumRepository {
+class PremiumRepositoryImpl : PremiumRepository {
 
     private val ENTITLEMENT_ID = "AllergyTrack Premium"
 

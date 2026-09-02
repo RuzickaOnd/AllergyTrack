@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.food
 
+import com.allergytrack.shared.presentation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,15 +13,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.allergytrack.app.R
-import com.allergytrack.app.data.remote.food.FoodAllergenHelper
-import com.allergytrack.app.data.remote.food.RecognizedFood
+import com.allergytrack.shared.resources.*
+import com.allergytrack.shared.data.remote.food.FoodAllergenHelper
+import com.allergytrack.shared.data.remote.food.RecognizedFood
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.*
@@ -31,7 +32,7 @@ fun FoodConfirmScreen(
     navController: NavController,
     foodName: String,
     allergens: String,
-    viewModel: FoodLogViewModel = hiltViewModel()
+    viewModel: FoodLogViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val customTimestamp by viewModel.customTimestamp.collectAsStateWithLifecycle()
@@ -89,7 +90,7 @@ fun FoodConfirmScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = stringResource(R.string.food_ai_identified),
+                            text = stringResource(Res.string.food_ai_identified),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.primary,
                             fontFamily = MonoFontFamily,
@@ -101,7 +102,7 @@ fun FoodConfirmScreen(
         }
 
         item {
-            CardTitle(text = stringResource(R.string.section_detected_allergens), icon = Icons.Outlined.Warning)
+            CardTitle(text = stringResource(Res.string.section_detected_allergens), icon = Icons.Outlined.Warning)
             if (parsedAllergens.isNotEmpty()) {
                 AppCard(
                     borderColor = MaterialTheme.colorScheme.symptomColor.copy(alpha = 0.3f),
@@ -130,7 +131,7 @@ fun FoodConfirmScreen(
                     ) {
                         Icon(Icons.Default.CheckCircle, null, tint = MaterialTheme.colorScheme.okColor, modifier = Modifier.size(20.dp))
                         Text(
-                            stringResource(R.string.no_allergens_detected),
+                            stringResource(Res.string.no_allergens_detected),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -150,7 +151,7 @@ fun FoodConfirmScreen(
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    stringResource(R.string.label_notes),
+                    stringResource(Res.string.label_notes),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontFamily = MonoFontFamily
@@ -158,7 +159,7 @@ fun FoodConfirmScreen(
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    placeholder = { Text(stringResource(R.string.notes_placeholder_food), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    placeholder = { Text(stringResource(Res.string.notes_placeholder_food), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     maxLines = 3,
@@ -175,7 +176,7 @@ fun FoodConfirmScreen(
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 PrimaryButton(
-                    text = stringResource(R.string.btn_save_record),
+                    text = stringResource(Res.string.btn_save_record),
                     onClick = {
                         viewModel.saveFood(
                             food = RecognizedFood(name = foodName, allergens = parsedAllergens),
@@ -184,7 +185,7 @@ fun FoodConfirmScreen(
                     }
                 )
                 SecondaryButton(
-                    text = stringResource(R.string.btn_edit_selection),
+                    text = stringResource(Res.string.btn_edit_selection),
                     onClick = { navController.popBackStack() }
                 )
             }

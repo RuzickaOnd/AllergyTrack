@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name">AllergyTrack</string>
+
+    <!-- Common buttons -->
+    <string name="btn_back">BACK</string>
+    <string name="btn_continue">CONTINUE</string>
+    <string name="btn_continue_arrow">CONTINUE</string>
+    <string name="btn_skip">SKIP</string>
+    <string name="btn_close">CLOSE</string>
+    <string name="btn_save_record">SAVE RECORD</string>
+    <string name="btn_upgrade_premium">Upgrade to Premium</string>
+    <string name="btn_saving">SAVING…</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_cancel">CANCEL</string>
+    <string name="datetime_picker_title">Log date and time</string>
+    <string name="time_picker_title">Enter time</string>
+
+    <!-- Content descriptions -->
+    <string name="nav_back">Back</string>
+    <string name="cd_export_report">Export report</string>
+    <string name="cd_reset_all">Reset all</string>
+    <string name="cd_clear">Clear</string>
+    <string name="cd_take_photo">Take photo</string>
+    <string name="cd_permission_granted">Granted</string>
+    <string name="cd_permission_grant">Grant</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_dashboard">OVERVIEW</string>
+    <string name="nav_charts">CHARTS</string>
+    <string name="nav_analysis">ANALYSIS</string>
+    <string name="nav_profile">PROFILE</string>
+
+    <!-- Screen titles -->
+    <string name="screen_profile">Profile</string>
+    <string name="screen_analytics">Analytics</string>
+    <string name="screen_ai_analysis">AI Analysis</string>
+    <string name="screen_log_food">Log food</string>
+    <string name="screen_log_symptom">Log symptom</string>
+    <string name="screen_settings">Settings</string>
+    <string name="screen_about">About</string>
+    <string name="screen_faq">FAQ</string>
+    <string name="screen_debug_menu">Debug Menu</string>
+    <string name="screen_confirm_food">Confirm food</string>
+    <string name="screen_search_food">Search food</string>
+    <string name="subtitle_charts">Trends and environmental correlations</string>
+
+    <!-- Greetings -->
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+
+    <!-- Dashboard insights -->
+    <string name="dashboard_insight_high_pollen">Pollen index %1$d today – monitor your symptoms carefully.</string>
+    <string name="dashboard_insight_high_aqi">Air quality AQI %1$d – consider limiting outdoor time.</string>
+    <string name="dashboard_insight_good_day">Good air conditions today. Great for outdoor activity.</string>
+
+    <!-- Dashboard -->
+    <string name="btn_add_food">+ FOOD</string>
+    <string name="btn_add_symptom">+ SYMPTOM</string>
+    <string name="section_today_records">Today's records</string>
+    <string name="env_section_title">Environment today</string>
+    <string name="env_label_pollen_grass">Grass pollen</string>
+    <string name="env_label_aqi">AQI</string>
+    <string name="env_label_pollen_tree">Tree pollen</string>
+    <string name="env_label_pollen_weed">Weed pollen</string>
+    <string name="loading_environment">Loading environment data…</string>
+    <string name="empty_day_title">No records today yet</string>
+    <string name="empty_day_subtitle">Log your breakfast or how you feel.</string>
+
+    <!-- Food Log -->
+    <string name="btn_scan_tap">TAP TO SCAN</string>
+    <string name="btn_scan_subtitle">Quick AI recognition</string>
+    <string name="btn_barcode">BARCODE</string>
+    <string name="btn_voice_input">VOICE</string>
+    <string name="search_food_hint">Search food manually…</string>
+    <string name="section_recently_logged">RECENTLY LOGGED</string>
+    <string name="food_recently_empty">No records yet. Start logging your food.</string>
+
+    <!-- Food Search -->
+    <string name="search_food_query_hint">Search food…</string>
+    <string name="search_min_chars">Enter at least 2 characters to search</string>
+    <string name="search_no_results_title">Nothing found</string>
+    <string name="search_no_results_subtitle">Try a different name or add manually below</string>
+    <string name="search_service_unavailable_title">Service temporarily unavailable</string>
+    <string name="search_service_unavailable_desc">Open Food Facts is currently overloaded (HTTP 503). This is caused by too many requests on the shared infrastructure. Please try again in a moment, or add the food manually.</string>
+    <string name="search_add_manually">Add \"%1$s\" manually</string>
+    <string name="btn_add_food_manually">Add food manually</string>
+    <string name="search_info_banner">Searches packaged food products from Open Food Facts. For fresh food, vegetables, or restaurant meals, use manual entry.</string>
+
+    <!-- Manual food entry -->
+    <string name="screen_manual_food_entry">Manual entry</string>
+    <string name="manual_entry_name_label">Food name</string>
+    <string name="manual_entry_allergen_heading">ALLERGENS</string>
+    <string name="manual_entry_suggest_btn">Suggest allergens</string>
+    <string name="manual_entry_suggesting">Searching…</string>
+    <string name="manual_entry_suggest_hint">Tap the button to automatically suggest allergens based on the food name.</string>
+
+    <!-- EU 14 allergens -->
+    <string name="allergen_gluten">Gluten (cereals)</string>
+    <string name="allergen_milk">Milk</string>
+    <string name="allergen_eggs">Eggs</string>
+    <string name="allergen_fish">Fish</string>
+    <string name="allergen_crustaceans">Crustaceans</string>
+    <string name="allergen_peanuts">Peanuts</string>
+    <string name="allergen_soybeans">Soybeans</string>
+    <string name="allergen_nuts">Tree nuts</string>
+    <string name="allergen_celery">Celery</string>
+    <string name="allergen_mustard">Mustard</string>
+    <string name="allergen_sesame">Sesame</string>
+    <string name="allergen_sulphites">Sulphites</string>
+    <string name="allergen_lupin">Lupin</string>
+    <string name="allergen_molluscs">Molluscs</string>
+
+    <!-- Food Confirm -->
+    <string name="food_name_original_lang">Name in orig. language</string>
+    <string name="food_ai_identified">IDENTIFIED BY AI</string>
+    <string name="section_detected_allergens">DETECTED ALLERGENS</string>
+    <string name="no_allergens_detected">No common allergens detected</string>
+    <string name="label_notes">NOTES</string>
+    <string name="notes_placeholder_food">Add details (e.g. homemade, ingredients)…</string>
+    <string name="btn_edit_selection">EDIT SELECTION</string>
+
+    <!-- Camera -->
+    <string name="camera_title">Take photo of food</string>
+    <string name="camera_recognizing">Recognizing food…</string>
+    <string name="voice_listening_title">Listening…</string>
+    <string name="voice_listening_hint">Say the name of the food</string>
+    <string name="voice_not_available">Speech recognition is not available</string>
+    <string name="voice_permission_denied">Microphone permission is required for voice input</string>
+    <string name="screen_barcode_scanner">Scan barcode</string>
+    <string name="barcode_scanning">Scanning barcode…</string>
+    <string name="barcode_scan_hint">Point the camera at a barcode</string>
+    <string name="barcode_not_found">Product with this barcode was not found</string>
+
+    <!-- Symptom Log -->
+    <string name="section_symptom_type">SYMPTOM TYPE</string>
+    <string name="select_symptom_type_prompt">Select a symptom type on the left to customize details.</string>
+    <string name="section_intensity">INTENSITY</string>
+    <string name="section_body_area">AFFECTED AREA</string>
+    <string name="notes_placeholder_symptom">Specific triggers or details…</string>
+    <string name="btn_save_symptom">SAVE SYMPTOM</string>
+    <string name="intensity_1">Mild</string>
+    <string name="intensity_2">Slight</string>
+    <string name="intensity_3">Moderate</string>
+    <string name="intensity_4">Strong</string>
+    <string name="intensity_5">Critical</string>
+    <string name="intensity_format">%1$s (%2$d/5)</string>
+
+    <!-- Body parts -->
+    <string name="body_part_face">Face</string>
+    <string name="body_part_neck">Neck</string>
+    <string name="body_part_chest">Chest</string>
+    <string name="body_part_back">Back</string>
+    <string name="body_part_arms">Arms</string>
+    <string name="body_part_hands">Hands</string>
+    <string name="body_part_stomach">Stomach</string>
+    <string name="body_part_legs">Legs</string>
+    <string name="body_part_feet">Feet</string>
+
+    <!-- Symptom types -->
+    <string name="symptom_eczema">Eczema</string>
+    <string name="symptom_rhinitis">Rhinitis</string>
+    <string name="symptom_eye_itching">Eye Itching</string>
+    <string name="symptom_urticaria">Urticaria</string>
+    <string name="symptom_asthma">Asthma</string>
+    <string name="symptom_itching">Itching</string>
+    <string name="symptom_digestive">Digestive</string>
+    <string name="symptom_other">Other</string>
+    <string name="symptom_sneezing">Sneezing</string>
+
+    <!-- Allergy types -->
+    <string name="allergy_pollen">Pollen (hay fever)</string>
+    <string name="allergy_food">Food</string>
+    <string name="allergy_animal">Animals</string>
+    <string name="allergy_dust">Dust and mites</string>
+    <string name="allergy_mold">Mold</string>
+    <string name="allergy_unknown">Unknown / other</string>
+
+    <!-- Analysis -->
+    <string name="feature_unavailable">This feature is currently unavailable.</string>
+    <string name="analysis_coming_soon_title">AI Analysis</string>
+    <string name="analysis_coming_soon_subtitle">We're building smart data analysis to help you discover hidden allergy triggers.</string>
+    <string name="analysis_coming_feature_1">Food and allergic reaction correlations</string>
+    <string name="analysis_coming_feature_2">Automatic trigger identification</string>
+    <string name="analysis_coming_feature_3">AI summary for sharing with your doctor</string>
+    <string name="analysis_top_triggers">Main triggers</string>
+    <string name="analysis_no_patterns">No significant patterns found yet. Keep logging.</string>
+    <string name="analysis_food_triggers_title">Food Triggers</string>
+    <string name="analysis_food_triggers_subtitle">Foods and allergens most often linked to reactions</string>
+    <string name="analysis_show_all_triggers">Show all triggers (%1$d)</string>
+    <string name="analysis_no_food_patterns">No patterns found yet.\nKeep logging food and symptoms regularly — analysis improves over time.</string>
+    <string name="analysis_locked_no_data">Not enough data yet</string>
+    <string name="analysis_symptom_count_label">Recorded symptoms</string>
+    <string name="analysis_log_encouragement">Every symptom counts — record how you feel anytime during the day.</string>
+    <string name="btn_export_pdf">Export PDF report</string>
+    <string name="export_pdf_header">AllergyTrack - Medical Report</string>
+    <string name="export_pdf_date_label">Generated on: %1$s</string>
+    <string name="export_pdf_summary_header">Clinical Summary (AI)</string>
+    <string name="export_pdf_correlations_header">Identified Correlations</string>
+    <string name="export_pdf_confidence_label">Confidence: %1$d%</string>
+    <string name="export_pdf_symptom_label">Symptom: %1$s</string>
+    <string name="export_pdf_occurrences_label">Recorded in %1$d of %2$d cases.</string>
+    <string name="export_pdf_food_triggers_header">Potential Foods and Allergens</string>
+    <string name="export_pdf_reaction_label">Reactions: %1$d/%2$d servings (%3$d%)</string>
+    <string name="export_pdf_symptoms_list_label">Symptoms: %1$s</string>
+    <string name="export_pdf_disclaimer">This report is generated by AI based on user data and is for informational purposes only.</string>
+    <string name="export_share_chooser_title">Share Medical Report</string>
+    <string name="export_save_confirmation">Report saved to Documents/AllergyTrack</string>
+    <string name="export_error_msg">Error sharing PDF</string>
+    <string name="correlation_reliability">CORRELATION CONFIDENCE</string>
+    <string name="stat_matches">MATCHES</string>
+    <string name="stat_latency">LATENCY</string>
+    <string name="stat_impact">IMPACT</string>
+    <string name="analysis_correlation_detail">Correlation Detail</string>
+    <string name="analysis_food_trigger_detail">Food Trigger Detail</string>
+    <string name="correlation_insight_title">Clinical insight</string>
+    <string name="correlation_recommendation_title">Recommendation</string>
+    <string name="analysis_locked_title">Analysis is being prepared</string>
+    <string name="analysis_locked_desc">Our AI model needs more data to accurately identify patterns. Keep logging symptoms and food.</string>
+    <string name="data_maturity">DATA MATURITY</string>
+    <string name="data_records_progress">%1$d / 5 RECORDS</string>
+    <string name="correlation_item_details">%1$s • %2$d of %3$d</string>
+    <string name="correlation_badge_expected">MATCH</string>
+    <string name="recommendation_food">Consider a 14-day elimination test for %1$s and track whether symptoms improve.</string>
+    <string name="recommendation_environment">Try to minimise time outdoors when %1$s levels are high, or use an air purifier.</string>
+    <string name="recommendation_combined">This combination suggests multiple factors. Consult this report with your allergist.</string>
+    <string name="interpretation_food">%1$s was identified as a strong trigger for %2$s with %3$d% confidence. Symptoms typically appear ~%4$dh after consumption.</string>
+    <string name="interpretation_environment">High levels of %1$s strongly correlate with your %2$s episodes. This pattern was detected on %3$d% of tracked days.</string>
+    <string name="interpretation_combined">Synergistic effect detected: The combination of %1$s and recent environmental factors significantly increases reaction intensity.</string>
+
+    <!-- Charts -->
+    <string name="filter_symptoms_label">Symptom filter</string>
+    <string name="filter_all">ALL</string>
+    <string name="stat_total">TOTAL</string>
+    <string name="stat_avg">AVERAGE</string>
+    <string name="stat_most_frequent">MOST FREQUENT</string>
+    <string name="chart_symptom_intensity">SYMPTOM INTENSITY</string>
+    <string name="chart_pollen_vs_symptoms">POLLEN VS. SYMPTOMS</string>
+    <string name="chart_aqi_vs_symptoms">AIR QUALITY (AQI) VS. SYMPTOMS</string>
+    <string name="chart_empty_period">No data for this period</string>
+    <string name="pollen_unavailable_title">Environment data unavailable</string>
+    <string name="pollen_unavailable_desc">Pollen data is not available for this region or time of year (available Mar–Sep in EU).</string>
+    <string name="legend_pollen_grass">Pollen (grass)</string>
+    <string name="legend_symptoms">Symptoms</string>
+    <string name="legend_aqi">AQI (norm.)</string>
+    <string name="empty_charts_title">Insufficient data</string>
+    <string name="empty_charts_desc">Record food and symptoms every day. Charts will appear once there are enough records.</string>
+    <string name="time_range_week">7 days</string>
+    <string name="time_range_two_weeks">14 days</string>
+    <string name="time_range_month">30 days</string>
+
+    <!-- Profile -->
+    <string name="profile_user_name">User</string>
+    <string name="profile_option_premium">Premium</string>
+    <string name="profile_option_premium_manage">Manage Subscription</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="profile_edit_name">Edit name</string>
+    <string name="profile_name_done">Done</string>
+    <string name="profile_change_avatar">Change avatar</string>
+    <string name="profile_name_placeholder">Anonym</string>
+    <string name="avatar_picker_title">Choose avatar</string>
+    <string name="avatar_from_gallery">From gallery</string>
+    <string name="avatar_person">Person</string>
+    <string name="avatar_favorite">Favorite</string>
+    <string name="avatar_star">Star</string>
+    <string name="avatar_pets">Pets</string>
+    <string name="avatar_florist">Flower</string>
+    <string name="avatar_fitness">Fitness</string>
+    <string name="avatar_run">Running</string>
+    <string name="avatar_spa">Spa</string>
+    <string name="avatar_eco">Eco</string>
+    <string name="avatar_health">Health</string>
+    <string name="avatar_happy">Happy</string>
+    <string name="avatar_mindful">Mindful</string>
+
+    <!-- About -->
+    <string name="about_section_what_title">What AllergyTrack does</string>
+    <string name="about_section_what_content">AllergyTrack helps you identify the triggers of your allergies. You record what you eat, where you go and what allergic reactions you experience — the app then looks for patterns and correlations between this data.</string>
+    <string name="about_section_how_title">How it works</string>
+    <string name="about_section_how_content">Every day you log food (photo or manual entry), allergic symptoms (eczema, rhinitis, itching…) and the app automatically loads air quality and pollen data based on your GPS location. After collecting data, the analysis reveals what most often triggers your allergies.</string>
+    <string name="about_section_data_title">Your data</string>
+    <string name="about_section_data_content">All data is stored only on your device and is never shared with third parties. The app collects no personal data.</string>
+    <string name="about_section_sources_title">Data sources</string>
+    <string name="about_section_sources_content">Air quality and pollen data: Open-Meteo (open-meteo.com)\nFood database: Open Food Facts (openfoodfacts.org)</string>
+    <string name="about_disclaimer">This application is not a medical device and does not provide medical diagnosis or treatment. For medical advice, always consult a qualified healthcare professional.</string>
+
+    <!-- Settings -->
+    <string name="settings_section_general">GENERAL</string>
+    <string name="settings_dark_mode">Dark mode (forced)</string>
+    <string name="settings_push_notifications">Push notifications</string>
+    <string name="settings_notifications_permission_required">To enable notifications, first grant permission in the Permissions section below.</string>
+    <string name="permission_required_location_title">Location permission required</string>
+    <string name="permission_required_location_body">To display air quality and pollen data, grant Location permission in Settings → Permissions.</string>
+    <string name="permission_required_go_to_settings">Set permissions</string>
+    <string name="settings_section_charts">CHARTS</string>
+    <string name="settings_app_language">App language</string>
+    <string name="settings_app_language_auto">System (auto)</string>
+    <string name="settings_app_language_dialog_title">App language</string>
+    <string name="settings_sync_charts_scroll">Synchronised chart scrolling</string>
+    <string name="settings_section_food_search">FOOD SEARCH</string>
+    <string name="settings_food_language">Food search language</string>
+    <string name="settings_food_language_auto">Auto (%1$s)</string>
+    <string name="settings_food_language_dialog_title">Select language</string>
+    <string name="settings_section_data_privacy">DATA AND PRIVACY</string>
+    <string name="settings_section_permissions">PERMISSIONS</string>
+    <string name="settings_export_data">Export my data</string>
+    <string name="settings_exporting">Generating PDF…</string>
+    <string name="settings_delete_data">Delete all records</string>
+    <string name="settings_delete_confirm_title">Delete all data?</string>
+    <string name="settings_delete_confirm_message">This will permanently delete all food, symptom, and environment records. This cannot be undone.</string>
+    <string name="settings_delete_confirm_btn">Delete</string>
+    <string name="settings_section_developer">DEVELOPER</string>
+    <string name="settings_debug_menu_label">Debug menu</string>
+    <string name="settings_version_format">Version %1$s (%2$s)</string>
+
+    <!-- Debug -->
+    <string name="debug_premium_override_title">Premium Override Settings</string>
+    <string name="debug_other_options">Other options</string>
+    <string name="debug_seed_test_data">Insert test data (Food and Symptoms)</string>
+    <string name="debug_seed_hint">Inserts 21 days of data (food, symptoms, environment). Existing records will be deleted.</string>
+    <string name="debug_seed_cz">Seed CZ data</string>
+    <string name="debug_seed_en">Seed EN data</string>
+    <string name="debug_seed_in_progress">Inserting data…</string>
+    <string name="debug_crash_app">Crashlytics: test crash</string>
+    <string name="debug_nonfatal_test">Crashlytics: test non-fatal</string>
+    <string name="debug_onboarding_section">Onboarding</string>
+    <string name="debug_reset_onboarding_btn">Reset onboarding (restarts app)</string>
+    <string name="debug_reset_onboarding_note">After reset, onboarding will appear on next app launch.</string>
+
+    <string name="debug_firebase_section">Firebase settings</string>
+    <string name="debug_firebase_analytics_title">Enable Firebase Analytics</string>
+    <string name="debug_firebase_analytics_desc">Enable event logging and screen tracking in debug</string>
+    <string name="debug_firebase_crashlytics_title">Enable Firebase Crashlytics</string>
+    <string name="debug_firebase_crashlytics_desc">Enable crash and exception reporting in debug</string>
+    <string name="debug_enable_crashlytics_toast">You must enable Firebase Crashlytics first.</string>
+
+    <!-- Premium -->
+    <string name="premium_upsell_desc">This feature is available in the Premium version.</string>
+    <string name="premium_badge_label">PREMIUM</string>
+    <string name="dashboard_premium_promo_title">Unlock Premium</string>
+    <string name="dashboard_premium_promo_body">AI insights, pollen data, longer charts and PDF reports.</string>
+    <string name="dashboard_premium_promo_cta">View</string>
+    <string name="ai_badge_label">CLINICAL INSIGHT</string>
+
+    <!-- Premium features -->
+    <string name="premium_feature_food_photo">Food photo recognition</string>
+    <string name="premium_feature_pollen">Pollen data</string>
+    <string name="premium_feature_extended_charts">Charts 14+ days</string>
+    <string name="premium_feature_ai_analysis">AI trigger analysis</string>
+    <string name="premium_feature_pdf_export">PDF export for doctor</string>
+    <string name="premium_feature_unlimited_history">Unlimited history</string>
+
+    <!-- Premium page -->
+    <string name="screen_premium">Premium</string>
+    <string name="premium_page_headline">Unlock the full potential</string>
+    <string name="premium_page_subtitle">Get access to all features and uncover your allergy triggers with maximum precision.</string>
+    <string name="premium_page_features_title">What you get with Premium</string>
+    <string name="premium_page_cta">Buy Premium</string>
+    <string name="premium_feature_food_photo_desc">Simply photograph your food and AI will automatically recognise and log it.</string>
+    <string name="premium_feature_pollen_desc">Monitor pollen levels in your area in real time and anticipate reactions.</string>
+    <string name="premium_feature_extended_charts_desc">Analyse symptom and environment trends over 14 or 30 days.</string>
+    <string name="premium_feature_ai_analysis_desc">Advanced AI uncovers hidden patterns and precise allergy triggers.</string>
+    <string name="premium_feature_pdf_export_desc">Generate a clear medical report and share it directly with your doctor.</string>
+    <string name="premium_feature_unlimited_history_desc">Keep a complete history of all records without any time limit.</string>
+
+    <!-- Stats -->
+    <string name="stats_symptom_summary">Symptom overview</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">SKIP</string>
+    <string name="onboarding_title">Find your\ntriggers</string>
+    <string name="onboarding_description">AllergyTrack automatically links your food, environment and symptoms to help you discover what's behind your allergies.</string>
+    <string name="onboarding_cta">START</string>
+    <string name="onboarding_no_registration">No registration required</string>
+    <string name="onboarding_profile_title">Allergy profile</string>
+    <string name="onboarding_profile_subtitle">This information will help us tailor the analysis and focus on what matters most to you.</string>
+    <string name="onboarding_allergies_heading">WHAT ALLERGIES DO YOU HAVE?</string>
+    <string name="onboarding_symptoms_heading">WHAT ARE YOUR USUAL SYMPTOMS?</string>
+    <string name="onboarding_permissions_title">Required permissions</string>
+    <string name="onboarding_permissions_subtitle">These permissions are necessary for automatic environment monitoring and food logging. You can change permissions at any time in Settings.</string>
+    <string name="permission_location_title">Location</string>
+    <string name="permission_location_desc">Automatically loads pollen data and air quality based on your location.</string>
+    <string name="permission_camera_title">Camera</string>
+    <string name="permission_camera_desc">AI food recognition from photos. Food can also be entered manually without a camera.</string>
+    <string name="permission_notifications_title">Notifications</string>
+    <string name="permission_notifications_desc">Evening reminders and alerts for high pollen levels.</string>
+    <string name="permission_privacy_note">Your data stays on your device only. We never share it with third parties.</string>
+    <string name="btn_continue_no_location">CONTINUE WITHOUT LOCATION</string>
+    <string name="onboarding_ready_title">All set!</string>
+    <string name="onboarding_ready_subtitle">After collecting the first records, system will reveal your patterns and potential allergy triggers.</string>
+    <string name="ready_settings_title">YOUR SETUP</string>
+    <string name="ready_allergies_label">Allergy types</string>
+    <string name="ready_allergies_not_set">Not set</string>
+    <string name="ready_symptoms_label">Symptoms</string>
+    <string name="ready_symptoms_not_set">Not set</string>
+    <string name="ready_location_label">Location</string>
+    <string name="ready_camera_label">Camera</string>
+    <string name="ready_notifications_label">Notifications</string>
+    <string name="ready_status_granted">Allowed</string>
+    <string name="ready_status_denied">Denied</string>
+    <string name="ready_first_day_title">HOW IT WORKS</string>
+    <string name="ready_tip_breakfast">Log the food and drinks you consume</string>
+    <string name="ready_tip_feeling">Record your symptoms and their intensity</string>
+    <string name="ready_tip_environment">Analysis reveals your triggers automatically</string>
+    <string name="btn_go_to_dashboard">GO TO OVERVIEW</string>
+
+    <!-- Permission denied screen -->
+    <string name="permission_denied_title">Permission denied</string>
+
+    <!-- Food trigger detail -->
+    <string name="food_trigger_reaction_probability">probability of reaction</string>
+    <string name="food_trigger_servings_fraction">%1$d of %2$d</string>
+    <string name="food_trigger_servings_with_reaction">servings with reaction</string>
+    <string name="food_trigger_matches_profile">Matches your allergy profile</string>
+    <string name="food_trigger_typical_reactions">Typical reactions: %1$s</string>
+    <string name="food_trigger_frequency_title">Reaction Frequency</string>
+    <string name="food_trigger_bar_with_reaction">%1$d× reaction</string>
+    <string name="food_trigger_bar_without_reaction">%1$d× no reaction</string>
+    <string name="food_trigger_legend_with_reaction">With reaction</string>
+    <string name="food_trigger_legend_without_reaction">Without reaction</string>
+    <string name="food_trigger_symptom_matrix_title">Most common reactions after consumption</string>
+    <string name="food_trigger_history_title">Consumption History</string>
+    <string name="food_trigger_history_subtitle">Tap to see reaction details after consumption</string>
+    <string name="food_trigger_reactions_timeline">Reaction timeline:</string>
+    <string name="food_trigger_no_reactions">No symptoms recorded after this consumption.</string>
+    <string name="food_trigger_intensity_label">intensity %1$d/5</string>
+    <string name="delay_minutes">%1$d min</string>
+    <string name="delay_hours">+%1$d h</string>
+    <string name="delay_days">+%1$d d</string>
+    <string name="cd_back">Back</string>
+    <string name="debug_analysis_sim_title">Analysis — symptom count simulation</string>
+    <string name="debug_analysis_sim_desc">Overrides the actual symptom count for testing analysis states. -1 = real data.</string>
+    <string name="debug_analysis_real_data">Real data</string>
+    <string name="debug_analysis_0">0 symptoms (Locked — empty progress)</string>
+    <string name="debug_analysis_3">3 symptoms (Locked — 60% progress)</string>
+    <string name="debug_analysis_5">5 symptoms (Partial — first analysis)</string>
+    <string name="debug_analysis_8">8 symptoms (Partial — disclaimer)</string>
+    <string name="debug_analysis_10">10 symptoms (Full — no disclaimer)</string>
+
+    <!-- FAQ -->
+    <string name="faq_q_aqi">What is AQI?</string>
+    <string name="faq_a_aqi">AQI (Air Quality Index) is a number expressing air quality in your area. The data comes from the nearest weather station based on your GPS location. The lower the number, the cleaner the air:\n\n• 0–20 — Excellent\n• 20–40 — Good\n• 40–60 — Moderate (sensitive people may experience mild discomfort)\n• 60–80 — Poor (we recommend limiting time outdoors)\n• 80–100 — Very poor\n• 100+ — Extreme (avoid outdoor exposure)</string>
+    <string name="faq_q_pollen_scale">What is the pollen index scale?</string>
+    <string name="faq_a_pollen_scale">Grass, tree and weed pollen indices are on a scale of 0–5:\n\n• 0 — No pollen\n• 1 — Low (no problem for most people)\n• 2 — Moderate (allergy sufferers may experience mild symptoms)\n• 3 — High (we recommend reducing time outdoors)\n• 4 — Very high (take your medication, minimize outdoor exposure)\n• 5 — Extreme\n\nPollen data is only available in Europe, approximately from February to October.</string>
+    <string name="faq_q_analysis_unlock">When does the analysis unlock?</string>
+    <string name="faq_a_analysis_unlock">The analysis needs at least 5 recorded symptoms. Once you reach that, the first results will appear with a note that they are indicative. From 10 symptoms, the analysis works fully and accuracy improves with each additional record.</string>
+    <string name="faq_q_how_correlations">How does the app know what causes my allergies?</string>
+    <string name="faq_a_how_correlations">The app tracks whether an allergic reaction occurs within 72 hours after consuming a certain food or allergen. The more often this repeats, the higher the correlation score. It also compares your symptoms with changes in air quality and pollen levels using a mathematical method called Pearson correlation.</string>
+    <string name="faq_q_correlation_percent">What does the percentage next to a correlation mean?</string>
+    <string name="faq_a_correlation_percent">The percentage tells you how often an allergic reaction occurred after the given trigger (food or allergen). For example, 75% for milk means that out of 4 recorded milk consumptions, a symptom followed 3 times. The higher the number, the stronger and more reliable the connection.</string>
+    <string name="faq_q_match_badge">What does the MATCH badge mean?</string>
+    <string name="faq_a_match_badge">The MATCH badge appears on correlations that correspond to your allergy profile set up when you first launched the app. If you indicated a pollen allergy and the app finds a correlation with pollen, it marks it as a match — such results appear higher in the analysis.</string>
+    <string name="faq_q_food_database">Where does the food information come from?</string>
+    <string name="faq_a_food_database">Data on packaged foods comes from Open Food Facts (openfoodfacts.org) — an open community database of products from around the world. If you can't find a product in the database, you can enter it manually and select allergens yourself from the EU 14 list.</string>
+    <string name="faq_q_no_pollen">Why don't I see pollen data?</string>
+    <string name="faq_a_no_pollen">Pollen data will only appear if three conditions are met: you have location access enabled, you are in Europe, and it is pollen season (approximately February–October). Outside this period or outside Europe, the app correctly displays an unavailability message — this is not an error.</string>
+    <string name="faq_q_eu_allergens">What are the EU 14 allergens?</string>
+    <string name="faq_a_eu_allergens">These are allergens that must be mandatorily labeled on food packaging in the European Union. They include: gluten (wheat, rye, barley, oats), milk, eggs, fish, crustaceans (shrimp, crab, lobster), peanuts, soya, nuts (almonds, cashews, walnuts etc.), celery, mustard, sesame, sulphites (preservative in dried fruit and wine), lupin and molluscs (octopus, mussels, scallops).</string>
+    <string name="faq_q_data_safety">Is my data safe?</string>
+    <string name="faq_a_data_safety">Yes. All your data — food, symptom and environment records — is stored only on your phone. The app does not send any personal data to servers or collect any information about you. You don't need to register or create an account at all.</string>
+
+    <!-- Symptom detail -->
+    <string name="symptom_detail_title">Symptom Overview</string>
+    <string name="symptom_detail_most_frequent_heading">Most frequent symptom</string>
+    <string name="symptom_detail_other_heading">Other symptoms</string>
+    <string name="symptom_detail_avg_intensity">Average intensity</string>
+    <string name="symptom_detail_empty">No symptoms in this period.\nStart logging symptoms to see statistics here.</string>
+    <string name="symptom_detail_badge">Top</string>
+
+    <!-- Dashboard — notification banner -->
+    <string name="dashboard_notification_banner_title">Enable evening reminders</string>
+    <string name="dashboard_notification_banner_body">We'll remind you every evening after 7 PM to log your food and symptoms.</string>
+    <string name="dashboard_notification_banner_dismiss">Dismiss permanently</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_reminders_name">Logging reminders</string>
+    <string name="notification_channel_reminders_desc">Evening reminder to log food and symptoms</string>
+    <string name="notification_reminder_title">AllergyTrack</string>
+    <string name="notification_reminder_body">Don't forget to log today's food and symptoms.</string>
+    <string name="notification_channel_fcm_name">Alerts and news</string>
+    <string name="notification_channel_fcm_desc">Push notifications for air quality warnings, pollen alerts, and app news</string>
+
+    <string name="settings_section_diagnostics">Diagnostics</string>
+    <string name="settings_fcm_token_title">Firebase Token</string>
+    <string name="settings_fcm_token_copied_toast">Token copied to clipboard</string>
+    <string name="settings_fcm_token_copy_desc">Copy Firebase Token</string>
+    <string name="settings_fcm_token_loading">Loading…</string>
+    <string name="settings_fcm_token_unavailable">Token unavailable</string>
+    <string name="update_downloaded_message">A new update has been downloaded. Restart the app to apply it.</string>
+    <string name="update_action_restart">RESTART</string>
+
+    <!-- Dashboard — AI Analysis teaser (HIDDEN mode) -->
+    <string name="dashboard_analysis_teaser_title">Potential triggers found</string>
+    <string name="dashboard_analysis_teaser_body">Analysis of your records found %1$d potential triggers. Unlock AI Analysis for a detailed overview.</string>
+
+    <!-- Analysis — glimpse &amp; lock (VISIBLE + FREE mode) -->
+    <string name="analysis_free_ai_locked">Full AI overview in Premium</string>
+    <string name="analysis_free_more_triggers">+ %1$d more triggers in Premium</string>
+    <string name="analysis_locked_message">Record at least %1$d symptoms for your first analysis</string>
+    <string name="analysis_partial_disclaimer">The analysis is indicative — accuracy will grow with more records. For reliable results, record %1$d more symptoms.</string>
+    <string name="analysis_partial_no_env">Environmental correlations will appear once GPS data has been collected.</string>
+    <string name="ai_prompt_role">You are a clinical assistant for allergy analysis in the AllergyTrack app. </string>
+    <string name="ai_prompt_task">Based on the measured correlations between food/environment and the user's symptoms, generate a brief, </string>
+    <string name="ai_prompt_style">understandable and personalised summary (max 4-5 sentences) %1$s. </string>
+    <string name="ai_prompt_language">in English</string>
+    <string name="ai_prompt_no_preamble">Do not use opening phrases like 'Here is a summary'. Get straight to the point. </string>
+    <string name="ai_prompt_markdown">Mark important triggers and symptoms in bold using markdown (**text**). </string>
+    <string name="ai_prompt_closing">At the end, recommend consulting a doctor or allergist.</string>
+    <string name="ai_prompt_data_header">Measured data:</string>
+    <string name="ai_prompt_data_row">- %1$s + %2$s: correlation %3$d% (%4$s significance)%5$s%6$s</string>
+    <string name="ai_prompt_delay"> (reaction after %1$dh)</string>
+    <string name="ai_prompt_expected"> [matches allergy profile]</string>
+    <string name="ai_severity_high">high</string>
+    <string name="ai_severity_medium">medium</string>
+    <string name="ai_severity_low">low</string>
+    <string name="ai_summary_main_trigger">Based on your records I identified the main trigger: **%1$s** correlates with %2$s in %3$d% of cases</string>
+    <string name="ai_summary_delay">, typically %1$d–%2$d hours later</string>
+    <string name="ai_summary_second_factor"> Another significant factor is %1$s.</string>
+    <string name="ai_summary_synergy"> I also observed a synergistic effect — symptoms are more intense when a food trigger combines with high pollen levels.</string>
+    <string name="ai_summary_consult"> I recommend discussing these findings with an allergist.</string>
+    <string name="trigger_grass_pollen">grass pollen</string>
+    <string name="trigger_birch_pollen">birch pollen</string>
+    <string name="trigger_pm25">PM2.5 particulate matter</string>
+    <string name="trigger_ozone">ozone</string>
+    <string name="trigger_no2">nitrogen dioxide</string>
+    <string name="trigger_aqi">air quality index (AQI)</string>
+    <string name="ai_summary_not_enough_data">I don't have enough data for an analysis yet. Keep recording food and symptoms.</string>
+</resources>

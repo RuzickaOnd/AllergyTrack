@@ -2,23 +2,22 @@ package com.allergytrack.app.ui.screens.debug
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.allergytrack.app.data.local.database.dao.EnvironmentLogDao
-import com.allergytrack.app.data.local.database.dao.FoodLogDao
-import com.allergytrack.app.data.local.database.dao.SymptomLogDao
-import com.allergytrack.app.data.local.datastore.DebugPreferences
-import com.allergytrack.app.data.local.datastore.DebugPremiumOverride
-import com.allergytrack.app.data.local.datastore.OnboardingDataStore
-import com.allergytrack.app.domain.model.EnvironmentLog
-import com.allergytrack.app.domain.model.EnvironmentRegion
-import com.allergytrack.app.domain.model.FoodLog
-import com.allergytrack.app.domain.model.PremiumVisibilityMode
-import com.allergytrack.app.domain.model.SymptomLog
-import com.allergytrack.app.domain.model.SymptomType
-import com.allergytrack.app.domain.premium.PremiumHelper
-import com.allergytrack.app.domain.repository.EnvironmentRepository
-import com.allergytrack.app.domain.repository.FoodRepository
-import com.allergytrack.app.domain.repository.SymptomRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.allergytrack.shared.data.local.database.dao.EnvironmentLogDao
+import com.allergytrack.shared.data.local.database.dao.FoodLogDao
+import com.allergytrack.shared.data.local.database.dao.SymptomLogDao
+import com.allergytrack.shared.data.local.datastore.DebugPreferences
+import com.allergytrack.shared.data.local.datastore.DebugPremiumOverride
+import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
+import com.allergytrack.shared.domain.model.EnvironmentLog
+import com.allergytrack.shared.domain.model.EnvironmentRegion
+import com.allergytrack.shared.domain.model.FoodLog
+import com.allergytrack.shared.domain.model.PremiumVisibilityMode
+import com.allergytrack.shared.domain.model.SymptomLog
+import com.allergytrack.shared.domain.model.SymptomType
+import com.allergytrack.shared.domain.premium.PremiumHelper
+import com.allergytrack.shared.domain.repository.EnvironmentRepository
+import com.allergytrack.shared.domain.repository.FoodRepository
+import com.allergytrack.shared.domain.repository.SymptomRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,10 +25,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import javax.inject.Inject
 
-@HiltViewModel
-class DebugMenuViewModel @Inject constructor(
+class DebugMenuViewModel(
     private val debugPreferences: DebugPreferences,
     private val onboardingDataStore: OnboardingDataStore,
     private val foodRepository: FoodRepository,

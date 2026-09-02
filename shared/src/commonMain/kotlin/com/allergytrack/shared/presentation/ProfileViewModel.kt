@@ -1,0 +1,45 @@
+package com.allergytrack.shared.presentation
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
+import com.allergytrack.shared.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.premium.PremiumHelper
+import com.allergytrack.shared.platform.Analytics
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+
+class ProfileViewModel(
+    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val premiumHelper: PremiumHelper,
+    private val analyticsManager: Analytics
+) : ViewModel() {
+
+    init {
+        analyticsManager.logScreenView("profile", this::class.simpleName)
+    }
+
+    val userName: StateFlow<String> = userPreferencesDataStore.userName
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Anonym")
+
+    val avatarSelection: StateFlow<String> = userPreferencesDataStore.avatarSelection
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "person")
+
+    val isPremiumUser: StateFlow<Boolean> = premiumHelper
+        .observeAccess(PremiumFeature.AI_CORRELATION_ANALYSIS)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    val isPremiumVisible: StateFlow<Boolean> = premiumHelper
+        .observeVisible(PremiumFeature.AI_CORRELATION_ANALYSIS)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    fun setUserName(name: String) {
+        viewModelScope.launch { userPreferencesDataStore.setUserName(name.trim()) }
+    }
+
+    fun setAvatarSelection(selection: String) {
+        viewModelScope.launch { userPreferencesDataStore.setAvatarSelection(selection) }
+    }
+}

@@ -1,0 +1,138 @@
+package com.allergytrack.shared.presentation
+
+import com.allergytrack.shared.platform.currentTimeMillis
+import androidx.lifecycle.ViewModel
+import org.jetbrains.compose.resources.StringResource
+import androidx.lifecycle.viewModelScope
+import com.allergytrack.shared.resources.*
+import com.allergytrack.shared.data.local.database.dao.EnvironmentLogDao
+import com.allergytrack.shared.data.local.database.dao.SymptomLogDao
+import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
+import com.allergytrack.shared.platform.Permissions
+import com.allergytrack.shared.domain.model.SymptomType
+import kotlinx.coroutines.flow.*
+import com.allergytrack.shared.platform.Analytics
+
+enum class TimeRange(val days: Int, val labelRes: StringResource) {
+    WEEK(7, Res.string.time_range_week),
+    TWO_WEEKS(14, Res.string.time_range_two_weeks),
+    MONTH(30, Res.string.time_range_month)
+}
+
+data class ChartsUiState(
+    val isLoading: Boolean = true,
+    val selectedRange: TimeRange = TimeRange.WEEK,
+    val selectedSymptomFilter: SymptomType? = null,
+    val chartData: ChartDataSet? = null,
+    val totalSymptomEvents: Int = 0,
+    val mostFrequentSymptomType: SymptomType? = null,
+    val avgDailyIntensity: Float = 0f
+)
+
+class ChartsViewModel(
+    private val symptomLogDao: SymptomLogDao,
+    private val environmentLogDao: EnvironmentLogDao,
+    private val premiumHelper: com.allergytrack.shared.domain.premium.PremiumHelper,
+    private val permissionsHelper: Permissions,
+    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val analyticsManager: Analytics
+) : ViewModel() {
+
+    init {
+        analyticsManager.logScreenView("charts", this::class.simpleName)
+    }
+
+    private val _selectedRange = MutableStateFlow(TimeRange.WEEK)
+    private val _selectedFilter = MutableStateFlow<SymptomType?>(null)
+    private val _locationGranted = MutableStateFlow(permissionsHelper.hasLocationPermission())
+    val locationGranted: StateFlow<Boolean> = _locationGranted.asStateFlow()
+
+    fun refreshPermissions() {
+        _locationGranted.value = permissionsHelper.hasLocationPermission()
+    }
+
+    val isExtendedChartsVisible: StateFlow<Boolean> =
+        premiumHelper.observeVisible(com.allergytrack.shared.domain.model.PremiumFeature.EXTENDED_CHARTS)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val canUseExtendedCharts: StateFlow<Boolean> =
+        premiumHelper.observeAccess(com.allergytrack.shared.domain.model.PremiumFeature.EXTENDED_CHARTS)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
+
+    val showExtendedChartsBadge: StateFlow<Boolean> =
+        premiumHelper.observeShowBadge(com.allergytrack.shared.domain.model.PremiumFeature.EXTENDED_CHARTS)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val showExtendedChartsUpsell: StateFlow<Boolean> =
+        premiumHelper.observeShowUpsell(com.allergytrack.shared.domain.model.PremiumFeature.EXTENDED_CHARTS)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val isPollenVisible: StateFlow<Boolean> =
+        premiumHelper.observeVisible(com.allergytrack.shared.domain.model.PremiumFeature.POLLEN_DATA)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val canSeePollen: StateFlow<Boolean> =
+        premiumHelper.observeAccess(com.allergytrack.shared.domain.model.PremiumFeature.POLLEN_DATA)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
+
+    val showPollenUpsell: StateFlow<Boolean> =
+        premiumHelper.observeShowUpsell(com.allergytrack.shared.domain.model.PremiumFeature.POLLEN_DATA)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val uiState: StateFlow<ChartsUiState> = combine(
+        _selectedRange,
+        _selectedFilter,
+        symptomLogDao.getAllLogs(),
+        environmentLogDao.getAllLogs()
+    ) { range, filter, symptomLogs, envLogs ->
+
+        val from = currentTimeMillis() - (range.days.toLong() * 24L * 60 * 60 * 1000)
+        val filteredSymptoms = symptomLogs.filter { it.timestamp >= from }
+        val filteredEnv = envLogs.filter { it.timestamp >= from }
+
+        // Statistiky respektují aktivní filtr typu příznaku (stejně jako grafy)
+        val displaySymptoms = if (filter != null)
+            filteredSymptoms.filter { it.type == filter.name }
+        else filteredSymptoms
+
+        val chartData = ChartDataMapper.mapToChartData(
+            symptomLogs = filteredSymptoms,
+            environmentLogs = filteredEnv,
+            filterType = filter,
+            days = range.days
+        )
+
+        val mostFrequent = displaySymptoms
+            .groupBy { it.type }
+            .maxByOrNull { it.value.size }
+            ?.let { try { SymptomType.valueOf(it.key) } catch (_: IllegalArgumentException) { null } }
+
+        val avgIntensity = if (displaySymptoms.isEmpty()) 0f
+        else displaySymptoms.map { it.intensity }.average().toFloat()
+
+        ChartsUiState(
+            isLoading = false,
+            selectedRange = range,
+            selectedSymptomFilter = filter,
+            chartData = chartData,
+            totalSymptomEvents = displaySymptoms.size,
+            mostFrequentSymptomType = mostFrequent,
+            avgDailyIntensity = avgIntensity
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = ChartsUiState()
+    )
+
+    val syncChartsScroll: StateFlow<Boolean> = userPreferencesDataStore.syncChartsScroll
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
+
+    fun onRangeSelected(range: TimeRange) {
+        _selectedRange.value = range
+    }
+
+    fun onFilterSelected(type: SymptomType?) {
+        _selectedFilter.value = type
+    }
+}

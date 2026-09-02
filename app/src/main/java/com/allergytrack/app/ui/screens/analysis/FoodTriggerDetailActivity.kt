@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.analysis
 
+import com.allergytrack.shared.presentation.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,9 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.allergytrack.app.ui.theme.AllergyTrackTheme
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class FoodTriggerDetailActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

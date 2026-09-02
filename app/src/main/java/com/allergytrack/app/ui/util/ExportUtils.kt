@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.util
 
+import com.allergytrack.shared.presentation.*
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
@@ -10,7 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.allergytrack.app.R
-import com.allergytrack.app.ui.screens.analysis.AnalysisViewModel
+import com.allergytrack.shared.presentation.AnalysisViewModel
 import java.io.File
 
 /**
@@ -53,9 +54,11 @@ fun AnalysisExportHandler(viewModel: AnalysisViewModel) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState.exportedFile) {
-        uiState.exportedFile?.let { file ->
-            context.sharePdfFile(file)
+    LaunchedEffect(uiState.exportedFilePath) {
+        uiState.exportedFilePath?.let { path ->
+            // ViewModel je v commonMain a java.io.File tam neexistuje, proto
+            // předává cestu; soubor se rekonstruuje až tady, v Android vrstvě.
+            context.sharePdfFile(java.io.File(path))
             viewModel.dismissExport()
         }
     }

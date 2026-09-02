@@ -29,29 +29,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
+import org.jetbrains.compose.resources.StringResource
 import com.allergytrack.app.ui.components.AppCard
 
-private data class FaqEntry(val questionRes: Int, val answerRes: Int)
+private data class FaqEntry(val questionRes: StringResource, val answerRes: StringResource)
 
 @Composable
 fun FaqScreen(navController: NavController) {
     val items = remember {
         listOf(
-            FaqEntry(R.string.faq_q_aqi, R.string.faq_a_aqi),
-            FaqEntry(R.string.faq_q_pollen_scale, R.string.faq_a_pollen_scale),
-            FaqEntry(R.string.faq_q_analysis_unlock, R.string.faq_a_analysis_unlock),
-            FaqEntry(R.string.faq_q_how_correlations, R.string.faq_a_how_correlations),
-            FaqEntry(R.string.faq_q_correlation_percent, R.string.faq_a_correlation_percent),
-            FaqEntry(R.string.faq_q_match_badge, R.string.faq_a_match_badge),
-            FaqEntry(R.string.faq_q_food_database, R.string.faq_a_food_database),
-            FaqEntry(R.string.faq_q_no_pollen, R.string.faq_a_no_pollen),
-            FaqEntry(R.string.faq_q_eu_allergens, R.string.faq_a_eu_allergens),
-            FaqEntry(R.string.faq_q_data_safety, R.string.faq_a_data_safety),
+            FaqEntry(Res.string.faq_q_aqi, Res.string.faq_a_aqi),
+            FaqEntry(Res.string.faq_q_pollen_scale, Res.string.faq_a_pollen_scale),
+            FaqEntry(Res.string.faq_q_analysis_unlock, Res.string.faq_a_analysis_unlock),
+            FaqEntry(Res.string.faq_q_how_correlations, Res.string.faq_a_how_correlations),
+            FaqEntry(Res.string.faq_q_correlation_percent, Res.string.faq_a_correlation_percent),
+            FaqEntry(Res.string.faq_q_match_badge, Res.string.faq_a_match_badge),
+            FaqEntry(Res.string.faq_q_food_database, Res.string.faq_a_food_database),
+            FaqEntry(Res.string.faq_q_no_pollen, Res.string.faq_a_no_pollen),
+            FaqEntry(Res.string.faq_q_eu_allergens, Res.string.faq_a_eu_allergens),
+            FaqEntry(Res.string.faq_q_data_safety, Res.string.faq_a_data_safety),
         )
     }
 

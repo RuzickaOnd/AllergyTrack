@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.onboarding
 
+import com.allergytrack.shared.presentation.*
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -18,11 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.app.ui.components.*
 
 @Composable
@@ -57,7 +58,7 @@ fun OnboardingPermissionsContent(
     ) {
         // Subtitle
         Text(
-            text = stringResource(R.string.onboarding_permissions_subtitle),
+            text = stringResource(Res.string.onboarding_permissions_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth()
@@ -66,8 +67,8 @@ fun OnboardingPermissionsContent(
         // GPS — Required for environmental data
         PermissionCard(
             icon = Icons.Default.LocationOn,
-            title = stringResource(R.string.permission_location_title),
-            description = stringResource(R.string.permission_location_desc),
+            title = stringResource(Res.string.permission_location_title),
+            description = stringResource(Res.string.permission_location_desc),
             isGranted = permissions.location,
             onRequest = {
                 locationLauncher.launch(
@@ -83,8 +84,8 @@ fun OnboardingPermissionsContent(
         if (uiState.isCameraPermissionVisible) {
             PermissionCard(
                 icon = Icons.Default.CameraAlt,
-                title = stringResource(R.string.permission_camera_title),
-                description = stringResource(R.string.permission_camera_desc),
+                title = stringResource(Res.string.permission_camera_title),
+                description = stringResource(Res.string.permission_camera_desc),
                 isGranted = permissions.camera,
                 onRequest = {
                     cameraLauncher.launch(Manifest.permission.CAMERA)
@@ -96,8 +97,8 @@ fun OnboardingPermissionsContent(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             PermissionCard(
                 icon = Icons.Default.Notifications,
-                title = stringResource(R.string.permission_notifications_title),
-                description = stringResource(R.string.permission_notifications_desc),
+                title = stringResource(Res.string.permission_notifications_title),
+                description = stringResource(Res.string.permission_notifications_desc),
                 isGranted = permissions.notifications,
                 onRequest = {
                     notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -118,7 +119,7 @@ fun OnboardingPermissionsContent(
                     modifier = Modifier.size(20.dp)
                 )
                 Text(
-                    text = stringResource(R.string.permission_privacy_note),
+                    text = stringResource(Res.string.permission_privacy_note),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 18.sp
@@ -181,7 +182,7 @@ fun PermissionCard(
             if (isGranted) {
                 Icon(
                     Icons.Default.CheckCircle,
-                    contentDescription = stringResource(R.string.cd_permission_granted),
+                    contentDescription = stringResource(Res.string.cd_permission_granted),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
@@ -195,7 +196,7 @@ fun PermissionCard(
                 ) {
                     Icon(
                         Icons.Default.Add,
-                        contentDescription = stringResource(R.string.cd_permission_grant),
+                        contentDescription = stringResource(Res.string.cd_permission_grant),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(20.dp)
                     )

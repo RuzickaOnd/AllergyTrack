@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.onboarding
 
+import com.allergytrack.shared.presentation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -7,12 +8,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.allergytrack.app.R
-import com.allergytrack.app.domain.model.AllergyType
-import com.allergytrack.app.domain.model.SymptomTypeOnboarding
+import com.allergytrack.shared.resources.*
+import com.allergytrack.shared.domain.model.AllergyType
+import com.allergytrack.shared.domain.model.SymptomTypeOnboarding
 import com.allergytrack.app.ui.theme.*
 import com.allergytrack.app.ui.util.icon
 import com.allergytrack.app.ui.util.labelRes
@@ -33,7 +34,7 @@ fun OnboardingProfileContent(
     ) {
         // Subtitle
         Text(
-            text = stringResource(R.string.onboarding_profile_subtitle),
+            text = stringResource(Res.string.onboarding_profile_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth()
@@ -42,7 +43,7 @@ fun OnboardingProfileContent(
         // Allergy Types
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(
-                text = stringResource(R.string.onboarding_allergies_heading),
+                text = stringResource(Res.string.onboarding_allergies_heading),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Bold,
@@ -74,7 +75,7 @@ fun OnboardingProfileContent(
         // Symptoms
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(
-                text = stringResource(R.string.onboarding_symptoms_heading),
+                text = stringResource(Res.string.onboarding_symptoms_heading),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Bold,

@@ -9,25 +9,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.allergytrack.app.data.local.datastore.OnboardingDataStore
-import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
-import com.allergytrack.app.data.worker.WorkManagerScheduler
+import com.allergytrack.shared.data.local.datastore.OnboardingDataStore
+import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
+import com.allergytrack.shared.platform.BackgroundScheduler
 import com.allergytrack.app.ui.navigation.MainAppScaffold
 import com.allergytrack.app.ui.onboarding.OnboardingFlow
 import com.allergytrack.app.ui.theme.AllergyTrackTheme
 import com.allergytrack.app.ui.util.AppLocaleHelper
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject lateinit var workManagerScheduler: WorkManagerScheduler
-    @Inject lateinit var onboardingDataStore: OnboardingDataStore
-    @Inject lateinit var userPreferencesDataStore: UserPreferencesDataStore
-    @Inject lateinit var appUpdateRepository: com.allergytrack.app.domain.repository.AppUpdateRepository
+    private val workManagerScheduler: BackgroundScheduler by inject()
+    private val onboardingDataStore: OnboardingDataStore by inject()
+    private val userPreferencesDataStore: UserPreferencesDataStore by inject()
+    private val appUpdateRepository: com.allergytrack.shared.domain.repository.AppUpdateRepository by inject()
 
     private lateinit var appUpdateHelper: com.allergytrack.app.ui.util.AppUpdateHelper
 
@@ -78,7 +76,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppRoot(
     initialOnboardingCompleted: Boolean,
-    appUpdateRepository: com.allergytrack.app.domain.repository.AppUpdateRepository
+    appUpdateRepository: com.allergytrack.shared.domain.repository.AppUpdateRepository
 ) {
     var onboardingCompleted by remember { mutableStateOf(initialOnboardingCompleted) }
 

@@ -1,5 +1,6 @@
 package com.allergytrack.app.data.notifications
 
+import com.allergytrack.shared.platform.AppNotifications
 import android.app.NotificationChannel
 import android.app.NotificationManager as SystemNotificationManager
 import android.app.PendingIntent
@@ -11,21 +12,17 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.allergytrack.app.MainActivity
 import com.allergytrack.app.R
-import com.allergytrack.app.data.local.datastore.UserPreferencesDataStore
+import com.allergytrack.shared.data.local.datastore.UserPreferencesDataStore
 import com.google.firebase.messaging.FirebaseMessaging
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.firstOrNull
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Centrální manažer pro správu, konfiguraci a zobrazování notifikací (lokálních i FCM push notifikací).
  */
-@Singleton
-class NotificationManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+class NotificationManager(
+    private val context: Context,
     private val userPreferences: UserPreferencesDataStore
-) {
+) : AppNotifications {
 
     companion object {
         const val REMINDER_CHANNEL_ID = "reminder_channel"
@@ -37,7 +34,7 @@ class NotificationManager @Inject constructor(
      * Inicializuje všechny notifikační kanály.
      * Volá se při startu aplikace v AllergyTrackApplication.
      */
-    fun createNotificationChannels() {
+    override fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val systemManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as SystemNotificationManager
 
@@ -112,7 +109,7 @@ class NotificationManager @Inject constructor(
     /**
      * Získá aktuální FCM token pro registraci zařízení.
      */
-    fun getFcmToken(onComplete: (String?) -> Unit) {
+    override fun getFcmToken(onComplete: (String?) -> Unit) {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 onComplete(task.result)

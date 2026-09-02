@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.charts
 
+import com.allergytrack.shared.presentation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,12 +17,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -43,13 +44,13 @@ import com.patrykandpatrick.vico.compose.cartesian.VicoScrollState
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
-import com.allergytrack.app.R
-import com.allergytrack.app.domain.model.SymptomType
+import com.allergytrack.shared.resources.*
+import com.allergytrack.shared.domain.model.SymptomType
 import com.allergytrack.app.ui.components.*
 import com.allergytrack.app.ui.theme.*
 import com.allergytrack.app.ui.util.icon
 import com.allergytrack.app.ui.util.labelRes
-import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.shared.domain.model.PremiumFeature
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -57,7 +58,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 @Composable
 fun ChartsScreen(
     navController: NavController,
-    viewModel: ChartsViewModel = hiltViewModel()
+    viewModel: ChartsViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isExtendedChartsVisible by viewModel.isExtendedChartsVisible.collectAsStateWithLifecycle()
@@ -149,9 +150,9 @@ fun ChartsScreen(
                             if (!locationGranted) {
                                 item(span = { GridItemSpan(maxLineSpan) }) {
                                     PermissionRequiredCard(
-                                        title = stringResource(R.string.permission_required_location_title),
-                                        description = stringResource(R.string.permission_required_location_body),
-                                        actionLabel = stringResource(R.string.permission_required_go_to_settings),
+                                        title = stringResource(Res.string.permission_required_location_title),
+                                        description = stringResource(Res.string.permission_required_location_body),
+                                        actionLabel = stringResource(Res.string.permission_required_go_to_settings),
                                         onAction = { navController.navigate(Screen.Settings.route) }
                                     )
                                 }
@@ -163,21 +164,21 @@ fun ChartsScreen(
                                         feature = PremiumFeature.POLLEN_DATA,
                                         onUpgradeClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
                                     ) {
-                                        ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
+                                        ChartCard(title = stringResource(Res.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
                                             PollenVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
                                         }
                                     }
                                 }
 
                                 item {
-                                    ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
+                                    ChartCard(title = stringResource(Res.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
                                         AqiVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
                                     }
                                 }
                             }
 
                             item {
-                                ChartCard(title = stringResource(R.string.chart_symptom_intensity), icon = Icons.AutoMirrored.Outlined.ShowChart) {
+                                ChartCard(title = stringResource(Res.string.chart_symptom_intensity), icon = Icons.AutoMirrored.Outlined.ShowChart) {
                                     SymptomIntensityChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
                                 }
                             }
@@ -233,9 +234,9 @@ fun ChartsScreen(
                     if (!locationGranted) {
                         item {
                             PermissionRequiredCard(
-                                title = stringResource(R.string.permission_required_location_title),
-                                description = stringResource(R.string.permission_required_location_body),
-                                actionLabel = stringResource(R.string.permission_required_go_to_settings),
+                                title = stringResource(Res.string.permission_required_location_title),
+                                description = stringResource(Res.string.permission_required_location_body),
+                                actionLabel = stringResource(Res.string.permission_required_go_to_settings),
                                 onAction = { navController.navigate(Screen.Settings.route) }
                             )
                         }
@@ -247,7 +248,7 @@ fun ChartsScreen(
                                 feature = PremiumFeature.POLLEN_DATA,
                                 onUpgradeClick = { context.startActivity(Intent(context, PremiumActivity::class.java)) }
                             ) {
-                                ChartCard(title = stringResource(R.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
+                                ChartCard(title = stringResource(Res.string.chart_pollen_vs_symptoms), icon = Icons.Outlined.FilterVintage) {
                                     PollenVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
                                 }
                             }
@@ -255,13 +256,13 @@ fun ChartsScreen(
                     }
                     if (locationGranted) {
                         item {
-                            ChartCard(title = stringResource(R.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
+                            ChartCard(title = stringResource(Res.string.chart_aqi_vs_symptoms), icon = Icons.Outlined.Air) {
                                 AqiVsSymptomChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
                             }
                         }
                     }
                     item {
-                        ChartCard(title = stringResource(R.string.chart_symptom_intensity), icon = Icons.AutoMirrored.Outlined.ShowChart) {
+                        ChartCard(title = stringResource(Res.string.chart_symptom_intensity), icon = Icons.AutoMirrored.Outlined.ShowChart) {
                             SymptomIntensityChart(data = data, days = days, scrollState = if (syncChartsScroll) sharedScrollState else null)
                         }
                     }
@@ -313,16 +314,16 @@ fun SummaryRow(uiState: ChartsUiState, onStatClick: () -> Unit) {
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         CardTitle(
-            text = stringResource(R.string.stats_symptom_summary),
+            text = stringResource(Res.string.stats_symptom_summary),
             icon = Icons.Outlined.BarChart
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            StatCard(modifier = Modifier.weight(1f), value = uiState.totalSymptomEvents.toString(), label = stringResource(R.string.stat_total), onClick = onStatClick)
-            StatCard(modifier = Modifier.weight(1f), value = "%.1f".format(uiState.avgDailyIntensity), label = stringResource(R.string.stat_avg), onClick = onStatClick)
-            StatCard(modifier = Modifier.weight(1f), value = mostFrequentLabel, label = stringResource(R.string.stat_most_frequent), onClick = onStatClick)
+            StatCard(modifier = Modifier.weight(1f), value = uiState.totalSymptomEvents.toString(), label = stringResource(Res.string.stat_total), onClick = onStatClick)
+            StatCard(modifier = Modifier.weight(1f), value = "%.1f".format(uiState.avgDailyIntensity), label = stringResource(Res.string.stat_avg), onClick = onStatClick)
+            StatCard(modifier = Modifier.weight(1f), value = mostFrequentLabel, label = stringResource(Res.string.stat_most_frequent), onClick = onStatClick)
         }
     }
 }
@@ -344,7 +345,7 @@ fun StatCard(modifier: Modifier = Modifier, value: String, label: String, onClic
 fun SymptomFilterRow(selected: SymptomType?, onSelected: (SymptomType?) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
-            stringResource(R.string.filter_symptoms_label),
+            stringResource(Res.string.filter_symptoms_label),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontFamily = MonoFontFamily
@@ -354,7 +355,7 @@ fun SymptomFilterRow(selected: SymptomType?, onSelected: (SymptomType?) -> Unit)
                 FilterChip(
                     selected = selected == null,
                     onClick = { onSelected(null) },
-                    label = { Text(stringResource(R.string.filter_all), fontFamily = MonoFontFamily, fontSize = 10.sp) },
+                    label = { Text(stringResource(Res.string.filter_all), fontFamily = MonoFontFamily, fontSize = 10.sp) },
                     shape = RoundedCornerShape(8.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -449,7 +450,7 @@ fun SymptomIntensityChart(data: ChartDataSet, days: Int, scrollState: VicoScroll
             modifier = Modifier.fillMaxWidth().height(180.dp)
         )
     } else {
-        EmptyChartPlaceholder(stringResource(R.string.chart_empty_period))
+        EmptyChartPlaceholder(stringResource(Res.string.chart_empty_period))
     }
 }
 
@@ -495,8 +496,8 @@ fun PollenVsSymptomChart(data: ChartDataSet, days: Int, scrollState: VicoScrollS
             modifier = Modifier.fillMaxWidth().height(180.dp)
         )
         Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            LegendItem(color = pollenColor, label = stringResource(R.string.legend_pollen_grass))
-            LegendItem(color = symptomColor, label = stringResource(R.string.legend_symptoms))
+            LegendItem(color = pollenColor, label = stringResource(Res.string.legend_pollen_grass))
+            LegendItem(color = symptomColor, label = stringResource(Res.string.legend_symptoms))
         }
     } else {
         AppCard(borderColor = MaterialTheme.colorScheme.outline) {
@@ -507,8 +508,8 @@ fun PollenVsSymptomChart(data: ChartDataSet, days: Int, scrollState: VicoScrollS
             ) {
                 Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 Column {
-                    Text(stringResource(R.string.pollen_unavailable_title), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface)
-                    Text(stringResource(R.string.pollen_unavailable_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(Res.string.pollen_unavailable_title), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface)
+                    Text(stringResource(Res.string.pollen_unavailable_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
@@ -556,11 +557,11 @@ fun AqiVsSymptomChart(data: ChartDataSet, days: Int, scrollState: VicoScrollStat
             modifier = Modifier.fillMaxWidth().height(180.dp)
         )
         Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            LegendItem(color = aqiColor, label = stringResource(R.string.legend_aqi))
-            LegendItem(color = symptomColor, label = stringResource(R.string.legend_symptoms))
+            LegendItem(color = aqiColor, label = stringResource(Res.string.legend_aqi))
+            LegendItem(color = symptomColor, label = stringResource(Res.string.legend_symptoms))
         }
     } else {
-        EmptyChartPlaceholder(stringResource(R.string.chart_empty_period))
+        EmptyChartPlaceholder(stringResource(Res.string.chart_empty_period))
     }
 }
 
@@ -593,9 +594,9 @@ fun EmptyChartsCard() {
                 modifier = Modifier.size(40.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Text(stringResource(R.string.empty_charts_title), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
+            Text(stringResource(Res.string.empty_charts_title), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
             Text(
-                stringResource(R.string.empty_charts_desc),
+                stringResource(Res.string.empty_charts_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

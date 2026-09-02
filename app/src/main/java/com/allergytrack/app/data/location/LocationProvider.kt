@@ -2,28 +2,40 @@ package com.allergytrack.app.data.location
 
 import android.annotation.SuppressLint
 import android.content.Context
+import com.allergytrack.shared.platform.Coordinates
+import com.allergytrack.shared.platform.LocationSource
 import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.suspendCancellableCoroutine
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-@Singleton
-class LocationProvider @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
+class LocationProvider(
+    private val context: Context
+) : LocationSource {
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
     // Vrací aktuální polohu s přiměřenou přesností. Může spustit GPS/síťový fix — pomalejší.
     @SuppressLint("MissingPermission")
-    suspend fun getCurrentLocation(): Location? =
+    /**
+     * SecurityException se chytá zde. Dřív ji chytal EnvironmentRepositoryImpl,
+     * ale ten je teď v commonMain, kde tenhle typ neexistuje. Pozice odchycení
+     * se změnila, chování ne — v obou případech výsledkem je null.
+     */
+    override suspend fun getCurrentLocation(): Coordinates? = try {
+        rawCurrentLocation()?.let { Coordinates(it.latitude, it.longitude) }
+    } catch (e: SecurityException) {
+        null
+    }
+
+    override suspend fun getLastKnownLocation(): Coordinates? =
+        rawLastKnownLocation()?.let { Coordinates(it.latitude, it.longitude) }
+
+    private suspend fun rawCurrentLocation(): Location? =
         suspendCancellableCoroutine { continuation ->
             val cts = CancellationTokenSource()
             fusedLocationClient
@@ -40,7 +52,7 @@ class LocationProvider @Inject constructor(
     // Vrací poslední kešovanou polohu ze systému — okamžité, bez čekání na GPS/síť.
     // Může vrátit null pokud oprávnění není uděleno nebo systém nemá žádnou kešovanou pozici.
     @SuppressLint("MissingPermission")
-    suspend fun getLastKnownLocation(): Location? =
+    private suspend fun rawLastKnownLocation(): Location? =
         suspendCancellableCoroutine { continuation ->
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location ->

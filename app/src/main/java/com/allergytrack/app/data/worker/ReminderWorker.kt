@@ -9,14 +9,11 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.allergytrack.app.MainActivity
 import java.util.Calendar
 import com.allergytrack.app.R
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 
 /**
  * WorkManager worker odesílající večerní připomínku k zalogování jídla a příznaků.
@@ -39,10 +36,9 @@ import dagger.assisted.AssistedInject
  * `reminder_channel` — IMPORTANCE_DEFAULT (zvuk + oznámení, bez vyskakovacího okna).
  * Kanál je registrován v AllergyTrackApplication.onCreate().
  */
-@HiltWorker
-class ReminderWorker @AssistedInject constructor(
-    @Assisted private val context: Context,
-    @Assisted workerParams: WorkerParameters,
+class ReminderWorker(
+    private val context: Context,
+    workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {

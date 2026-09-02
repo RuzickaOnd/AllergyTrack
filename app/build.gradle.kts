@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
@@ -23,8 +22,8 @@ android {
         applicationId = "com.allergytrack.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1000302
-        versionName = "1.0.3"
+        versionCode = 1000400
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -76,6 +75,14 @@ android {
 }
 
 dependencies {
+    implementation(project(":shared"))
+
+    // Room zůstává na classpath :app, protože 8 ViewModelů volá DAO přímo
+    // (porušení repository patternu, které je starší než tato migrace).
+    // Samotná databáze i migrace žijí v :shared; tohle je jen kvůli typům.
+    // Odstranitelné až po fázi 8, kdy ViewModely odejdou do commonMain.
+    implementation(libs.room.runtime)
+    implementation(libs.compose.components.resources)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -88,22 +95,16 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
-    implementation(libs.hilt.lifecycle.viewmodel.compose)
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
-    implementation(libs.retrofit.core)
-    implementation(libs.retrofit.kotlinx.serialization)
-    implementation(libs.okhttp.core)
-    implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.work.runtime.ktx)
-    implementation(libs.hilt.work)
-    ksp(libs.hilt.work.compiler)
+
+    // Koin — DI náhrada za Hilt (KMP migrace, fáze 2)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.workmanager)
     implementation(libs.camera.core)
     implementation(libs.camera.camera2)
     implementation(libs.camera.lifecycle)
@@ -135,6 +136,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.testing.ui.manifest)
     testImplementation(libs.testing.junit)
+    testImplementation(libs.testing.coroutines)
+    testImplementation(platform(libs.koin.bom))
+    testImplementation(libs.koin.test)
+    // Jen pro KoinModuleGraphTest — verify() čte konstruktory reflexí
+    // a potřebuje vidět typ HttpClient. Testy běží na JVM, do APK to nejde,
+    // takže se to netýká dexování (Ktor 3.2+ tam má problém, viz níže).
+    testImplementation(libs.ktor.client.core)
     androidTestImplementation(libs.testing.androidx.junit)
     androidTestImplementation(libs.testing.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

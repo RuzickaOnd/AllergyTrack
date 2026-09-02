@@ -7,10 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 
 @Composable
 fun PermissionDeniedScreen(
@@ -29,12 +29,12 @@ fun PermissionDeniedScreen(
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            stringResource(R.string.permission_denied_title),
+            stringResource(Res.string.permission_denied_title),
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(Modifier.height(8.dp))
         Text(message, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(24.dp))
-        Button(onClick = onBack) { Text(stringResource(R.string.nav_back)) }
+        Button(onClick = onBack) { Text(stringResource(Res.string.nav_back)) }
     }
 }

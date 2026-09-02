@@ -9,11 +9,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.allergytrack.app.R
-import com.allergytrack.app.domain.model.PremiumFeature
+import com.allergytrack.shared.resources.*
+import com.allergytrack.shared.domain.model.PremiumFeature
 import com.allergytrack.app.ui.theme.*
 import com.allergytrack.app.ui.util.displayNameRes
 
@@ -54,7 +54,7 @@ fun PremiumUpsellCard(
                 )
             }
             Text(
-                stringResource(R.string.premium_upsell_desc),
+                stringResource(Res.string.premium_upsell_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -68,7 +68,7 @@ fun PremiumUpsellCard(
                 )
             ) {
                 Text(
-                    stringResource(R.string.btn_upgrade_premium).uppercase(),
+                    stringResource(Res.string.btn_upgrade_premium).uppercase(),
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -99,7 +99,7 @@ fun PremiumBadge(modifier: Modifier = Modifier) {
                 tint = MaterialTheme.colorScheme.secondary
             )
             Text(
-                stringResource(R.string.premium_badge_label),
+                stringResource(Res.string.premium_badge_label),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.secondary,
                 fontWeight = FontWeight.Bold,

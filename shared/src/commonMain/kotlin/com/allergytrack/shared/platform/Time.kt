@@ -1,0 +1,25 @@
+package com.allergytrack.shared.platform
+
+/** Aktuální čas v milisekundách od epochy. Náhrada za System.currentTimeMillis(). */
+expect fun currentTimeMillis(): Long
+
+/** ISO 639-1 kód jazyka zařízení, malými písmeny (např. "cs"). */
+expect fun deviceLanguage(): String
+
+/** ISO 3166-1 kód země zařízení, malými písmeny (např. "cz"). Prázdný, pokud není známa. */
+expect fun deviceCountry(): String
+
+/** Náhodné UUID jako řetězec — pro primární klíče Room entit. */
+expect fun randomUuidString(): String
+
+/**
+ * Půlnoc dnešního dne v místní zóně, v milisekundách od epochy.
+ * Náhrada za Calendar.getInstance() s vynulovanými poli.
+ */
+expect fun startOfToday(): Long
+
+/** Hodina dne (0–23) v místní zóně. Náhrada za Calendar.HOUR_OF_DAY. */
+expect fun currentHourOfDay(): Int
+
+/** Den a měsíc (1–12) daného časového razítka v místní zóně, jako Pair(den, měsíc). */
+expect fun dayAndMonth(epochMillis: Long): Pair<Int, Int>

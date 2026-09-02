@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.charts
 
+import com.allergytrack.shared.presentation.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.allergytrack.app.ui.theme.AllergyTrackTheme
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class SymptomDetailActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

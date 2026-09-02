@@ -1,5 +1,6 @@
 package com.allergytrack.app.ui.screens.food
 
+import com.allergytrack.shared.presentation.*
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
@@ -21,15 +22,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.allergytrack.app.R
+import com.allergytrack.shared.resources.*
 import com.allergytrack.app.ui.navigation.Screen
 import com.allergytrack.app.ui.theme.MonoFontFamily
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -43,7 +44,7 @@ import java.util.concurrent.Executor
 fun CameraScreen(
     navController: NavController,
     mode: String = "photo",
-    viewModel: FoodLogViewModel = hiltViewModel()
+    viewModel: FoodLogViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -97,8 +98,8 @@ fun CameraScreen(
                     CircularProgressIndicator(color = Color.White)
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        text = if (mode == "barcode") stringResource(R.string.barcode_scanning)
-                               else stringResource(R.string.camera_recognizing),
+                        text = if (mode == "barcode") stringResource(Res.string.barcode_scanning)
+                               else stringResource(Res.string.camera_recognizing),
                         color = Color.White,
                         fontFamily = MonoFontFamily
                     )
@@ -123,14 +124,14 @@ fun CameraScreen(
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
-                    stringResource(R.string.nav_back),
+                    stringResource(Res.string.nav_back),
                     tint = Color.White
                 )
             }
             Spacer(Modifier.weight(1f))
             Text(
-                text = if (mode == "barcode") stringResource(R.string.screen_barcode_scanner)
-                       else stringResource(R.string.camera_title),
+                text = if (mode == "barcode") stringResource(Res.string.screen_barcode_scanner)
+                       else stringResource(Res.string.camera_title),
                 color = Color.White,
                 style = MaterialTheme.typography.titleMedium
             )
@@ -155,7 +156,7 @@ fun CameraScreen(
                                 context,
                                 capture,
                                 ContextCompat.getMainExecutor(context)
-                            ) { uri -> viewModel.onImageCaptured(uri) }
+                            ) { uri -> viewModel.onImageCaptured(uri.toString()) }
                         }
                     },
                     modifier = Modifier
@@ -166,14 +167,14 @@ fun CameraScreen(
                 ) {
                     Icon(
                         Icons.Default.Camera,
-                        contentDescription = stringResource(R.string.cd_take_photo),
+                        contentDescription = stringResource(Res.string.cd_take_photo),
                         tint = Color.Black,
                         modifier = Modifier.size(36.dp)
                     )
                 }
             } else {
                 Text(
-                    text = stringResource(R.string.barcode_scan_hint),
+                    text = stringResource(Res.string.barcode_scan_hint),
                     color = Color.White,
                     style = MaterialTheme.typography.bodyMedium,
                     fontFamily = MonoFontFamily
